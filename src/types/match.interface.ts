@@ -1,8 +1,7 @@
-import { ISquad } from "@/app/admin/squad/page";
 import { IFileProps } from "@/types/file.interface";
 import { IPlayerMini } from "./player.interface";
-import { IPlayerStatsProps } from "@/app/statistics/Statistics";
 import { ICard } from "./card.interface";
+import { ISquad } from "./squad.interface";
 
 export enum EMatchStatus {
   FT = 'FT',
@@ -60,7 +59,7 @@ export interface ITeam {
   contact: string;
   contactName: string;
   logo: string;
-  currentPlayers: IPlayerStatsProps[];
+  currentPlayers: IPlayerMini[];
   createdAt: string;
   updatedAt: string;
 }
