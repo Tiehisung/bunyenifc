@@ -1,20 +1,21 @@
-import { useState } from "react";
 import "./App.css";
+import { RouterProvider } from "react-router-dom";
+import applicationRouter from "./router";
+import { Toaster } from "sonner";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p className="text-red-600">
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-    </>
+    <div>
+      <RouterProvider router={applicationRouter} />
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        expand={true}
+        duration={3000}
+        theme="light"
+      />
+    </div>
   );
 }
 
