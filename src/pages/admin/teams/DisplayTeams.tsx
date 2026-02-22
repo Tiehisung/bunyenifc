@@ -1,4 +1,3 @@
-import { teamLogos } from "@/assets/teams/logos/team-logos";
 import { formatDate } from "@/lib/timeAndDate";
 import { IQueryResponse } from "@/types";
 import { PrimaryDropdown } from "@/components/Dropdown";
@@ -13,6 +12,7 @@ import { useDeleteTeamMutation } from "@/services/team.endpoints";
 import { ITeam } from "@/types/match.interface";
 import { TeamForm } from "./TeamForm";
 import { Pagination } from "@/components/pagination/Pagination";
+import { staticImages } from "@/assets/images";
 
 const DisplayTeams = ({ teams }: { teams?: IQueryResponse<ITeam[]> }) => {
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ const DisplayTeams = ({ teams }: { teams?: IQueryResponse<ITeam[]> }) => {
             <p className="_heading">{team?.name}</p>
             <div className="flex flex-wrap gap-3.5">
               <img
-                src={team?.logo ?? teamLogos?.[0]?.logo}
+                src={team?.logo ?? staticImages.ball}
                 alt={team?.name ?? "logo"}
                 className="object-cover bg-accent h-60 w-60 aspect-4/3 rounded-xl"
               />

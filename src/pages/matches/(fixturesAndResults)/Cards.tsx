@@ -2,11 +2,11 @@
 
  
 import { getTimeAgo } from "@/lib/timeAndDate";
-import { teamLogos } from "@/assets/teams/logos/team-logos";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { IMatch } from "@/types/match.interface";
 import { checkTeams } from "@/lib/compute/match";
+import { staticImages } from "@/assets/images";
 
 interface IMatchFixtureCardProps {
   match: IMatch;
@@ -34,7 +34,7 @@ export const MatchFixtureCard: React.FC<IMatchFixtureCardProps> = ({
             <img
               width={250}
               height={250}
-              src={home?.logo ?? teamLogos[0].logo}
+              src={home?.logo ?? staticImages.ball}
               alt={"home logo"}
               className="w-12 h-12"
             />
@@ -53,7 +53,7 @@ export const MatchFixtureCard: React.FC<IMatchFixtureCardProps> = ({
           {/* Away Team */}
           <div className="flex flex-col items-center space-y-2">
             <img
-              src={away?.logo ?? teamLogos[0].logo}
+              src={away?.logo ?? staticImages.ball}
               width={250}
               height={250}
               alt={away?.name as string}
@@ -98,7 +98,7 @@ export const PlayedMatchCard: React.FC<{
           {/* Team Details */}
           <div className="flex items-center space-x-3">
             <img
-              src={team?.logo ?? teamLogos[0].logo}
+              src={team?.logo ?? staticImages.ball}
               alt={team?.name ?? ""}
               className="w-8 h-8 rounded-full"
               width={400}
@@ -137,7 +137,7 @@ export const CanceledMatchCard: React.FC<{
           <img
             width={100}
             height={100}
-            src={home?.logo ?? teamLogos[0].logo}
+            src={home?.logo ?? staticImages.ball}
             alt={home?.name ?? "home"}
             className="w-12 h-12"
           />
@@ -152,7 +152,7 @@ export const CanceledMatchCard: React.FC<{
           <img
             width={100}
             height={100}
-            src={away?.logo ?? teamLogos[0].logo}
+            src={away?.logo ?? staticImages.ball}
             alt={away?.name}
             className="w-12 h-12"
           />

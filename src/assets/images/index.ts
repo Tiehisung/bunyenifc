@@ -18,9 +18,14 @@ import cap from "./cap.png";
 import cards from "./cards.png";
 import goalkeeperGloves from "./goalkeeper-gloves.png";
 import blueCurvy from "./bg/blue-curvy-bg.png";
-
+import circleCheckMark from './circle-checkmark.png'
+import error from './error.png'
+import success from './success.png'
 
 export const staticImages = {
+  error: error,
+  success: success,
+  circleCheckMark: circleCheckMark,
   blueCurvy: blueCurvy,
   avatar,
   sponsor,

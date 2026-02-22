@@ -10,13 +10,13 @@ import { useForm } from "react-hook-form";
 import { isToday } from "@/lib/timeAndDate";
 import { toast } from "sonner";
 import ContentShowcaseWrapper from "@/components/ShowcaseWrapper";
-import { imageIcons } from "@/assets/icons/image-icons";
 import { Label } from "@/components/ui/label";
 import { getErrorMessage } from "@/lib/error";
 import {
   useCreateTrainingSessionMutation,
   useUpdateTrainingSessionMutation,
 } from "@/services/training.endpoints";
+import { staticImages } from "@/assets/images";
 
 export interface IPostTrainingSession {
   date: string;
@@ -165,7 +165,7 @@ export function AttendanceTable({
         )}
       </div>
       <ContentShowcaseWrapper
-        images={[todaySession ? imageIcons.success : imageIcons.error]}
+        images={[todaySession ? staticImages.success : staticImages.error]}
         graphicsStyles="animate-pulse max-w-32 max-h-32 md:max-w-52 md:max-h-52 md:mt-20 mx-auto"
       >
         <section className="grow">
