@@ -29,7 +29,7 @@ export default function FolderPage() {
   });
 
   // Fetch players for tagging
-  const { data: players, isLoading: playersLoading } = useGetPlayersQuery();
+  const { data: players, isLoading: playersLoading } = useGetPlayersQuery('');
 
   if (docsLoading || playersLoading) {
     return (

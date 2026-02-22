@@ -6,12 +6,12 @@ import { toast } from "sonner";
 import { fireDoubleEscape } from "@/hooks/Esc";
 import { ITeam } from "@/types/match.interface";
 import { getErrorMessage } from "@/lib/error";
-import { AvatarUploadWidget } from "@/components/cloudinary/AvatarUploadWidget";
 import { useNavigate } from "react-router-dom";
 import {
   useCreateTeamMutation,
   useUpdateTeamMutation,
 } from "@/services/team.endpoints";
+import { ImageUploadWidget } from "@/components/cloudinary/AvatarUploadWidget";
 
 export interface IPostTeam {
   name: string;
@@ -119,7 +119,7 @@ export const TeamForm = ({ team }: IProps) => {
         className="p-4 pt-10 border max-w-md flex flex-col gap-4 gap-y-8 items-center justify-center mx-center w-full grow md:min-w-sm"
       >
         <div className="flex flex-col items-center justify-center gap-2 mx-auto">
-          <AvatarUploadWidget
+          <ImageUploadWidget
             onUpload={(file) =>
               setFormData({ ...formData, logo: file?.secure_url ?? "" })
             }

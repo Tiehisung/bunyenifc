@@ -4,7 +4,7 @@ import { GiSoccerBall } from "react-icons/gi";
 import { TbPlayFootball, TbTableRow } from "react-icons/tb";
 import { RiNewsLine } from "react-icons/ri";
 import { SiGithubsponsors } from "react-icons/si";
-import UserLogButtons from "./UserLogger";
+// import UserLogButtons from "./UserLogger";
 import { ThemeModeToggle } from "./ThemeToggle";
 import { NavigationPopover } from "./NavigationPopover";
 import { GalleryThumbnails } from "lucide-react";
@@ -62,7 +62,7 @@ export const DesktopNav = () => {
       ))}
 
       <li className="ml-3">
-        <UserLogButtons />
+        {/* <UserLogButtons /> */}
       </li>
       <li className="ml-3">
         <ThemeModeToggle />
@@ -137,7 +137,7 @@ export const MobilePublicNav = () => {
         )} */}
         <li className="mt-12 px-3 flex gap-3 items-center">
           <ThemeModeToggle />
-          <UserLogButtons />
+          {/* <UserLogButtons /> */}
         </li>
       </ul>
     </NavigationPopover>

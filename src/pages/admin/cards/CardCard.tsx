@@ -8,12 +8,31 @@ import { ICard } from "@/types/card.interface";
 import { IPlayer } from "@/types/player.interface";
 import { POPOVER } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { useDeleteCardMutation } from "@/services/cards.endpoints";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface IProps {
   card: ICard;
   selectedPlayer?: IPlayer;
 }
+
 const CardCard = ({ card, selectedPlayer }: IProps) => {
+  const navigate = useNavigate();
+  const [deleteCard] = useDeleteCardMutation();
+
+  const handleDelete = async () => {
+    try {
+      const result = await deleteCard(card._id).unwrap();
+      if (result.success) {
+        toast.success(result.message);
+        navigate(0);
+      }
+    } catch (error) {
+      toast.error("Failed to delete card");
+    }
+  };
+
   // Severity badge component
   const TypeBadge = ({ type }: { type: string }) => {
     const config = {
@@ -21,7 +40,6 @@ const CardCard = ({ card, selectedPlayer }: IProps) => {
         label: "🟨 Yellow",
         className: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
       },
-
       red: {
         label: "🟥 Red",
         className: "bg-red-100 text-red-800 hover:bg-red-100",
@@ -53,7 +71,7 @@ const CardCard = ({ card, selectedPlayer }: IProps) => {
 
             <p className="text-muted-foreground mb-3">{card.description}</p>
 
-            <div className=" flex flex-wrap items-center gap-4 text-sm">
+            <div className="flex flex-wrap items-center gap-4 text-sm">
               {!selectedPlayer && (
                 <div className="flex items-center gap-2">
                   <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
@@ -62,8 +80,6 @@ const CardCard = ({ card, selectedPlayer }: IProps) => {
                         src={card?.player?.avatar}
                         alt={card?.player?.name}
                         className="h-6 w-6 rounded-full object-cover"
-                        width={200}
-                        height={200}
                       />
                     ) : (
                       <User className="h-3 w-3" />
@@ -84,15 +100,15 @@ const CardCard = ({ card, selectedPlayer }: IProps) => {
           </div>
 
           <POPOVER
-            variant={"ghost"}
-            className="w-fit space-y-1.5 "
-            size={"icon-sm"}
+            variant="ghost"
+            className="w-fit space-y-1.5"
+            size="icon-sm"
             triggerClassNames="rounded-full"
           >
             <DIALOG
-              trigger={"Edit"}
-              variant={"ghost"}
-              triggerStyles="text-sm p-1.5 px-2 grow w-full justify-start "
+              trigger="Edit"
+              variant="ghost"
+              triggerStyles="text-sm p-1.5 px-2 grow w-full justify-start"
             >
               <CardForm match={undefined} card={card} />
             </DIALOG>
@@ -100,14 +116,11 @@ const CardCard = ({ card, selectedPlayer }: IProps) => {
             <ConfirmDialog
               description={`Are you sure you want to delete this card? \n <i>${
                 card?.description ?? ""
-              }</>`}
-              action={{
-                method: "DELETE",
-                uri: `/cards/${card._id}`,
-              }}
+              }</i>`}
+              onConfirm={handleDelete}
               trigger="Resolve"
               triggerStyles="text-sm p-1.5 px-2 grow w-full justify-start"
-              variant={"destructive"}
+              variant="destructive"
               title={card.type}
             />
           </POPOVER>

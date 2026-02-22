@@ -1,4 +1,4 @@
-"use client";
+ 
 
 import { CountupMetricCard } from "@/components/MetricsCards";
 import { useFetch } from "@/hooks/fetch";
@@ -13,7 +13,7 @@ interface IProps {
 }
 export function InjuryStats({ loading }: IProps) {
   // Fetch all injuries
-  const { results: allInjuries, loading: isLoadingInjuries } = useFetch<
+  const { results: allInjuries } = useFetch<
     IInjury[]
   >({
     uri: "/injuries",

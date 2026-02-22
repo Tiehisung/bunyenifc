@@ -1,11 +1,10 @@
-"use client";
+ 
 
 // import { signIn, signOut } from "next-auth/react";
 import { Button } from "../buttons/Button";
 import { LogIn, LogOut } from "lucide-react";
 import { useState } from "react";
 import { TButtonSize, TButtonVariant } from "../ui/button";
-import { getUrlToShare } from "@/lib";
 
 interface IProps {
   className?: string;
@@ -23,8 +22,6 @@ export const LoginBtn = ({
   variant,
   text = "Login",
   children,
-  redirectTo = getUrlToShare(),
-  stayOnPage = false,
 }: IProps) => {
   const [loading, setLoading] = useState(false);
   const handleLogin = async (e: { preventDefault: () => void }) => {
@@ -58,8 +55,6 @@ export const LogoutBtn = ({
   variant = "destructive",
   text = "",
   children,
-  redirectTo = "/",
-  stayOnPage = false,
 }: IProps) => {
   const [loading, setLoading] = useState(false);
   const handleLogout = async () => {

@@ -70,6 +70,8 @@ export const validateFile = (
     return { status: true, message: '' };
 };
 
+ 
+
 export const getVideoThumbnail = (
     publicId: string,
     options?: {
@@ -96,7 +98,9 @@ export const getVideoThumbnail = (
         `h_${height}`,
     ].join(",")
 
-    return `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/${transformations}/${publicId}.jpg`
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+
+    return `https://res.cloudinary.com/${cloudName}/video/upload/${transformations}/${publicId}.jpg`
 }
 
 export const getThumbnail = (
@@ -110,7 +114,8 @@ export const getThumbnail = (
 ) => {
     if (!file) return ''
 
-    if (file?.resource_type == 'image') return file.secure_url
+    if (file?.resource_type === 'image') return file.secure_url
+
     const {
         width = 1200,
         height = 680,
@@ -128,10 +133,10 @@ export const getThumbnail = (
         `h_${height}`,
     ].join(",")
 
-    return `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/${transformations}/${file?.public_id}.jpg`
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+
+    return `https://res.cloudinary.com/${cloudName}/video/upload/${transformations}/${file?.public_id}.jpg`
 }
-
-
 export const downloadFile = (url: string | URL | Request, filename: string) => {
     fetch(url)
         .then((response) => response.blob())

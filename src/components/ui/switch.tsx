@@ -1,10 +1,10 @@
-"use client";
+ 
 
 import * as React from "react";
 import * as SwitchPrimitives from "@radix-ui/react-switch";
 
 import { cn } from "@/lib/utils";
-import { toggleClick } from "@/lib/DOM";
+import { toggleClick } from "@/lib/dom";
 
 const Switch = React.forwardRef<
   React.ComponentRef<typeof SwitchPrimitives.Root>,

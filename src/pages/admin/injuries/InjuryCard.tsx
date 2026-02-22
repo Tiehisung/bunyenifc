@@ -1,50 +1,80 @@
- 
-
 import { ConfirmDialog } from "@/components/Confirm-dialog";
 import { DIALOG } from "@/components/Dialog";
 import { Card } from "@/components/ui/card";
 import { POPOVER } from "@/components/ui/popover";
 import { formatDate } from "@/lib/timeAndDate";
 import { IInjury } from "@/types/injury.interface";
-import { AlertCircle, AlertOctagon, AlertTriangle, Calendar, User } from "lucide-react";
+import {
+  AlertCircle,
+  AlertOctagon,
+  AlertTriangle,
+  Calendar,
+  User,
+} from "lucide-react";
 import { InjuryForm } from "./InjuryForm";
 import { IPlayer } from "@/types/player.interface";
 import { Badge } from "@/components/ui/badge";
+import { useDeleteInjuryMutation } from "@/services/injuries.endpoints";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
-export function InjuryCard({ injury ,selectedPlayer}: { injury: IInjury ,selectedPlayer?:IPlayer}) { const SeverityBadge = ({ severity }: { severity: string }) => {
-  const config = {
-    MINOR: {
-      label: "Minor",
-      className: "bg-green-100 text-green-800 hover:bg-green-100",
-      icon: <AlertCircle className="h-3 w-3" />,
-    },
-    MODERATE: {
-      label: "Moderate",
-      className: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
-      icon: <AlertTriangle className="h-3 w-3" />,
-    },
-    MAJOR: {
-      label: "Major",
-      className: "bg-orange-100 text-orange-800 hover:bg-orange-100",
-      icon: <AlertTriangle className="h-3 w-3" />,
-    },
-    SEVERE: {
-      label: "Severe",
-      className: "bg-red-100 text-red-800 hover:bg-red-100",
-      icon: <AlertOctagon className="h-3 w-3" />,
-    },
+export function InjuryCard({
+  injury,
+  selectedPlayer,
+}: {
+  injury: IInjury;
+  selectedPlayer?: IPlayer;
+}) {
+  const navigate = useNavigate();
+  const [deleteInjury] = useDeleteInjuryMutation();
+
+  const SeverityBadge = ({ severity }: { severity: string }) => {
+    const config = {
+      MINOR: {
+        label: "Minor",
+        className: "bg-green-100 text-green-800 hover:bg-green-100",
+        icon: <AlertCircle className="h-3 w-3" />,
+      },
+      MODERATE: {
+        label: "Moderate",
+        className: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
+        icon: <AlertTriangle className="h-3 w-3" />,
+      },
+      MAJOR: {
+        label: "Major",
+        className: "bg-orange-100 text-orange-800 hover:bg-orange-100",
+        icon: <AlertTriangle className="h-3 w-3" />,
+      },
+      SEVERE: {
+        label: "Severe",
+        className: "bg-red-100 text-red-800 hover:bg-red-100",
+        icon: <AlertOctagon className="h-3 w-3" />,
+      },
+    };
+
+    const { label, className, icon } =
+      config[severity as keyof typeof config] || config.MINOR;
+
+    return (
+      <Badge variant="outline" className={`gap-1 ${className}`}>
+        {icon}
+        {label}
+      </Badge>
+    );
   };
 
-  const { label, className, icon } =
-    config[severity as keyof typeof config] || config.MINOR;
+  const handleDelete = async () => {
+    try {
+      const result = await deleteInjury(injury?._id as string).unwrap();
+      if (result.success) {
+        toast.success(result.message);
+        navigate(0);
+      }
+    } catch (error) {
+      toast.error("Failed to delete injury");
+    }
+  };
 
-  return (
-    <Badge variant="outline" className={`gap-1 ${className}`}>
-      {icon}
-      {label}
-    </Badge>
-  );
-};
   return (
     <Card key={injury._id} className="overflow-hidden">
       <div className="p-4">
@@ -90,28 +120,25 @@ export function InjuryCard({ injury ,selectedPlayer}: { injury: IInjury ,selecte
             </div>
           </div>
           <POPOVER
-            variant={"ghost"}
-            className="w-fit space-y-1.5 "
-            size={"icon-sm"}
+            variant="ghost"
+            className="w-fit space-y-1.5"
+            size="icon-sm"
             triggerClassNames="rounded-full"
           >
             <DIALOG
-              trigger={"Edit"}
-              variant={"ghost"}
-              triggerStyles="text-sm p-1.5 px-2 grow w-full justify-start "
+              trigger="Edit"
+              variant="ghost"
+              triggerStyles="text-sm p-1.5 px-2 grow w-full justify-start"
             >
               <InjuryForm match={undefined} injury={injury} />
             </DIALOG>
 
             <ConfirmDialog
               description="Delete injury to resolve"
-              action={{
-                method: "DELETE",
-                uri: `/injuries/${injury._id}`,
-              }}
+              onConfirm={handleDelete}
               trigger="Delete"
-              triggerStyles="text-sm p-1.5 px-2 grow w-full justify-start "
-              variant={"destructive"}
+              triggerStyles="text-sm p-1.5 px-2 grow w-full justify-start"
+              variant="destructive"
               title={injury.title}
             />
           </POPOVER>

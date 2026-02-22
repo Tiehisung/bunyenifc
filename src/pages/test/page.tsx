@@ -1,12 +1,12 @@
-"use client";
+ 
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+ 
+import { Link, useLocation } from "react-router-dom";
 import { sidebarLinkGroups } from "../admin/(sidebar)/GroupedSidebarLinks";
 import { PrimaryAdminSidebar } from "../admin/(sidebar)/PrimarySidebarAdmin";
 
 export default function GroupedAdminSidebar() {
-  const pathname = usePathname();
+  const {pathname} = useLocation();
 
   if (1 < 8) return <PrimaryAdminSidebar />;
 
@@ -25,7 +25,7 @@ export default function GroupedAdminSidebar() {
               return (
                 <Link
                   key={item.path}
-                  href={item.path}
+                  to={item.path}
                   className={`flex items-center gap-3 px-4 py-2 rounded-md text-sm transition ${
                     active
                       ? "bg-primary "

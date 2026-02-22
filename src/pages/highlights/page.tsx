@@ -1,11 +1,10 @@
-import { IQueryResponse } from "@/types";
-import { IMatch, IMatchHighlight } from "@/types/match.interface";
+ 
 import InfiniteLimitScroller from "@/components/InfiniteScroll";
 import { SearchHighlights } from "../admin/matches/highlights/Search";
 import { MatchHighlights } from "../admin/matches/highlights/DisplayHighlights";
 import { useSearchParams } from "react-router-dom";
 import { useGetHighlightsQuery } from "@/services/highlights.endpoints";
-import { useGetMatchesQuery } from "@/services/matches.endpoints";
+import { useGetMatchesQuery } from "@/services/match.endpoints";
 import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -20,7 +19,7 @@ export default function MatchHighlightsPage() {
     error: highlightsError,
   } = useGetHighlightsQuery(paramsString);
 
-  const { data: matches, isLoading: matchesLoading } = useGetMatchesQuery();
+  const { data: matches, isLoading: matchesLoading } = useGetMatchesQuery({});
 
   const isLoading = highlightsLoading || matchesLoading;
 

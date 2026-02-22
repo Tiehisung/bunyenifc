@@ -1,23 +1,39 @@
 import HEADER from "@/components/Element";
-import { getPlayers } from "../players/page";
-import { IQueryResponse, ISelectOptionLV } from "@/types";
-import { IPlayer } from "@/types/player.interface";
+import { ISelectOptionLV } from "@/types";
 import DocumentFolders from "./Folders";
 import { DocumentUploader } from "./DocUploader";
 import { ConsentForm } from "@/components/pdf/ConsentForm";
 import { RecentDocs } from "./RecentDocs";
 import TextDivider from "@/components/Divider";
 import { useGetFolderMetricsQuery } from "@/services/docs.endpoints";
+import { useGetPlayersQuery } from "@/services/player.endpoints";
+import Loader from "@/components/loaders/Loader";
 
-export default async function DocsPage() {
-  const players: IQueryResponse<IPlayer[]> = await getPlayers();
+export default function DocsPage() {
+  const { data: playersData, isLoading: playersLoading } = useGetPlayersQuery('');
+  const { data: metricsData, isLoading: metricsLoading } =
+    useGetFolderMetricsQuery();
 
-  const { currentData, isLoading } = useGetFolderMetricsQuery();
-  console.log(currentData, isLoading);
+  const isLoading = playersLoading || metricsLoading;
+  const players = playersData;
+  const folderMetrics = metricsData;
+
+  if (isLoading) {
+    return (
+      <div>
+        <HEADER title="DOCUMENTATION" />
+        <main className="_page mt-6 pb-6">
+          <div className="flex justify-center items-center min-h-100">
+            <Loader message="Loading documents..." />
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <HEADER title="DOCUMENTATION " />
+      <HEADER title="DOCUMENTATION" />
       <main className="_page mt-6 pb-6">
         <RecentDocs />
 
@@ -34,12 +50,7 @@ export default async function DocsPage() {
               },
             ]}
           />
-          <DocumentFolders
-            folderMetrics={{
-              data: { folders: [], totalDocs: 9 },
-              success: true,
-            }}
-          />
+          <DocumentFolders folderMetrics={folderMetrics} />
         </section>
 
         <br />

@@ -125,7 +125,7 @@ const docsApi = api.injectEndpoints({
         }),
 
         // Folder metrics
-        getFolderMetrics: builder.query<IQueryResponse<IFolderMetrics>, void>({
+        getFolderMetrics: builder.query<IQueryResponse<IFolderMetrics[]>, void>({
             query: () => "/docs/metrics",
             providesTags: ["Folders", "Documents"],
             transformErrorResponse: (response) => formatError(response),

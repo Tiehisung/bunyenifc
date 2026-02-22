@@ -1,5 +1,3 @@
- 
-
 import { Card } from "@/components/ui/card";
 import { formatDate } from "@/lib/timeAndDate";
 import { Calendar, User } from "lucide-react";
@@ -14,25 +12,42 @@ import { POPOVER } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { MVPForm } from "./MvpForm";
 import { IMVP } from "@/types/mvp.interface";
+import { useDeleteMvpMutation } from "@/services/mvps.endpoints";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface IProps {
   mvp: IMVP;
   selectedPlayer?: IPlayer;
 }
+
 const MvpCard = ({ mvp, selectedPlayer }: IProps) => {
+  const navigate = useNavigate();
+  const [deleteMvp] = useDeleteMvpMutation();
   const ui = PLAYER_POSITION_UI_MAP[mvp.positionPlayed as EPlayerPosition];
+
+  const handleDelete = async () => {
+    try {
+      const result = await deleteMvp(mvp._id).unwrap();
+      if (result.success) {
+        toast.success(result.message);
+        navigate(0);
+      }
+    } catch (error) {
+      toast.error("Failed to delete MVP");
+    }
+  };
 
   return (
     <Card className="overflow-hidden">
       <div className="px-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h1 className="font-bold text-lg mb-3">{mvp.match.title}</h1>
+            <h1 className="font-bold text-lg mb-3">{mvp.match?.title}</h1>
             <div className="flex items-center gap-3 mb-2">
               <Badge variant="outline" className="uppercase">
-              
                 <span style={{ color: ui?.color ?? "grayText" }}>
-                  {ui?.icon??''} {mvp.positionPlayed??'Unknown'}
+                  {ui?.icon ?? ""} {mvp.positionPlayed ?? "Unknown"}
                 </span>
               </Badge>
               <span className="text-sm text-muted-foreground">
@@ -42,7 +57,7 @@ const MvpCard = ({ mvp, selectedPlayer }: IProps) => {
 
             <p className="text-muted-foreground mb-3">{mvp.description}</p>
 
-            <div className=" flex flex-wrap items-center gap-4 text-sm">
+            <div className="flex flex-wrap items-center gap-4 text-sm">
               {!selectedPlayer && (
                 <div className="flex items-center gap-2">
                   <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
@@ -51,9 +66,6 @@ const MvpCard = ({ mvp, selectedPlayer }: IProps) => {
                         src={mvp?.player?.avatar}
                         alt={mvp?.player?.name}
                         className="h-6 w-6 rounded-full object-cover"
-                        width={200}
-                        height={200}
-                      
                       />
                     ) : (
                       <User className="h-3 w-3" />
@@ -74,15 +86,15 @@ const MvpCard = ({ mvp, selectedPlayer }: IProps) => {
           </div>
 
           <POPOVER
-            variant={"ghost"}
-            className="w-fit space-y-1.5 "
-            size={"icon-sm"}
+            variant="ghost"
+            className="w-fit space-y-1.5"
+            size="icon-sm"
             triggerClassNames="rounded-full"
           >
             <DIALOG
-              trigger={"Edit"}
-              variant={"ghost"}
-              triggerStyles="text-sm p-1.5 px-2 grow w-full justify-start "
+              trigger="Edit"
+              variant="ghost"
+              triggerStyles="text-sm p-1.5 px-2 grow w-full justify-start"
             >
               <MVPForm match={undefined} mvp={mvp} />
             </DIALOG>
@@ -91,13 +103,10 @@ const MvpCard = ({ mvp, selectedPlayer }: IProps) => {
               description={`Are you sure you want to delete this MVP? \n <i>${
                 mvp?.description ?? ""
               }</i>`}
-              action={{
-                method: "DELETE",
-                uri: `/mvps/${mvp._id}`,
-              }}
+              onConfirm={handleDelete}
               trigger="Delete"
               triggerStyles="text-sm p-1.5 px-2 grow w-full justify-start"
-              variant={"destructive"}
+              variant="destructive"
               title={`Delete MoTM for ${mvp?.match?.title}`}
             />
           </POPOVER>

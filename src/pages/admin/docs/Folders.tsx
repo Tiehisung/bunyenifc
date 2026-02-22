@@ -1,9 +1,6 @@
- 
- 
- 
 import { IQueryResponse } from "@/types";
 import { FolderForm } from "./FolderForm";
- 
+
 import { FolderActions } from "./Actions";
 import { Button } from "@/components/buttons/Button";
 import { DIALOG } from "@/components/Dialog";
@@ -11,22 +8,18 @@ import { icons } from "@/assets/icons/icons";
 import { IFolderMetrics } from "@/types/doc";
 import { PiFolderThin } from "react-icons/pi";
 import { Link, useLocation } from "react-router-dom";
- 
 
-export default function DocumentFolders({
-  folderMetrics,
-}: {
-  folderMetrics?: IQueryResponse<{
-    folders: IFolderMetrics[];
-    totalDocs: number;
-  }>;
-}) {
-  const {pathname} = useLocation();
+interface IProps {
+  folderMetrics?: IQueryResponse<IFolderMetrics[]>;
+}
+
+export default function DocumentFolders({ folderMetrics }: IProps) {
+  const { pathname } = useLocation();
   return (
     <div>
       <main className="flex items-start gap-4 ">
         <ul className="grid grid-cols-2 sm:flex flex-wrap items-center justify-start gap-3 border rounded-2xl overflow-hidden w-fit">
-          {folderMetrics?.data?.folders?.map((f, index) => {
+          {folderMetrics?.data?.map((f, index) => {
             return (
               <li
                 key={index}

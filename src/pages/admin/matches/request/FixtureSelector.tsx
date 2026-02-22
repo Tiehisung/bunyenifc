@@ -1,15 +1,12 @@
-"use client";
-
-import { IMatchProps } from "@/app/matches/(fixturesAndResults)";
 import { Button } from "@/components/buttons/Button";
 import { useUpdateSearchParams } from "@/hooks/params";
 import { formatDate } from "@/lib/timeAndDate";
 import { IQueryResponse } from "@/types";
-import Link from "next/link";
-import React from "react";
+import { IMatch } from "@/types/match.interface";
+import { Link } from "react-router-dom";
 
 interface IProps {
-  fixtures?: IQueryResponse<IMatchProps[]>;
+  fixtures?: IQueryResponse<IMatch[]>;
 }
 
 const FixtureSelector = ({ fixtures }: IProps) => {
@@ -18,7 +15,7 @@ const FixtureSelector = ({ fixtures }: IProps) => {
     return (
       <p className="font-normal">
         There are no available fixtures.{" "}
-        <Link href={"/admin/matches/create-fixture"} className="_link">
+        <Link to={"/admin/matches/create-fixture"} className="_link">
           Kindly create a fixture to continue
         </Link>
       </p>

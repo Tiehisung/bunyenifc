@@ -14,12 +14,12 @@ import { Label } from "@/components/ui/label";
 import { enumToOptions } from "@/lib/select";
 import QuillEditor from "@/components/editor/Quill";
 import { getErrorMessage } from "@/lib/error";
-import { AvatarUploadWidget } from "@/components/cloudinary/AvatarUploadWidget";
 import { useNavigate } from "react-router-dom";
 import {
   useCreatePlayerMutation,
   useUpdatePlayerMutation,
 } from "@/services/player.endpoints";
+import { ImageUploadWidget } from "@/components/cloudinary/AvatarUploadWidget";
 
 // Zod Schemas
 const playerManagerSchema = z.object({
@@ -149,7 +149,7 @@ export default function PlayerProfileForm({
                     name="avatar"
                     render={({ field: { value, onChange }, fieldState }) => (
                       <div className="flex flex-col items-center gap-2">
-                        <AvatarUploadWidget
+                        <ImageUploadWidget
                           onUpload={(file) => onChange(file?.secure_url ?? "")}
                           cropping
                           folder="/players/"

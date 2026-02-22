@@ -167,12 +167,7 @@ export default function PlayerSigningDocument({
               </Text>
             </View>
 
-            <View style={styles.row}>
-              <Text style={styles.label}>Email:</Text>
-              <Text style={styles.value}>
-                {player?.manager?.email ?? "N/A"}
-              </Text>
-            </View>
+             
           </View>
         )}
 
@@ -234,7 +229,7 @@ export function DownloadPlayerForm({ player }: { player?: IPlayer }) {
         fileName={`${player?.firstName}-${player?.lastName}-signing-form.pdf`}
         className="_primaryBtn w-fit"
       >
-        {({ blob, url, loading, error }) => (
+        {({ loading, error }) => (
           <div>
             {loading ? "Generating PDF..." : "Download Player Signing Form"}
 

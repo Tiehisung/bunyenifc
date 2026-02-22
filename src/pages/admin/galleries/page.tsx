@@ -25,7 +25,7 @@ export default function GalleriesAdmin() {
   } = useGetGalleriesQuery(queryString);
 
   // Fetch players for tagging
-  const { data: players, isLoading: playersLoading } = useGetPlayersQuery();
+  const { data: players, isLoading: playersLoading } = useGetPlayersQuery('');
 
   const isLoading = galleriesLoading || playersLoading;
   const hasError = galleriesError;

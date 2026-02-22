@@ -1,10 +1,8 @@
 import { LinkTabs } from "@/components/Tabs";
-import { Metadata } from "next";
+ 
 import { FC, ReactNode } from "react";
 
-export const metadata: Metadata = {
-  title: "Features | KFC",
-};
+ 
 const FeaturesLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const tabs = [
     { label: "Teams", path: "/admin/features/teams" },

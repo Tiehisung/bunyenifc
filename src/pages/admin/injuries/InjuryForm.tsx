@@ -45,7 +45,7 @@ export function InjuryForm({
   const navigate = useNavigate();
 
   // Fetch players using RTK Query
-  const { data: playersData, isLoading: playersLoading } = useGetPlayersQuery();
+  const { data: playersData, isLoading: playersLoading } = useGetPlayersQuery('');
   const players = playersData?.data || [];
 
   // RTK Query mutations

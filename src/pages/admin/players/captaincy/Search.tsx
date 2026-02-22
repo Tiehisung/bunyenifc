@@ -1,15 +1,13 @@
-"use client";
-
 import { ClearFiltersBtn } from "@/components/buttons/ClearFilters";
 import { PrimarySearch } from "@/components/Search";
 import { useUpdateSearchParams } from "@/hooks/params";
 import { ISelectOptionLV } from "@/types";
-import { useSearchParams } from "next/navigation";
+
 import { useEffect, useState } from "react";
 
 export const SearchCaptains = () => {
   const { setParam } = useUpdateSearchParams();
-  const sp = useSearchParams();
+
   const options = [
     { value: "", label: "All" },
     { value: "current", label: "Current" },

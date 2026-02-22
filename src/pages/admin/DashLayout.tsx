@@ -16,7 +16,7 @@ const AdminLayout = () => {
           <Outlet />
         </div>
       </div>{" "}
-      <PageSEO customTitle="BunyeniFC Admin" customDescription="Bunyenifc Admin" page="admin" />
+      <PageSEO title="BunyeniFC Admin" description="Bunyenifc Admin" page="admin" />
     </div>
   );
 };

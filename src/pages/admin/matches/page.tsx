@@ -27,7 +27,7 @@ export default function AdminFixtures() {
 
   const { data: teams, isLoading: teamsLoading } = useGetTeamsQuery({});
 
-  const { data: players, isLoading: playersLoading } = useGetPlayersQuery();
+  const { data: players, isLoading: playersLoading } = useGetPlayersQuery('');
 
   const { data: managers, isLoading: managersLoading } = useGetManagersQuery({});
 

@@ -1,4 +1,4 @@
-import { ISelectOptionLV } from "@/types/index.interface";
+import { ISelectOptionLV } from "@/types";
 
 // Convert string array to ISelectOption array
 export function stringArrayToOptions(items: string[]): ISelectOptionLV[] {

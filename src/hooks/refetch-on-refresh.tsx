@@ -1,9 +1,9 @@
 // hooks/use-refetch-on-refresh.ts
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+ 
 
 export function useRefetchOnRefresh(refetch: () => void) {
-  const navigate = useNavigate();
+ 
 
   useEffect(() => {
     // React Router doesn't have a direct refresh equivalent

@@ -43,7 +43,7 @@ const matchApi = api.injectEndpoints({
         }),
 
         // GET match by slug or ID
-        getMatchBySlug: builder.query<IQueryResponse<IMatch>, string>({
+        getMatch: builder.query<IQueryResponse<IMatch>, string>({
             query: (slugOrId) => `/matches/${slugOrId}`,
             providesTags: (_result, _error, slugOrId) => [{ type: 'Matches', id: slugOrId }],
         }),
@@ -400,7 +400,7 @@ const matchApi = api.injectEndpoints({
 export const {
     // Queries
     useGetMatchesQuery,
-    useGetMatchBySlugQuery,
+    useGetMatchQuery,
     useGetUpcomingMatchesQuery,
     useGetRecentMatchesQuery,
     useGetMatchesByTeamQuery,
@@ -424,7 +424,7 @@ export const {
 
     // Lazy queries
     useLazyGetMatchesQuery,
-    useLazyGetMatchBySlugQuery,
+    useLazyGetMatchQuery,
     useLazyGetLiveMatchQuery,
     useLazyGetMatchStatsQuery,
     useLazyGetHeadToHeadQuery,

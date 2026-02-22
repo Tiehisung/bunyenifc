@@ -1,10 +1,9 @@
-"use client";
-
-import { kfc } from "@/data/teamBnfc";
+ 
 import { teamKFC } from "@/data/teams";
 import { IManager } from "../../managers/page";
 import { checkTeams } from "@/lib/compute/match";
 import { IMatch } from "@/types/match.interface";
+import { teamBnfc } from "@/data/teamBnfc";
 
 export const printMatchRequestLetter = (
   template: { title: string; body: string },
@@ -107,7 +106,7 @@ export const printMatchRequestLetter = (
           <h1>${teamKFC.name}</h1>
           <p>Official Match Correspondence</p>
         </div>
-        <img src="${kfc.logo}" class="logo" />
+        <img src="${teamBnfc.logo}" class="logo" />
       </div>
 
       <!-- META -->
@@ -130,7 +129,7 @@ export const printMatchRequestLetter = (
         </div>
 
         <div class="signature">
-          <img src="${kfc.officialSignature}" />
+          <img src="${teamBnfc.officialSignature}" />
           <div class="sign-text">
             For ${teamKFC.name}
           </div>

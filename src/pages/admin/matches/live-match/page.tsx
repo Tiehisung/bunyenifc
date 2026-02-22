@@ -16,7 +16,7 @@ export default function LiveMatchPage() {
     error: matchError,
   } = useGetLiveMatchQuery({});
 
-  const { data: playersData, isLoading: playersLoading } = useGetPlayersQuery();
+  const { data: playersData, isLoading: playersLoading } = useGetPlayersQuery('');
 
   const isLoading = matchLoading || playersLoading;
   const match = matchData;

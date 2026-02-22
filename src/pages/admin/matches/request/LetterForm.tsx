@@ -1,24 +1,24 @@
-"use client";
-
 import QuillEditor from "@/components/editor/Quill";
 import { useEffect, useState } from "react";
 import { generateMatchRequestTemplates } from "./_templates";
 import useGetParam from "@/hooks/params";
-import { IMatchProps } from "@/app/matches/(fixturesAndResults)";
 import { IManager } from "../../managers/page";
 import { TemplatesSelector } from "./TemplatesSelectorModal";
-import { POPOVER } from "@/components/ui/popover";
-import { ActionButton } from "@/components/buttons/ActionButton";
+ 
 import { Button } from "@/components/buttons/Button";
 import { printMatchRequestLetter } from "./Print";
 import { icons } from "@/assets/icons/icons";
 import { Separator } from "@/components/ui/separator";
+import { IMatch } from "@/types/match.interface";
+import { useNavigate } from "react-router-dom";
 
 interface IProps {
-  match: IMatchProps;
+  match: IMatch;
   official: { requester: IManager };
 }
+
 export function MatchRequestForm({ match, official }: IProps) {
+  const navigate = useNavigate();
   const [letterForm, setLetterForm] = useState({
     body: "",
     title: "",
@@ -29,13 +29,23 @@ export function MatchRequestForm({ match, official }: IProps) {
   useEffect(() => {
     if (templateId) {
       const template = generateMatchRequestTemplates(match, official)?.find(
-        (t) => t?.id == templateId
+        (t) => t?.id === templateId,
       );
-      console.log(template?.body);
-      if (template)
+      if (template) {
         setLetterForm({ body: template.body, title: template.title });
+      }
     }
-  }, [templateId]);
+  }, [templateId, match, official]);
+
+  const handlePrint = () => {
+    printMatchRequestLetter(letterForm, match, official);
+  };
+
+  const handleSaveDraft = async () => {
+    // TODO: Implement save draft functionality
+    console.log("Saving draft:", letterForm);
+    navigate(0);
+  };
 
   return (
     <div>
@@ -47,7 +57,7 @@ export function MatchRequestForm({ match, official }: IProps) {
           match={match}
           official={official}
           modal
-          modalVariant={"outline"}
+          modalVariant="outline"
         />
       </header>
       <QuillEditor
@@ -55,7 +65,7 @@ export function MatchRequestForm({ match, official }: IProps) {
         onChange={(text) => {
           setLetterForm((p) => ({ ...p, body: text }));
         }}
-        className="w-full "
+        className="w-full"
         placeholder="Type request letter here..."
       />
       <br />
@@ -63,22 +73,22 @@ export function MatchRequestForm({ match, official }: IProps) {
         <Button
           primaryText="Print"
           waitingText="Generating..."
-          className=" w-full justify-start font-normal"
-          variant={"default"}
+          className="w-full justify-start font-normal"
+          variant="default"
           disabled={!letterForm.body}
-          onClick={() => printMatchRequestLetter(letterForm, match, official)}
+          onClick={handlePrint}
         >
-          {<icons.printer />}
+          <icons.printer />
         </Button>
-        <ActionButton
+        <Button
           primaryText="Save as draft"
-          loadingText="Saving..."
-          method="POST"
-          className=" w-full justify-start font-normal"
-          variant={"secondary"}
+          waitingText="Saving..."
+          onClick={handleSaveDraft}
+          className="w-full justify-start font-normal"
+          variant="secondary"
         >
-          {<icons.save />}
-        </ActionButton>
+          <icons.save />
+        </Button>
       </section>
     </div>
   );
