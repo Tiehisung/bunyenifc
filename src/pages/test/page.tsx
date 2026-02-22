@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import { sidebarLinkGroups } from "../admin/(sidebar)/GroupedSidebarLinks";
 import { PrimaryAdminSidebar } from "../admin/(sidebar)/PrimarySidebarAdmin";
 
-export default function GroupedAdminSidebar() {
+export default function TestPage() {
   const {pathname} = useLocation();
 
   if (1 < 8) return <PrimaryAdminSidebar />;

@@ -4,10 +4,10 @@ import { RouteObject } from "react-router-dom";
 
 
 export const adminRoutes: RouteObject[] = [
-  { path: "/admin", element: <AdminDashboardPage /> },
+  { path: "", element: <AdminDashboardPage /> },
 
 //   {
-//     path: "users",
+//     path: "players",
 //     element: <AdminUsersLayout />,
 //     children: [
 //       { index: true, element: <AllUsersPageAdmin /> },
