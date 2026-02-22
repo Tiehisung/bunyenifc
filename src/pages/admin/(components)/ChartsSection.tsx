@@ -1,4 +1,4 @@
-"use client";
+ 
 
 import { PrimaryCollapsible } from "@/components/Collapsible";
 import { Clock } from "lucide-react";

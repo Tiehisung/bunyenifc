@@ -8,7 +8,7 @@ import { useGetTeamsQuery } from "@/services/team.endpoints";
 const TeamsFeature = () => {
   const [searchParams] = useSearchParams();
   const paramsString = searchParams.toString();
-  console.log(paramsString)
+  console.log(paramsString);
 
   const { data: teams, isLoading, error, isFetching } = useGetTeamsQuery({});
 

@@ -2,10 +2,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Users, Calendar, Trophy, TrendingUp } from "lucide-react";
 import { IQueryResponse } from "@/types";
 
-export const KeyTopStatsCards = async () => {
+export const KeyTopStatsCards = () => {
   const metrics: IQueryResponse<any> = {
     data: null,
-    success: false
+    success: false,
   };
 
   return (

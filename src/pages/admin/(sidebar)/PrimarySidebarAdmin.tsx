@@ -112,7 +112,7 @@ const sidebarLinks: ILinkItem[] = [
       
       {
         title: "Match Request",
-        path: "/admin/matches/request",
+        path: "/admin/request",
         icon: <LetterText className="w-4 h-4" />,
       },
     ],
@@ -141,7 +141,7 @@ const sidebarLinks: ILinkItem[] = [
 
       {
         title: "Highlights",
-        path: "/admin/matches/highlights",
+        path: "/admin/highlights",
         icon: <ActivityIcon className="w-4 h-4" />,
       },
     ],

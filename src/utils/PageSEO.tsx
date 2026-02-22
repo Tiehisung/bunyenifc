@@ -70,7 +70,7 @@ export const PageSEO = ({
     <Helmet>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
-      <meta name="keywords" content={config.keywords.join(", ")} />
+      <meta name="keywords" content={config?.keywords?.join(", ")} />
 
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
