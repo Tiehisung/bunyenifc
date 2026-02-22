@@ -4,10 +4,10 @@ import { CgPerformance } from "react-icons/cg";
 import { IQueryResponse } from "@/types";
 import { IPlayersStats } from "@/types/stats";
 
-export default async function TopPlayers() {
+export default function TopPlayers() {
   const playersStats: IQueryResponse<IPlayersStats> = {
     data: exampleStats,
-    success: true
+    success: true,
   };
 
   return (

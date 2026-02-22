@@ -3,7 +3,6 @@ import UsersPage from "@/pages/Users";
 import { createBrowserRouter } from "react-router-dom";
 import { adminRoutes } from "./admin.routes";
 import ScrollToTop from "@/utils/ScrollToTop";
-import AdminLayout from "@/pages/admin/DashLayout";
 import TestPage from "@/pages/test/page";
 import SponsorsPage from "@/pages/sponsorship/page";
 import Contact from "@/pages/contact-us/page";
@@ -14,6 +13,9 @@ import PlayersPage from "@/pages/players/page";
 import JoinUsPage from "@/pages/join-us/page";
 import NewsPage from "@/pages/news/page";
 import HomeLayout from "@/pages/Layout";
+
+// Admin
+import AdminLayout from "@/pages/admin/layout";
 
 // Wrapper component for AdminLayout with ScrollToTop
 const AdminLayoutWithScrollToTop = () => (
@@ -78,13 +80,13 @@ const applicationRouter = createBrowserRouter([
         path: "*", // Catch-all route for 404 pages
         element: <NotFoundPage />,
       },
-      // --ADMIN-------------------------
-      {
-        path: "/admin/*",
-        element: <AdminLayoutWithScrollToTop />,
-        children: adminRoutes,
-      },
     ],
+  },
+  // --ADMIN-------------------------
+  {
+    path: "/admin/*",
+    element: <AdminLayoutWithScrollToTop />,
+    children: adminRoutes,
   },
 ]);
 
