@@ -1,5 +1,5 @@
 // manager.endpoint.ts
-import type { IQueryResponse } from "@/types";
+import type { IQueryResponse, IRecord } from "@/types";
 import { api } from "./api";
 
 export interface IManager {
@@ -26,7 +26,7 @@ const managerApi = api.injectEndpoints({
             limit?: number;
             search?: string;
             sortBy?: string;
-        }>({
+        } & IRecord>({
             query: (params) => ({
                 url: "/managers",
                 params: {
@@ -90,9 +90,9 @@ const managerApi = api.injectEndpoints({
         }),
 
         // UPDATE manager
-        updateManager: builder.mutation<IQueryResponse<IManager>, { id: string; body: Partial<IManager> }>({
-            query: ({ id, body }) => ({
-                url: `/managers/${id}`,
+        updateManager: builder.mutation<IQueryResponse<IManager>, Partial<IManager>>({
+            query: ({ _id, ...body }) => ({
+                url: `/managers/${_id}`,
                 method: "PUT",
                 body,
             }),

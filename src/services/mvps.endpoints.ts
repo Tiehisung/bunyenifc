@@ -7,13 +7,13 @@ const mvpApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
         // GET all MVPs
-        getMvps: builder.query<IQueryResponse<IMVP[]>, void>({
-            query: () => "/mvps",
+        getMvps: builder.query<IQueryResponse<IMVP[]>, string>({
+            query: (params) => `/mvps${params ? `?${params}` : ""}`,
             providesTags: ["MVPs"],
         }),
 
         // GET MVP by ID
-        getMvpById: builder.query<IQueryResponse<IMVP>, string>({
+        getMvp: builder.query<IQueryResponse<IMVP>, string>({
             query: (id) => `/mvps/${id}`,
             providesTags: ["MVPs"],
         }),
@@ -64,9 +64,9 @@ const mvpApi = api.injectEndpoints({
         }),
 
         // UPDATE MVP by ID (full update)
-        updateMvpById: builder.mutation<IQueryResponse<IMVP>, { id: string; body: Partial<IMVP> }>({
-            query: ({ id, body }) => ({
-                url: `/mvps/${id}`,
+        updateMvp: builder.mutation<IQueryResponse<IMVP>, Partial<IMVP>>({
+            query: ({ _id, ...body }) => ({
+                url: `/mvps/${_id}`,
                 method: "PUT",
                 body,
             }),
@@ -74,7 +74,7 @@ const mvpApi = api.injectEndpoints({
         }),
 
         // PATCH MVP by ID (partial update)
-        patchMvpById: builder.mutation<IQueryResponse<IMVP>, { id: string; body: Partial<IMVP> }>({
+        patchMvp: builder.mutation<IQueryResponse<IMVP>, { id: string; body: Partial<IMVP> }>({
             query: ({ id, body }) => ({
                 url: `/mvps/${id}`,
                 method: "PATCH",
@@ -84,7 +84,7 @@ const mvpApi = api.injectEndpoints({
         }),
 
         // DELETE MVP by ID
-        deleteMvpById: builder.mutation<IQueryResponse<IMVP>, string>({
+        deleteMvp: builder.mutation<IQueryResponse<IMVP>, string>({
             query: (id) => ({
                 url: `/mvps/${id}`,
                 method: "DELETE",
@@ -111,15 +111,15 @@ const mvpApi = api.injectEndpoints({
 
 export const {
     useGetMvpsQuery,
-    useGetMvpByIdQuery,
+    useGetMvpQuery,
     useGetMvpsByPlayerQuery,
     useGetMvpByMatchQuery,
     useGetMvpStatsQuery,
     useGetMvpLeaderboardQuery,
     useCreateMvpMutation,
-    useUpdateMvpByIdMutation,
-    usePatchMvpByIdMutation,
-    useDeleteMvpByIdMutation,
+    useUpdateMvpMutation,
+    usePatchMvpMutation,
+    useDeleteMvpMutation,
     useTransferMvpMutation,
 } = mvpApi;
 

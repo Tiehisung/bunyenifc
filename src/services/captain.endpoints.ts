@@ -7,8 +7,8 @@ const captainApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
         // GET all captaincy records
-        getCaptains: builder.query<IQueryResponse<ICaptain[]>, void>({
-            query: () => "/captains",
+        getCaptains: builder.query<IQueryResponse<ICaptain[]>, string>({
+            query: (paramsString='') => `/captains?${paramsString}`,
             providesTags: ["Captains"],
         }),
 

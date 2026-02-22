@@ -7,8 +7,8 @@ const cardApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
         // GET all cards
-        getCards: builder.query<IQueryResponse<ICard[]>, void>({
-            query: () => "/cards",
+        getCards: builder.query<IQueryResponse<ICard[]>, string>({
+            query: (params = "") => `/cards${params}`,
             providesTags: ["Cards"],
         }),
 

@@ -1,7 +1,7 @@
 // news.endpoint.ts
 import type { IQueryResponse } from "@/types";
 import { api } from "./api";
-import type { INewsProps } from "@/types/news.interface";
+import type { INewsProps, IPostNews } from "@/types/news.interface";
 
 const newsApi = api.injectEndpoints({
     endpoints: (builder) => ({
@@ -69,7 +69,7 @@ const newsApi = api.injectEndpoints({
         }),
 
         // GET news by slug
-        getNewsBySlug: builder.query<IQueryResponse<INewsProps>, string>({
+        getNewsItem: builder.query<IQueryResponse<INewsProps>, string>({
             query: (slug) => `/news/${slug}`,
             providesTags: (_result, _error, slug) => [{ type: 'News', id: slug }],
         }),
@@ -90,7 +90,7 @@ const newsApi = api.injectEndpoints({
         }),
 
         // CREATE news article
-        createNews: builder.mutation<IQueryResponse<INewsProps>, Partial<INewsProps>>({
+        createNews: builder.mutation<IQueryResponse<INewsProps>, IPostNews>({
             query: (body) => ({
                 url: "/news",
                 method: "POST",
@@ -105,13 +105,13 @@ const newsApi = api.injectEndpoints({
         }),
 
         // UPDATE news article (full update - PUT)
-        updateNews: builder.mutation<IQueryResponse<INewsProps>, { id: string; body: Partial<INewsProps> }>({
-            query: ({ id, body }) => ({
+        updateNews: builder.mutation<IQueryResponse<INewsProps>, Partial<INewsProps>>({
+            query: ({ _id: id, ...body }) => ({
                 url: `/news/${id}`,
                 method: "PUT",
                 body,
             }),
-            invalidatesTags: (_result, _error, { id }) => [
+            invalidatesTags: (_result, _error, { _id:id }) => [
                 { type: 'News', id: 'LIST' },
                 { type: 'News', id },
                 { type: 'News', id: 'LATEST' },
@@ -273,10 +273,10 @@ const newsApi = api.injectEndpoints({
 export const {
     // Queries
     useGetNewsQuery,
+    useGetNewsItemQuery,
     useGetTrendingNewsQuery,
     useGetLatestNewsQuery,
     useGetNewsByCategoryQuery,
-    useGetNewsBySlugQuery,
     useGetNewsStatsQuery,
     useGetRelatedNewsQuery,
     useGetNewsByAuthorQuery,
@@ -298,7 +298,7 @@ export const {
     useLazyGetTrendingNewsQuery,
     useLazyGetLatestNewsQuery,
     useLazyGetNewsByCategoryQuery,
-    useLazyGetNewsBySlugQuery,
+    useLazyGetNewsItemQuery,
 } = newsApi;
 
 // Export the API for use in store

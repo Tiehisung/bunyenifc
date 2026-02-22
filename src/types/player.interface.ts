@@ -4,7 +4,7 @@ import type { IGallery, ICldFileUploadResult, IFileProps } from "./file.interfac
 import type { IInjury } from "./injury.interface";
 import type { IGoal, IMatch } from "./match.interface";
 
- 
+
 export interface IPlayerMini {
     _id: string;
     name: string;
@@ -53,7 +53,9 @@ export interface IPlayer {
 
     // Status
     issues: {
-        date: string; title: string, description: string
+        title: string, 
+        description: string
+        date: string; 
     }[];
 
     status: 'current' | 'former'
