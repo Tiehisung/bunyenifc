@@ -52,6 +52,7 @@ const SquadPage = () => {
     playersLoading || managersLoading || matchesLoading || squadsLoading;
   const players = playersData;
   const managers = managersData;
+  console.log(managers)
   const matches = matchesData;
   const squads = squadsData;
 

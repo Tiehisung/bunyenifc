@@ -32,7 +32,7 @@ import AttendancePage from "@/pages/admin/training/attendance/page";
 import { InjuriesManager } from "@/pages/admin/injuries/InjuresManager";
 import AdminSponsorshipPage from "@/pages/admin/sponsorship/page";
 import AdminSponsor from "@/pages/admin/sponsorship/sponsor/page";
-import LogsPage from "@/pages/admin/logs/page";
+import LogsPage from "@/pages/admin/activity-logs/page";
 import UsersPage from "@/pages/admin/users/page";
 
 export const adminRoutes: RouteObject[] = [
