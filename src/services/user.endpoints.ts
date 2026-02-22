@@ -1,37 +1,85 @@
+// services/users.endpoints.ts
 import type { IQueryResponse } from "@/types";
-import type { IUser } from "@/types/user";
 import { api } from "./api";
+import type { IUser, } from "@/types/user";
 
-const authApi = api.injectEndpoints({
+
+
+export interface ChangePasswordInput {
+    currentPassword: string;
+    newPassword: string;
+}
+
+const usersApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
-        getUsers: builder.query<IQueryResponse<IUser[]>, void>({
-            query: () => "/users",
-            providesTags: ["Users"],
+        // Get all users with optional pagination/filtering
+        getUsers: builder.query<IQueryResponse<IUser[]>, string | void>({
+            query: (params) => `/users${params ? `?${params}` : ""}`,
+            providesTags: (result) =>
+                result?.data
+                    ? [
+                        ...result.data.map(({ _id }) => ({ type: 'Users' as const, id: _id })),
+                        { type: 'Users', id: 'LIST' },
+                    ]
+                    : [{ type: 'Users', id: 'LIST' }],
         }),
 
-        createUser: builder.mutation<IQueryResponse<IUser>, Partial<IUser>>({
+        // Get current authenticated user
+        getMe: builder.query<IQueryResponse<IUser>, void>({
+            query: () => "/users/me",
+            providesTags: ["Me"],
+        }),
+
+        // Get single user by ID
+        getUser: builder.query<IQueryResponse<IUser>, string>({
+            query: (userId) => `/users/${userId}`,
+            providesTags: (_result, _error, id) => [{ type: 'Users', id }],
+        }),
+
+        // Update user
+        updateUser: builder.mutation<IQueryResponse<IUser>, Partial<IUser>>({
+            query: ({ _id, ...body }) => ({
+                url: `/users/${_id}`,
+                method: "PUT",
+                body,
+            }),
+            invalidatesTags: (_result, _error, { _id: id }) => [
+                { type: 'Users', id },
+                { type: 'Users', id: 'LIST' },
+                'Me',
+            ],
+        }),
+
+        // Change user password
+        changeUserPassword: builder.mutation<IQueryResponse<null>, ChangePasswordInput>({
             query: (body) => ({
-                url: "/users",
+                url: "/users/change-password",
                 method: "POST",
                 body,
             }),
-            invalidatesTags: ["Users"],
+            invalidatesTags: ['Me'],
         }),
 
-        deleteUser: builder.mutation<IQueryResponse<IUser>, string>({
+        // Delete user
+        deleteUser: builder.mutation<IQueryResponse<null>, string>({
             query: (userId) => ({
                 url: `/users/${userId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: ["Users"],
+            invalidatesTags: [{ type: 'Users', id: 'LIST' }],
         }),
-
     }),
 });
 
 export const {
+    // Query hooks
     useGetUsersQuery,
-    useCreateUserMutation,
-    useDeleteUserMutation
-} = authApi;
+    useGetMeQuery,
+    useGetUserQuery,
+
+    // Mutation hooks
+    useUpdateUserMutation,
+    useChangeUserPasswordMutation,
+    useDeleteUserMutation,
+} = usersApi;

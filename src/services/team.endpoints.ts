@@ -108,7 +108,7 @@ const teamApi = api.injectEndpoints({
             }),
             providesTags: (result, _error, { teamId }) => [
                 ...(result?.data?.map(({ _id }) => ({ type: 'Players' as const, id: _id })) || []),
-                { type: 'Teams' as const, id:  teamId  },
+                { type: 'Teams' as const, id: teamId },
             ],
         }),
 
@@ -127,13 +127,13 @@ const teamApi = api.injectEndpoints({
         }),
 
         // UPDATE team (full update - PUT)
-        updateTeam: builder.mutation<IQueryResponse<ITeam>, { id: string; body: Partial<ITeam> }>({
-            query: ({ id, body }) => ({
-                url: `/teams/${id}`,
+        updateTeam: builder.mutation<IQueryResponse<ITeam>, Partial<ITeam>>({
+            query: ({ _id, ...body }) => ({
+                url: `/teams/${_id}`,
                 method: "PUT",
                 body,
             }),
-            invalidatesTags: (_result, _error, { id }) => [
+            invalidatesTags: (_result, _error, { _id:id }) => [
                 { type: 'Teams', id: 'LIST' },
                 { type: 'Teams', id },
                 { type: 'Teams', id: 'CLUB_' },

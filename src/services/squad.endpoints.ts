@@ -7,8 +7,8 @@ const squadApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
         // GET all squads
-        getSquads: builder.query<IQueryResponse<ISquad[]>, void>({
-            query: () => "/squads",
+        getSquads: builder.query<IQueryResponse<ISquad[]>, string>({
+            query: (paramsString = '') => `/squads?${paramsString}`,
             providesTags: ["Squads"],
         }),
 

@@ -7,8 +7,8 @@ const sponsorApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
         // GET all sponsors
-        getSponsors: builder.query<IQueryResponse<ISponsor[]>, void>({
-            query: () => "/sponsors",
+        getSponsors: builder.query<IQueryResponse<ISponsor[]>, string>({
+            query: (paramsString = '') => `/sponsors?${paramsString}`,
             providesTags: ["Sponsors"],
         }),
 
@@ -44,9 +44,9 @@ const sponsorApi = api.injectEndpoints({
         }),
 
         // UPDATE sponsor
-        updateSponsor: builder.mutation<IQueryResponse<ISponsor>, { id: string; body: Partial<ISponsor> }>({
-            query: ({ id, body }) => ({
-                url: `/sponsors/${id}`,
+        updateSponsor: builder.mutation<IQueryResponse<ISponsor>, Partial<ISponsor>>({
+            query: ({ _id, ...body }) => ({
+                url: `/sponsors/${_id}`,
                 method: "PUT",
                 body,
             }),

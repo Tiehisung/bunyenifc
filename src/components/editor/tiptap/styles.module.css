@@ -1,0 +1,16 @@
+/* Ensure lists are displayed correctly */
+.editor {
+  padding-left: 2px;
+}
+.editor ul,
+.editor ol {
+  padding-left: 1.5rem; /* Adjust as needed */
+}
+
+.editor ul {
+  list-style-type: disc;
+}
+
+.editor ol {
+  list-style-type: decimal;
+}

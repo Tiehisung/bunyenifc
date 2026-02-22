@@ -7,8 +7,8 @@ const injuryApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
         // GET all injuries
-        getInjuries: builder.query<IQueryResponse<IInjury[]>, void>({
-            query: () => "/injuries",
+        getInjuries: builder.query<IQueryResponse<IInjury[]>, string>({
+            query: (queryString = "") => `/injuries${queryString}`,
             providesTags: ["Injuries"],
         }),
 
@@ -53,9 +53,9 @@ const injuryApi = api.injectEndpoints({
         }),
 
         // UPDATE injury
-        updateInjury: builder.mutation<IQueryResponse<IInjury>, { id: string; body: Partial<IInjury> }>({
-            query: ({ id, body }) => ({
-                url: `/injuries/${id}`,
+        updateInjury: builder.mutation<IQueryResponse<IInjury>, Partial<IInjury>>({
+            query: ({ _id, ...body }) => ({
+                url: `/injuries/${_id}`,
                 method: "PUT",
                 body,
             }),

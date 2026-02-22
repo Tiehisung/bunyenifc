@@ -2,7 +2,7 @@
 import type { IQueryResponse, ISelectOptionLV } from "@/types";
 import { api } from "./api";
 
-export interface IFeature<T = ISelectOptionLV> {
+export interface IFeature<T = ISelectOptionLV[]> {
     _id?: string;
     name: string;
     data: T;
@@ -52,11 +52,11 @@ const featureApi = api.injectEndpoints({
         }),
 
         // UPDATE feature by ID
-        updateFeatureById: builder.mutation<IQueryResponse<IFeature>, { id: string; body: Partial<IFeature> }>({
-            query: ({ id, body }) => ({
-                url: `/features/${id}`,
+        updateFeature: builder.mutation<IQueryResponse<IFeature>, Partial<IFeature> >({
+            query: (data) => ({
+                url: `/features/${data?._id}`,
                 method: "PUT",
-                body,
+                body:data,
             }),
             invalidatesTags: ["Features"],
         }),
@@ -86,7 +86,7 @@ const featureApi = api.injectEndpoints({
         }),
 
         // DELETE feature by ID
-        deleteFeatureById: builder.mutation<IQueryResponse<IFeature>, string>({
+        deleteFeature: builder.mutation<IQueryResponse<IFeature>, string>({
             query: (id) => ({
                 url: `/features/${id}`,
                 method: "DELETE",
@@ -113,10 +113,10 @@ export const {
     useCheckFeatureStatusQuery,
     useGetFeatureStatsQuery,
     useCreateFeatureMutation,
-    useUpdateFeatureByIdMutation,
+    useUpdateFeatureMutation,
     useUpdateFeatureByNameMutation,
     useToggleFeatureStatusMutation,
-    useDeleteFeatureByIdMutation,
+    useDeleteFeatureMutation,
     useDeleteFeatureByNameMutation,
 } = featureApi;
 

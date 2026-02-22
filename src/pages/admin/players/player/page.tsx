@@ -1,0 +1,213 @@
+import { FaEdit } from "react-icons/fa";
+import { ScrollToPointBtn } from "@/components/scroll/ScrollToPoint";
+import { FcGallery } from "react-icons/fc";
+import UpdatePlayerIssuesAndFitness from "./IssuesUpdate";
+import { GiHealthNormal, GiPresent } from "react-icons/gi";
+import { RiDeleteBin2Line } from "react-icons/ri";
+import PlayerProfileForm from "../new/NewSigningForms";
+import { ConfirmActionButton } from "@/components/buttons/ConfirmAction";
+import GalleryGrid from "@/components/Gallery/GallaryGrid";
+import { GalleryUpload } from "@/components/Gallery/GalleryUpload";
+import { IGallery } from "@/types/file.interface";
+import { PrimaryCollapsible } from "@/components/Collapsible";
+import { icons } from "@/assets/icons/icons";
+import NotifierWrapper from "@/components/Notifier";
+import PageLoader from "@/components/loaders/Page";
+import { useParams } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useGetGalleriesQuery } from "@/services/gallery.endpoints";
+import {
+  useGetPlayersQuery,
+  useUpdatePlayerMutation,
+  useDeletePlayerMutation,
+  useGetPlayerQuery,
+} from "@/services/player.endpoints";
+import { buildQueryString } from "@/lib/searchParams";
+
+export default function PlayerProfilePage() {
+  const navigate = useNavigate();
+  const { playerId } = useParams<{ playerId: string }>();
+
+  const { data: playerData, isLoading: playerLoading } = useGetPlayerQuery(
+    playerId || "",
+  );
+  const { data: galleriesData } = useGetGalleriesQuery(`?tags=${playerId}`);
+  const { data: playersData } = useGetPlayersQuery(buildQueryString());
+
+  const [updatePlayer] = useUpdatePlayerMutation();
+  const [deletePlayer] = useDeletePlayerMutation();
+
+  const player = playerData?.data;
+  const galleries = galleriesData;
+  const players = playersData;
+
+  const handleUpdateStatus = async (status: boolean) => {
+    try {
+      const result = await updatePlayer({ _id: playerId, status:status?'former':'current' }).unwrap();
+      if (result.success) {
+        toast.success(result.message);
+        navigate(0);
+      }
+    } catch (error) {
+      toast.error("Failed to update player status");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const result = await deletePlayer(playerId || "").unwrap();
+      if (result.success) {
+        toast.success(result.message);
+        navigate("/admin/players");
+      }
+    } catch (error) {
+      toast.error("Failed to delete player");
+    }
+  };
+
+  if (playerLoading) return <PageLoader />;
+  if (!player) return <div>Player not found</div>;
+
+  const fullname = `${player?.lastName} ${player?.firstName}`;
+
+  return (
+    <main className="relative bg-cover py-8 _page">
+      <div
+        className="h-screen w-full z-[-1] absolute inset-0 bottom-0 bg-no-repeat bg-cover"
+        style={{
+          backgroundImage: `url(${
+            player?.featureMedia?.[0]?.secure_url ?? player?.avatar
+          })`,
+        }}
+      />
+
+      <div className="bg-modalOverlay text-white w-full px-1 flex gap-2 overflow-x-auto sticky z-10 top-0 hidden__scrollbar">
+        <ScrollToPointBtn
+          sectionId="edit-player"
+          className="flex gap-1 items-center shadow p-1 hover:text-blue-400 transition-transform"
+          label="Edit"
+        >
+          <FaEdit />
+        </ScrollToPointBtn>
+
+        <ScrollToPointBtn
+          sectionId="fitness-update"
+          className="flex gap-1 items-center shadow p-1 hover:text-blue-400 transition-transform"
+          label="Fitness"
+        >
+          <GiHealthNormal />
+        </ScrollToPointBtn>
+
+        <ScrollToPointBtn
+          sectionId="gallery"
+          className="flex gap-1 items-center shadow p-1 hover:text-blue-400 transition-transform"
+          label="Gallery"
+        >
+          <FcGallery />
+        </ScrollToPointBtn>
+
+        <ScrollToPointBtn
+          sectionId="danger-zone"
+          className="flex gap-1 items-center shadow p-1 hover:text-blue-400 transition-transform"
+          label={player?.status ? "Active" : "Inactive"}
+        >
+          <GiPresent />
+        </ScrollToPointBtn>
+
+        <ScrollToPointBtn
+          sectionId="danger-zone"
+          className="flex gap-1 items-center shadow p-1 hover:text-blue-400 transition-transform"
+          label="Delete"
+        >
+          <RiDeleteBin2Line />
+        </ScrollToPointBtn>
+      </div>
+
+      <main className="space-y-36 px-[2vw] pb-24 pt-7">
+        {!player?.status && (
+          <NotifierWrapper
+            message="Unconfirmed player"
+            className="text-Red"
+            inDismissible
+          >
+            <p>{fullname} is not visible to the public</p>
+          </NotifierWrapper>
+        )}
+
+        <h1 className="_heading backdrop-blur-xs p-0 flex items-center gap-6 justify-between flex-wrap">
+          <span>{fullname}</span>
+          <span className="text-muted-foreground">{player?.code}</span>
+        </h1>
+
+        <div className="my-3.5 space-y-2">
+          <p>{player?.email}</p>
+        </div>
+
+        <UpdatePlayerIssuesAndFitness player={player} />
+
+        <section id="edit-player">
+          <PrimaryCollapsible
+            header={{
+              label: "Edit Player",
+              icon: <icons.edit />,
+              className: "ring",
+            }}
+          >
+            <PlayerProfileForm player={player} />
+          </PrimaryCollapsible>
+        </section>
+
+        <section id="galleries">
+          <h1 className="my-6 _title _gradient p-4 flex items-center justify-between gap-6">
+            GALLERIES
+          </h1>
+          <GalleryGrid galleries={galleries?.data as IGallery[]} />
+
+          <br />
+
+          <GalleryUpload
+            tags={[fullname, playerId].filter(Boolean) as string[]}
+            players={players?.data}
+          />
+        </section>
+
+        <section id="danger-zone">
+          <h3 className="text-lg font-light mb-4 _label border-b pb-2">
+            DANGER ZONE
+          </h3>
+          <div className="flex gap-10 max-sm:flex-col flex-wrap justify-center items-center bg-card py-6">
+            {!player?.status && (
+              <ConfirmActionButton
+                onConfirm={() => handleUpdateStatus(true)}
+                primaryText="CONFIRM PLAYER"
+                loadingText="Approving..."
+                confirmText={`Do you want to confirm ${fullname}?`}
+                title="Confirm Player"
+                variant="default"
+              />
+            )}
+            <ConfirmActionButton
+              onConfirm={() => handleUpdateStatus(false)}
+              primaryText="DEACTIVATE PLAYER"
+              loadingText="Deactivating..."
+              confirmText={`Do you want to deactivate ${fullname}?`}
+              variant="destructive"
+              title="Deactivate Player"
+            />
+            <ConfirmActionButton
+              onConfirm={handleDelete}
+              primaryText="DELETE PLAYER"
+              loadingText="Deleting..."
+              confirmText={`Do you want to delete ${fullname}?`}
+              variant="destructive"
+              title="Delete Player"
+              className="ring"
+            />
+          </div>
+        </section>
+      </main>
+    </main>
+  );
+}

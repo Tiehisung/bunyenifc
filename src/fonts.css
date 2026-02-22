@@ -1,0 +1,43 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600&family=Montserrat:wght@400;500;700&family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&family=Archivo+Black&family=Barlow+Condensed:wght@400;600&display=swap");
+
+/* Add these font family declarations */
+.font-noto-sans-georgian {
+  font-family: "Noto Sans Georgian", sans-serif;
+}
+
+.font-titillium-web {
+  font-family: "Titillium Web", sans-serif;
+}
+
+.font-ibarra-real-nova {
+  font-family: "Ibarra Real Nova", serif;
+}
+
+/* Font utility classes */
+.font-bebas {
+  font-family: "Bebas Neue", cursive;
+}
+
+.font-oswald {
+  font-family: "Oswald", sans-serif;
+}
+
+.font-montserrat {
+  font-family: "Montserrat", sans-serif;
+}
+
+.font-roboto {
+  font-family: "Roboto", sans-serif;
+}
+
+.font-open-sans {
+  font-family: "Open Sans", sans-serif;
+}
+
+.font-archivo {
+  font-family: "Archivo Black", sans-serif;
+}
+
+.font-barlow-condensed {
+  font-family: "Barlow Condensed", sans-serif;
+}

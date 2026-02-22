@@ -1,12 +1,13 @@
 // transaction.endpoint.ts
 import type { IQueryResponse } from "@/types";
 import { api } from "./api";
+import { ITransaction, ITransactionsSummary } from "@/types/finance.interface";
 
 const transactionApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
         // GET all transactions with optional filters
-        getTransactions: builder.query<IQueryResponse<any[]>, {
+        getTransactions: builder.query<IQueryResponse<ITransaction[]>, {
             page?: number;
             limit?: number;
             type?: string;
@@ -76,7 +77,7 @@ const transactionApi = api.injectEndpoints({
         }),
 
         // GET transaction summary (grouped by type/category)
-        getTransactionSummary: builder.query<IQueryResponse<any>, {
+        getTransactionsSummary: builder.query<IQueryResponse<ITransactionsSummary>, {
             groupBy: 'type' | 'category' | 'date';
             fromDate?: string;
             toDate?: string;
@@ -114,8 +115,8 @@ const transactionApi = api.injectEndpoints({
         }),
 
         // UPDATE transaction
-        updateTransaction: builder.mutation<IQueryResponse<any>, { id: string; body: Partial<any> }>({
-            query: ({ id, body }) => ({
+        updateTransaction: builder.mutation<IQueryResponse<any>,  Partial<any> >({
+            query: ({ _id:id, ...body }) => ({
                 url: `/transactions/${id}`,
                 method: "PUT",
                 body,
@@ -141,7 +142,7 @@ export const {
     useGetTransactionsByTypeQuery,
     useGetTransactionsByCategoryQuery,
     useGetTransactionStatsQuery,
-    useGetTransactionSummaryQuery,
+    useGetTransactionsSummaryQuery,
     useExportTransactionsQuery,
     useCreateTransactionMutation,
     useUpdateTransactionMutation,

@@ -1,7 +1,7 @@
 // match.endpoint.ts
 import type { IQueryResponse } from "@/types";
 import { api } from "./api";
-import type { IMatch, IMatchEvent } from "@/types/match.interface";
+import type { EMatchStatus, IMatch, IMatchEvent } from "@/types/match.interface";
 import type { IMatchStats } from "@/types/stats";
 
 const matchApi = api.injectEndpoints({
@@ -13,8 +13,7 @@ const matchApi = api.injectEndpoints({
             limit?: number;
             season?: string;
             team?: string;
-            tournament?: string;
-            status?: 'scheduled' | 'live' | 'completed' | 'cancelled' | 'all';
+            status?: EMatchStatus
             fromDate?: string;
             toDate?: string;
             venue?: string;
@@ -27,7 +26,6 @@ const matchApi = api.injectEndpoints({
                     limit: params?.limit || 10,
                     season: params?.season,
                     team: params?.team,
-                    tournament: params?.tournament,
                     status: params?.status,
                     fromDate: params?.fromDate,
                     toDate: params?.toDate,
@@ -45,7 +43,7 @@ const matchApi = api.injectEndpoints({
         }),
 
         // GET match by slug or ID
-        getMatchBySlug: builder.query<IQueryResponse<IMatch>, string>({
+        getMatch: builder.query<IQueryResponse<IMatch>, string>({
             query: (slugOrId) => `/matches/${slugOrId}`,
             providesTags: (_result, _error, slugOrId) => [{ type: 'Matches', id: slugOrId }],
         }),
@@ -181,18 +179,18 @@ const matchApi = api.injectEndpoints({
             invalidatesTags: [
                 { type: 'Matches', id: 'LIST' },// Tag the list itself
                 { type: 'Matches', id: 'UPCOMING' },
-              
+
             ],
         }),
 
         // UPDATE match (full update - PUT)
-        updateMatch: builder.mutation<IQueryResponse<IMatch>, { id: string; body: Partial<IMatch> }>({
-            query: ({ id, body }) => ({
-                url: `/matches/${id}`,
+        updateMatch: builder.mutation<IQueryResponse<IMatch>, Partial<IMatch>>({
+            query: ({ _id, ...body }) => ({
+                url: `/matches/${_id}`,
                 method: "PUT",
                 body,
             }),
-            invalidatesTags: (_result, _error, { id }) => [
+            invalidatesTags: (_result, _error, { _id:id }) => [
                 { type: 'Matches', id: 'LIST' },
                 { type: 'Matches', id: id },
                 { type: 'Matches', id: 'UPCOMING' },
@@ -224,20 +222,18 @@ const matchApi = api.injectEndpoints({
 
         // UPDATE match status (scheduled, live, completed, cancelled)
         updateMatchStatus: builder.mutation<IQueryResponse<IMatch>, {
-            id: string;
-            status: 'scheduled' | 'live' | 'completed' | 'cancelled' | 'postponed';
-            reason?: string;
+            _id: string;
+            status: EMatchStatus;
         }>({
-            query: ({ id, status, reason }) => ({
-                url: `/matches/${id}/status`,
+            query: ({ _id, status, }) => ({
+                url: `/matches/${_id}/status`,
                 method: "PATCH",
-                body: { status, reason },
+                body: { status, },
             }),
-            invalidatesTags: (_result, _error, { id }) => [
+            invalidatesTags: (_result, _error, { _id }) => [
                 { type: 'Matches', id: 'LIST' },
-                { type: 'Matches', id },
+                { type: 'Matches', id: _id },
                 { type: 'Matches', id: 'UPCOMING' },
-                { type: 'Matches', id: 'RECENT' },
                 { type: 'Matches', id: 'LIVE' },
             ],
         }),
@@ -404,7 +400,7 @@ const matchApi = api.injectEndpoints({
 export const {
     // Queries
     useGetMatchesQuery,
-    useGetMatchBySlugQuery,
+    useGetMatchQuery,
     useGetUpcomingMatchesQuery,
     useGetRecentMatchesQuery,
     useGetMatchesByTeamQuery,
@@ -428,7 +424,7 @@ export const {
 
     // Lazy queries
     useLazyGetMatchesQuery,
-    useLazyGetMatchBySlugQuery,
+    useLazyGetMatchQuery,
     useLazyGetLiveMatchQuery,
     useLazyGetMatchStatsQuery,
     useLazyGetHeadToHeadQuery,

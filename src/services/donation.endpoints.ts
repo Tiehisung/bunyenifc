@@ -7,8 +7,8 @@ const donationApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
         // GET all donations
-        getDonations: builder.query<IQueryResponse<IDonation[]>, void>({
-            query: () => "/donations",
+        getDonations: builder.query<IQueryResponse<IDonation[]>, string>({
+            query: (paramsString='') => `/donations?${paramsString}`,
             providesTags: ["Donations"],
         }),
 
