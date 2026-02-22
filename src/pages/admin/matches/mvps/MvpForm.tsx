@@ -48,7 +48,7 @@ export function MVPForm({
  
   // Fetch players
   const { data: playersData, isLoading: isLoadingPlayers } =
-    useGetPlayersQuery();
+    useGetPlayersQuery('');
   const players = playersData?.data || [];
 
   // Fetch matches
