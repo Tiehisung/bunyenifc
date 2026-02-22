@@ -1,6 +1,6 @@
 import PlayerProfileForm from "./NewSigningForms";
 
-export default function AdminPlayer() {
+export default function AdminPlayerSignupPage() {
   return (
     <div className="p-5">
       <div className="flex max-md:flex-wrap gap-2 md:gap-5 items-center p-4">

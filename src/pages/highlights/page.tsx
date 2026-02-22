@@ -1,7 +1,6 @@
- 
 import InfiniteLimitScroller from "@/components/InfiniteScroll";
-import { SearchHighlights } from "../admin/matches/highlights/Search";
-import { MatchHighlights } from "../admin/matches/highlights/DisplayHighlights";
+import { SearchHighlights } from "../admin/media/highlights/Search";
+import { MatchHighlights } from "../admin/media/highlights/DisplayHighlights";
 import { useSearchParams } from "react-router-dom";
 import { useGetHighlightsQuery } from "@/services/highlights.endpoints";
 import { useGetMatchesQuery } from "@/services/match.endpoints";

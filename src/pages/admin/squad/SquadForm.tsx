@@ -96,8 +96,8 @@ const SquadForm = ({
         return;
       }
 
-      const coachObj = managers.find((m) => m._id === data.coach);
-      const assistantObj = managers.find((m) => m._id === data.assistant);
+      const coachObj = managers?.find((m) => m._id === data.coach);
+      const assistantObj = managers?.find((m) => m._id === data.assistant);
 
       const payload: ISquad = {
         description: data.description,
@@ -272,7 +272,10 @@ const SquadForm = ({
                           triggerStyles="border border-border rounded font-semibold capitalize"
                           className="capitalize"
                           onChange={(val) =>
-                            setValue(`positions.${player._id}`, val as EPlayerPosition)
+                            setValue(
+                              `positions.${player._id}`,
+                              val as EPlayerPosition,
+                            )
                           }
                           disabled={!selectedPlayers[player._id]}
                           value={positions[player._id] || player?.position}
@@ -311,7 +314,7 @@ const SquadForm = ({
                       control={control}
                       render={({ field, fieldState }) => (
                         <PrimarySelect
-                          options={managers.map((m) => ({
+                          options={managers?.map((m) => ({
                             label: m.fullname,
                             value: m._id,
                           }))}
@@ -331,7 +334,7 @@ const SquadForm = ({
                       control={control}
                       render={({ field, fieldState }) => (
                         <PrimarySelect
-                          options={managers.map((m) => ({
+                          options={managers?.map((m) => ({
                             label: m.fullname,
                             value: m._id,
                           }))}

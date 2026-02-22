@@ -1,10 +1,10 @@
+@import "./fonts.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 @import "./styles.extended.css";
-@import './fonts.css';
- 
+
 /* 
 body {
   margin: 0;
@@ -13,7 +13,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
 } */
- 
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -177,7 +177,12 @@ body {
   }
   body {
     @apply bg-background text-foreground p-0 m-0;
-    font-family: Segoe UI, SegoeUI, "Helvetica Neue", Helvetica, Arial,
+    font-family:
+      Segoe UI,
+      SegoeUI,
+      "Helvetica Neue",
+      Helvetica,
+      Arial,
       sans-serif;
   }
 }

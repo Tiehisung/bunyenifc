@@ -20,17 +20,6 @@ import { RiHomeLine } from "react-icons/ri";
 import { PrimaryAdminSidebar } from "./(sidebar)/PrimarySidebarAdmin";
 import { fireEscape } from "@/hooks/Esc";
 
-const AdminSidebar = () => {
-  return (
-    <>
-      <LeftPaneDesktop />
-      <LeftPaneMobile />
-    </>
-  );
-};
-
-export default AdminSidebar;
-
 export function LeftPaneDesktop() {
   return (
     <div className="max-md:hidden bg-accent max-h-screen overflow-y-auto py-6">
@@ -123,7 +112,7 @@ const sidebarLinks = [
   },
   {
     label: "Highlights",
-    path: "/admin/matches/highlights",
+    path: "/admin/highlights",
     icon: <MdOutlineLiveTv />,
   },
   {
