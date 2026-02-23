@@ -3,6 +3,8 @@ import { ICldFileUploadResult } from "@/types/file.interface";
 import { X } from "lucide-react";
 import { ReactNode, useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
+import { Button } from "../buttons/Button";
+import { TButtonSize, TButtonVariant } from "../ui/button";
 
 interface ICloudinaryUploaderProps {
   uploadPreset?: string;
@@ -12,8 +14,12 @@ interface ICloudinaryUploaderProps {
   resourceType?: "image" | "video" | "raw" | "auto";
   deletable?: boolean;
   hidePreview?: boolean;
+
   trigger?: ReactNode;
   triggerId?: string;
+  variant?: TButtonVariant;
+  triggerSize?: TButtonSize;
+  
   dismissOnComplete?: boolean;
   cropping?: boolean;
   successMessage?: string;
@@ -35,14 +41,19 @@ interface ICloudinaryUploaderProps {
 export default function CloudinaryUploader({
   multiple = true,
   maxFiles = 4,
-  folder = "players/gallery",
+  folder = "media",
   clearTrigger,
   setUploadedFiles,
   resourceType = "auto",
   deletable = true,
   hidePreview = false,
+
+  // Trigger
   trigger = "Upload Media",
   triggerId = "cloudinary-uploader",
+  triggerSize = "default",
+  variant='outline',
+
   dismissOnComplete = true,
   cropping = false,
   successMessage,
@@ -173,7 +184,8 @@ export default function CloudinaryUploader({
             setUploadedFiles(updated);
             return updated;
           });
-          toast.success(successMessage ?? "File uploaded successfully");
+
+          if (successMessage) toast.success(successMessage);
         }
 
         if (result?.event === "queues-end" && dismissOnComplete) {
@@ -186,19 +198,15 @@ export default function CloudinaryUploader({
   return (
     <div className={`flex flex-col items-center gap-4 ${wrapperStyles}`}>
       {/* Upload Trigger */}
-      <div
+      <Button
         id={triggerId}
         onClick={openUploadWidget}
-        className={`font-semibold cursor-pointer transition-colors select-none ${
-          !loaded ? "opacity-50 pointer-events-none" : ""
-        }`}
+        className={` ${!loaded ? "opacity-50 pointer-events-none" : ""}`}
+        variant={variant}
+        size={triggerSize}
       >
-        {trigger ?? (
-          <span className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white">
-            Upload Media
-          </span>
-        )}
-      </div>
+        {trigger}
+      </Button>
 
       {/* Uploaded previews */}
       {!hidePreview && files?.length > 0 && (

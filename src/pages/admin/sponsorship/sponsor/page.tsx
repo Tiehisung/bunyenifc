@@ -8,16 +8,16 @@ import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { useGetDonationsQuery } from "@/services/donation.endpoints";
 import {
-  useGetSponsorByIdQuery,
+  useGetSponsorQuery,
   useDeleteSponsorMutation,
 } from "@/services/sponsor.endpoints";
+import { smartToast } from "@/utils/toast";
 
 export default function AdminSponsor() {
   const navigate = useNavigate();
-  const { sponsorId } = useParams<{ sponsorId: string }>();
+  const  sponsorId   = useParams().sponsorSlug;
   const [searchParams] = useSearchParams();
   const paramsString = searchParams.toString();
 
@@ -25,7 +25,9 @@ export default function AdminSponsor() {
     data: sponsorData,
     isLoading: sponsorLoading,
     error: sponsorError,
-  } = useGetSponsorByIdQuery(sponsorId || "");
+  } = useGetSponsorQuery(sponsorId || "");
+
+  console.log(sponsorData);
 
   const { data: donationsData, isLoading: donationsLoading } =
     useGetDonationsQuery(paramsString);
@@ -39,12 +41,10 @@ export default function AdminSponsor() {
   const handleDelete = async () => {
     try {
       const result = await deleteSponsor(sponsorId || "").unwrap();
-      if (result.success) {
-        toast.success(result.message);
-        navigate("/admin/sponsorship");
-      }
+      smartToast(result);
+      if (result.success) navigate(-1);
     } catch (error) {
-      toast.error("Failed to delete sponsor");
+      smartToast({ error });
     }
   };
 

@@ -47,9 +47,9 @@ const cardApi = api.injectEndpoints({
         }),
 
         // UPDATE card
-        updateCard: builder.mutation<IQueryResponse<ICard>, { id: string; body: Partial<ICard> }>({
-            query: ({ id, body }) => ({
-                url: `/cards/${id}`,
+        updateCard: builder.mutation<IQueryResponse<ICard>, Partial<ICard>>({
+            query: ({ _id, ...body }) => ({
+                url: `/cards/${_id}`,
                 method: "PUT",
                 body,
             }),

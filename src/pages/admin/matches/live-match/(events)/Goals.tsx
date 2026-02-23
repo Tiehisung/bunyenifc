@@ -9,8 +9,6 @@ import {
 } from "@/components/ui/select";
 import { Plus, X } from "lucide-react";
 import { Input } from "@/components/input/Inputs";
-import { apiConfig } from "@/lib/configs";
-import { toast } from "sonner";
 
 import { IPlayer } from "@/types/player.interface";
 import { Button } from "@/components/buttons/Button";
@@ -18,9 +16,12 @@ import { Button } from "@/components/buttons/Button";
 import { IGoal, IMatch, ITeam } from "@/types/match.interface";
 import { SWITCH } from "@/components/ui/switch";
 import { PrimaryCollapsible } from "@/components/Collapsible";
-import { getErrorMessage } from "@/lib/error";
-import { useNavigate } from "react-router-dom";
-import { useDeleteGoalMutation } from "@/services/goals.endpoints";
+
+import {
+  useCreateGoalMutation,
+  useDeleteGoalMutation,
+} from "@/services/goals.endpoints";
+import { smartToast } from "@/utils/toast";
 
 interface ScoreEventsTabProps {
   players: IPlayer[];
@@ -29,7 +30,7 @@ interface ScoreEventsTabProps {
 }
 
 export function ScoreEventsTab({ players, match }: ScoreEventsTabProps) {
-  const navigate = useNavigate();
+  const [addGoal, { isLoading }] = useCreateGoalMutation();
   const [form, setForm] = useState({
     scorer: "",
     assist: "",
@@ -38,16 +39,14 @@ export function ScoreEventsTab({ players, match }: ScoreEventsTabProps) {
     forKFC: true,
   });
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const handleAddGoal = async (e: FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
-      setIsLoading(true);
-      if (!form.minute) {
-        toast.warning("Please specify the time in minutes, and description");
-        return;
-      }
+
+      if (!form.minute)
+        return smartToast({
+          message: "Please specify the time in minutes, and description",
+        });
 
       const scorer = players.find((p) => p._id === form.scorer);
       const assistBy = form.assist
@@ -85,28 +84,21 @@ export function ScoreEventsTab({ players, match }: ScoreEventsTabProps) {
           forKFC: true,
         };
 
-      const response = await fetch(apiConfig.goals, {
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newGoal),
-        method: "POST",
-      });
-
-      const results = await response.json();
-      toast.success(results.message);
+      const results = await addGoal(newGoal).unwrap();
 
       // onAddGoal(newGoal);
-      setForm({
-        scorer: "",
-        assist: "",
-        minute: "",
-        description: "",
-        forKFC: true,
-      });
+
+      if (results.success)
+        setForm({
+          scorer: "",
+          assist: "",
+          minute: "",
+          description: "",
+          forKFC: true,
+        });
+      smartToast(results);
     } catch (error) {
-      toast.error(getErrorMessage(error));
-    } finally {
-      setIsLoading(false);
-      navigate(0);
+      smartToast({ error });
     }
   };
 
@@ -228,53 +220,58 @@ export function ScoreEventsTab({ players, match }: ScoreEventsTabProps) {
           </div>
         </form>
 
-        <AllGoals match={match} />
+        {/* Goals */}
+        <PrimaryCollapsible
+          header={{
+            label: "All Goals",
+            className: "_label",
+          }}
+          defaultOpen
+        >
+          <div
+            className={
+              "flex items-center gap-5 flex-wrap" +
+              (isLoading ? "opacity-70 pointer-events-none cursor-wait" : "")
+            }
+          >
+            {match?.goals?.map((goal) => (
+              <Goal goal={goal} key={goal._id} />
+            ))}
+          </div>
+        </PrimaryCollapsible>
       </Card>
     </div>
   );
 }
 
-function AllGoals({ match }: { match: IMatch }) {
+function Goal({ goal }: { goal: IGoal }) {
   const [deleteGoal, { isLoading }] = useDeleteGoalMutation();
-  const navigate = useNavigate();
 
   //Increment Opponent goals
   const handleRemoveGoal = async (goal: IGoal) => {
     try {
-      const response = await deleteGoal(goal?._id as string).unwrap();
-        
-      toast.success(response.message);
+      const result = await deleteGoal(goal?._id as string).unwrap();
+
+      smartToast(result);
     } catch (error) {
-      toast.error(getErrorMessage(error));
-    } finally {
-      navigate(0);
+      smartToast({ error });
     }
   };
   return (
-    <PrimaryCollapsible
-      header={{
-        label: "All Goals",
-        className: "_label",
-      }}
-      defaultOpen
+    <div
+      className="flex items-center gap-2 bg-muted px-4 py-2 rounded-lg"
+      key={goal._id}
     >
-      <div className={"flex items-center gap-5 flex-wrap"+(isLoading?'opacity-70 pointer-events-none cursor-wait':'')} >
-        {match?.goals?.map((goal) => (
-          <div
-            className="flex items-center gap-2 bg-muted px-4 py-2 rounded-lg"
-            key={goal._id}
-          >
-            {`${goal.minute}' ${goal.scorer?.name ?? " Opponent"}`}{" "}
-            <Button
-              onClick={() => handleRemoveGoal(goal)}
-              size="sm"
-              variant={"ghost"}
-            >
-              <X />
-            </Button>
-          </div>
-        ))}
-      </div>
-    </PrimaryCollapsible>
+      {`${goal.minute}' ${goal.scorer?.name ?? " Opponent"}`}{" "}
+      <Button
+        onClick={() => handleRemoveGoal(goal)}
+        size="sm"
+        variant={"ghost"}
+        waiting={isLoading}
+        waitingText={"Deleting..."}
+      >
+        <X />
+      </Button>
+    </div>
   );
 }

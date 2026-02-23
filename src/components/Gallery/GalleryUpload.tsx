@@ -1,16 +1,14 @@
-import { useState, FormEvent, useCallback, ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useCallback, ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/buttons/Button";
 import CloudinaryUploader from "@/components/cloudinary/FileUploadWidget";
 import { Input } from "@/components/input/Inputs";
-import { apiConfig } from "@/lib/configs";
-import { IQueryResponse } from "@/types";
 import { IGallery } from "@/types/file.interface";
 import { IPlayer } from "@/types/player.interface";
 import MultiSelectionInput from "../select/MultiSelect";
 import { ICldFileUploadResult } from "@/types/file.interface";
-import { getErrorMessage } from "@/lib/error";
+import { smartToast } from "@/utils/toast";
+import { useCreateGalleryMutation } from "@/services/gallery.endpoints";
 
 interface GalleryUploadProps {
   tags?: string[];
@@ -21,11 +19,10 @@ interface GalleryUploadProps {
 export function GalleryUpload({
   tags = [],
   players = [],
-  trigger = <span className="_primaryBtn">Create Gallery</span>,
+  trigger = "Create Gallery",
 }: GalleryUploadProps) {
-  const navigate = useNavigate();
+  const [createGallery, { isLoading }] = useCreateGalleryMutation();
 
-  const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState<ICldFileUploadResult[]>([]);
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
@@ -42,7 +39,9 @@ export function GalleryUpload({
   }, []);
 
   /** Handle gallery save */
-  const handleSave = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSave = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
     e.preventDefault();
     if (files.length === 0) {
       toast.error("Please upload at least one file.");
@@ -50,8 +49,6 @@ export function GalleryUpload({
     }
 
     try {
-      setIsLoading(true);
-
       const payload: IGallery = {
         title,
         description,
@@ -66,26 +63,13 @@ export function GalleryUpload({
         type: "general",
       };
 
-      const response = await fetch(apiConfig.galleries, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        cache: "no-cache",
-        body: JSON.stringify(payload),
-      });
+      const result = await createGallery(payload).unwrap();
 
-      const result: IQueryResponse = await response.json();
-      if (result.success) {
-        toast.success(result.message || "Gallery saved successfully!");
-        resetForm();
-        // Use navigate with state to trigger refresh
-        navigate(0); // This refreshes the current route
-      } else {
-        toast.error(result.message || "Failed to save gallery");
-      }
+      if (result.success) resetForm();
+
+      smartToast(result);
     } catch (error) {
-      toast.error(getErrorMessage(error, "Something went wrong"));
-    } finally {
-      setIsLoading(false);
+      smartToast({ error });
     }
   };
 
@@ -94,10 +78,10 @@ export function GalleryUpload({
       <div className="w-full border border-border rounded-xl bg-card/30 shadow-sm space-y-8 p-4 mb-4">
         <CloudinaryUploader
           setUploadedFiles={setFiles}
-          successMessage="Gallery updated"
           clearTrigger={clearTrigger}
           maxFiles={16}
           trigger={trigger}
+          variant={"outline"}
         />
         {files.length > 0 && (
           <form

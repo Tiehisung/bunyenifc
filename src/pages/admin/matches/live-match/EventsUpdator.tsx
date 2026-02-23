@@ -4,16 +4,14 @@ import { ScoreEventsTab } from "./(events)/Goals";
 import { IPlayer } from "@/types/player.interface";
 import { Button } from "@/components/buttons/Button";
 import { Trash2, Bandage, Info, Crown } from "lucide-react";
-import { apiConfig } from "@/lib/configs";
-import { toast } from "sonner";
-import { useState } from "react";
+
 import { IMatch, IMatchEvent, ITeam } from "@/types/match.interface";
 import { CardForm } from "../../cards/CardForm";
 import { InjuryForm } from "../../injuries/InjuryForm";
 import { MVPForm } from "../mvps/MvpForm";
 import { Separator } from "@/components/ui/separator";
-import { useNavigate } from "react-router-dom";
-import { getErrorMessage } from "@/lib/error";
+import { smartToast } from "@/utils/toast";
+import { useUpdateMatchMutation } from "@/services/match.endpoints";
 
 interface IProps {
   players?: IPlayer[];
@@ -95,29 +93,20 @@ function MatchEventCard({
   match: IMatch;
   event: IMatchEvent;
 }) {
-  const navigate = useNavigate();
+  const [updateMatch, { isLoading }] = useUpdateMatchMutation();
 
-  const [isLoading, setIsLoading] = useState(false);
   const onDelete = async () => {
     try {
-      const response = await fetch(apiConfig.matches, {
-        body: JSON.stringify({
-          _id: match?._id,
-          events: match?.events?.filter(
-            (e) => e.description !== event.description,
-          ),
-        }),
-        headers: { "content-type": "application/json" },
-        method: "PUT",
+      const result = await updateMatch({
+        _id: match?._id,
+        events: match?.events?.filter(
+          (e) => e.description !== event.description,
+        ),
       });
-      const result = await response.json();
-      if (result.success) return toast.success(result.message);
-      else toast.error(result.message);
+
+      smartToast(result);
     } catch (error) {
-      toast.error(getErrorMessage(error));
-    } finally {
-      setIsLoading(false);
-      navigate(0);
+      smartToast({ error });
     }
   };
   return (

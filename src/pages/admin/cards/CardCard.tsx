@@ -9,8 +9,7 @@ import { IPlayer } from "@/types/player.interface";
 import { POPOVER } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { useDeleteCardMutation } from "@/services/cards.endpoints";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { smartToast } from "@/utils/toast";
 
 interface IProps {
   card: ICard;
@@ -18,18 +17,14 @@ interface IProps {
 }
 
 const CardCard = ({ card, selectedPlayer }: IProps) => {
-  const navigate = useNavigate();
   const [deleteCard] = useDeleteCardMutation();
 
   const handleDelete = async () => {
     try {
       const result = await deleteCard(card._id).unwrap();
-      if (result.success) {
-        toast.success(result.message);
-        navigate(0);
-      }
+      smartToast(result);
     } catch (error) {
-      toast.error("Failed to delete card");
+      smartToast({ error });
     }
   };
 

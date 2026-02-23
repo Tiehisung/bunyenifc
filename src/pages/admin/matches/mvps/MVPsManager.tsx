@@ -1,5 +1,3 @@
- 
-
 import { useState, useMemo } from "react";
 import { Filter, AlertTriangle, Plus } from "lucide-react";
 import { EPlayerPosition, IPlayer } from "@/types/player.interface";
@@ -36,10 +34,10 @@ export function MVPsManager({ mvpsData }: IProps) {
     }
 
     // Sort by date (newest first)
-    return mvps?.sort(
+    return [...(mvpsData?.data ?? [])]?.sort(
       (a, b) =>
         new Date(b?.createdAt as string).getTime() -
-        new Date(a?.createdAt as string).getTime()
+        new Date(a?.createdAt as string).getTime(),
     );
   }, [mvpsData, selectedPlayer, typeFilter]);
 
@@ -51,11 +49,11 @@ export function MVPsManager({ mvpsData }: IProps) {
         <DIALOG
           trigger={
             <>
-              <Plus className="" size={24} /> 
+              <Plus size={24} />
               <span className="max-sm:hidden">New MVP Report</span>
             </>
           }
-          variant={"secondary"}
+          variant={"outline"}
         >
           <MVPForm />
         </DIALOG>

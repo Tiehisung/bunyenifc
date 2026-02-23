@@ -33,7 +33,7 @@ export const ConfirmActionButton = ({
   className,
   children,
   loadingText,
-  primaryText,
+  primaryText='',
   confirmText,
   title,
   hidden,
@@ -97,7 +97,7 @@ export const ConfirmActionButton = ({
       <div className="flex flex-col items-center justify-center py-6 ">
         {confirmText && (
           <div
-            className="_label mb-6"
+            className="font-light text-sm text-muted-foreground mb-6"
             dangerouslySetInnerHTML={{ __html: confirmText }}
           />
         )}
@@ -105,7 +105,7 @@ export const ConfirmActionButton = ({
         <Button
           waiting={isLoading}
           disabled={isLoading}
-          primaryText={`Confirm ${primaryText}`}
+          primaryText={`Confirm ${primaryText ?? ""}`}
           waitingText={loadingText}
           onClick={handleConfirm}
           className={className}

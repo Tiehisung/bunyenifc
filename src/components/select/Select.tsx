@@ -1,5 +1,3 @@
- 
-
 import useGetParam, { useUpdateSearchParams } from "@/hooks/params";
 import {
   Select,
@@ -163,8 +161,10 @@ export default function SELECT({
         value={value}
         onChange={(e) => handleOnChange?.(e.target.value)}
         className={cn(
-          "bg-transparent text-sm border rounded px-2 py-1 h-9",
-          selectStyles
+          `text-sm border px-2 h-9 bg-background text-foreground border-input rounded-md py-2
+    focus:outline-none focus:ring-2 focus:ring-ring
+    disabled:cursor-not-allowed disabled:opacity-50`,
+          selectStyles,
         )}
         {...props}
       >

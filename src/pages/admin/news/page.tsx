@@ -9,8 +9,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 const AdminNewsPage = () => {
   const [searchParams] = useSearchParams();
   const paramsString = searchParams.toString();
-  console.log(paramsString)
-
+ 
+console.log(paramsString)
   const {
     data: news,
     isLoading,

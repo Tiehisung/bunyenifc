@@ -7,52 +7,64 @@ export function getErrorMessage(
 ): string {
     if (!error) return "Unknown error occurred";
 
-    const err = error as Record<string, unknown>;
+    // ✅ handle string FIRST
+    if (typeof error === "string") return error;
 
-    // 1. Fetch-based API errors
+    // ✅ Fetch Response
     if (error instanceof Response) {
         return `Request failed: ${error.status} ${error.statusText}`;
     }
 
-    // 2. Server returned structured JSON { error, message }
-    if (err.error && typeof err.error === "string") return err.error;
+    // ✅ ensure it's an object before accessing properties
+    if (typeof error !== "object") {
+        return customMessage ?? "Something went wrong. Please try again.";
+    }
 
-    if (err.message && typeof err.message === "string") return err.message;
+    const err = error as Record<string, unknown>;
 
-    // 3. Axios errors
+    // 1. Structured API errors
+    if (typeof err.error === "string") return err.error;
+    if (typeof err.message === "string") return err.message;
+
+    // 2. Axios errors
     if (err.response && typeof err.response === "object") {
         const response = err.response as Record<string, unknown>;
+
         if (response.data && typeof response.data === "object") {
             const data = response.data as Record<string, unknown>;
-            if (data.message && typeof data.message === "string") return data.message;
-            if (data.error && typeof data.error === "string") return data.error;
+
+            if (typeof data.message === "string") return data.message;
+            if (typeof data.error === "string") return data.error;
         }
     }
 
-    // 4. Zod/Joi/Mongoose validation errors
-    if (err.details && Array.isArray(err.details) && err.details.length) {
-        return err.details.map((d: { message: string }) => d.message).join(", ");
-    }
-
-    // Mongoose validation error
-    if (err.name === "ValidationError" && err.errors && typeof err.errors === "object") {
-        return Object.values(err.errors)
-            .map((e: { message: string }) => e.message)
+    // 3. Validation errors
+    if (Array.isArray(err.details)) {
+        return err.details
+            .map((d: any) => d?.message)
+            .filter(Boolean)
             .join(", ");
     }
 
-    // 5. Network errors
+    // Mongoose validation
+    if (
+        err.name === "ValidationError" &&
+        err.errors &&
+        typeof err.errors === "object"
+    ) {
+        return Object.values(err.errors as any)
+            .map((e: any) => e?.message)
+            .filter(Boolean)
+            .join(", ");
+    }
+
+    // 4. Network errors
     if (err.name === "NetworkError") {
         return "Network error — please check your connection.";
     }
 
-    // 6. String errors
-    if (typeof error === "string") return error;
-
-    // 7. Default fallback
     return customMessage ?? "Something went wrong. Please try again.";
 }
-
 
 
 

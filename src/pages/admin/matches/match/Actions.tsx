@@ -11,8 +11,8 @@ import {
   useUpdateMatchMutation,
   useDeleteMatchMutation,
 } from "@/services/match.endpoints";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+ 
+import { smartToast } from "@/utils/toast";
 
 const MatchActions = ({
   match,
@@ -25,7 +25,6 @@ const MatchActions = ({
   teams: ITeam[];
   players?: IPlayer[];
 }) => {
-  const navigate = useNavigate();
   const status = match?.status;
   const [updateMatch] = useUpdateMatchMutation();
   const [deleteMatch] = useDeleteMatchMutation();
@@ -40,24 +39,19 @@ const MatchActions = ({
         status: newStatus as EMatchStatus,
       }).unwrap();
 
-      if (result.success) {
-        toast.success(result.message);
-        navigate(0);
-      }
+      smartToast(result);
     } catch (error) {
-      toast.error(`Failed to update match status`);
+      smartToast({ error });
     }
   };
 
   const handleDelete = async () => {
     try {
       const result = await deleteMatch(match._id).unwrap();
-      if (result.success) {
-        toast.success(result.message);
-        navigate("/admin/matches");
-      }
+      if (result.success) window.location.href = "/admin/matches";
+      smartToast(result);
     } catch (error) {
-      toast.error("Failed to delete match");
+      smartToast({ error });
     }
   };
 

@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/lib/error';
+import { IQueryResponse } from '@/types';
 import { toast } from 'sonner';
 
 // Define position types (matching Sonner's positions)
@@ -26,12 +28,14 @@ interface ToastOptions {
     };
     icon?: React.ReactNode;
     id?: string | number;
+
 }
 
 /**
  * Unified toast helper with object syntax (for those who prefer it)
  */
 export const showToast = ({
+
     type,
     message,
     description,
@@ -68,5 +72,19 @@ export const showToast = ({
             return toast.loading(message, options);
         default:
             return toast(message, options);
+    }
+};
+
+export const smartToast = ({ success, message, error, }: Partial<Omit<IQueryResponse, 'error'> & { error: unknown }>) => {
+    const msg = error ? getErrorMessage(error) : message
+    const type = error ? false : success
+
+    switch (type) {
+        case true:
+            return toast.success(msg, { position: 'bottom-center' });
+        case false:
+            return toast.error(msg, { position: 'bottom-center' });
+        default:
+            return toast(msg, { position: 'bottom-center' });
     }
 };

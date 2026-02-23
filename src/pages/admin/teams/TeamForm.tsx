@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { fireDoubleEscape } from "@/hooks/Esc";
 import { ITeam } from "@/types/match.interface";
 import { getErrorMessage } from "@/lib/error";
-import { useNavigate } from "react-router-dom";
 import {
   useCreateTeamMutation,
   useUpdateTeamMutation,
@@ -31,7 +30,7 @@ interface IProps {
 }
 
 export const TeamForm = ({ team }: IProps) => {
-  const navigate = useNavigate();
+ 
   const [waiting, setWaiting] = useState(false);
   const [createTeam] = useCreateTeamMutation();
   const [updateTeam] = useUpdateTeamMutation();
@@ -97,7 +96,7 @@ export const TeamForm = ({ team }: IProps) => {
         }
 
         fireDoubleEscape();
-        navigate(0);
+     
       } else {
         toast.error(result.message);
       }

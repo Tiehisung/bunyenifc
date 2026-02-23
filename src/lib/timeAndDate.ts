@@ -18,21 +18,41 @@ export const getAgeFromDOB = (dob: string): number => {
   return ageInYears;
 };
 
+
 export const formatDate = (
   dateString?: string | Date,
-  format?: "dd/mm/yyyy" | "March 2, 2025" | "Sunday, March 2, 2025",
+  format?:
+    | "dd/mm/yyyy"
+    | "dd-mm-yyyy"
+    | "yyyy-mm-dd"
+    | "March 2, 2025"
+    | "Sunday, March 2, 2025"
+    | "HH:MM"
+    | "HH:MM:SS"
+    | "HH:MM:SS A"
+    | "full"
+    | "iso"
+    | "timestamp",
 ) => {
   if (!dateString) return "";
 
   const createdAt = new Date(dateString);
 
   switch (format) {
+    // Date formats
     case "March 2, 2025":
       return new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(
         createdAt
       );
+
     case "dd/mm/yyyy":
       return moment(dateString).format("DD/MM/YYYY");
+
+    case "dd-mm-yyyy":
+      return moment(dateString).format("DD-MM-YYYY");
+
+    case "yyyy-mm-dd":
+      return moment(dateString).format("YYYY-MM-DD");
 
     case "Sunday, March 2, 2025":
       return createdAt.toLocaleDateString("en-US", {
@@ -41,6 +61,26 @@ export const formatDate = (
         day: "numeric",
         year: "numeric",
       });
+
+    // Time formats
+    case "HH:MM":
+      return moment(dateString).format("HH:mm");
+
+    case "HH:MM:SS":
+      return moment(dateString).format("HH:mm:ss");
+
+    case "HH:MM:SS A":
+      return moment(dateString).format("hh:mm:ss A");
+
+    // Combined formats
+    case "full":
+      return moment(dateString).format("DD/MM/YYYY HH:mm:ss");
+
+    case "iso":
+      return createdAt.toISOString();
+
+    case "timestamp":
+      return createdAt.getTime().toString();
 
     default:
       return new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(

@@ -31,15 +31,6 @@ export const getInitials = (text: string | string[], length = 2) => {
   return initials.join('').substring(0, length);
 };
 
-export function fireEscape(target: HTMLElement | Document = document) {
-  target.dispatchEvent(
-    new KeyboardEvent('keydown', {
-      key: 'Escape',
-      code: 'Escape',
-      bubbles: true,
-    })
-  );
-}
 
 export const getSafeUrl = (url: string) => {
   if (!url) return '';

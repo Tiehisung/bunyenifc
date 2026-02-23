@@ -3,7 +3,6 @@ import UserTable from "./UserTable";
 import HEADER from "@/components/Element";
 import { DIALOG } from "@/components/Dialog";
 import UserForm from "./UserForm";
-import { Button } from "@/components/buttons/Button";
 import { useSearchParams } from "react-router-dom";
 import { useGetUsersQuery } from "@/services/user.endpoints";
 import Loader from "@/components/loaders/Loader";
@@ -113,8 +112,9 @@ export default function UsersPage() {
           </div>
 
           <DIALOG
-            trigger={<Button primaryText="Add New User" />}
+            trigger={"Add New User"}
             title="Add New User"
+            variant={"default"}
           >
             <UserForm />
           </DIALOG>

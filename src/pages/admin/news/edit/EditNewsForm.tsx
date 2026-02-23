@@ -8,7 +8,7 @@ import {
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
-import { Input } from "@/components/input/Inputs";
+import {   TextArea } from "@/components/input/Inputs";
 import { Button } from "@/components/buttons/Button";
 import { IFileProps } from "@/types/file.interface";
 import { Plus, X } from "lucide-react";
@@ -94,20 +94,20 @@ export const EditNewsForm = ({ newsItem }: INewsForm) => {
           HEADLINE SECTION
       ------------------------------------------ */}
       <header className="border-b-2 grid gap-4 py-4 mb-6 px-2 border-primary">
+        {" "}
+        <h1 className="_subtitle">Headline text</h1>
         <Controller
           name="headline.text"
           control={control}
           rules={{ required: "Headline is required" }}
           render={({ field }) => (
-            <Input
+            <TextArea
               {...field}
-              label="Headline text"
               placeholder="Type headline here..."
               labelStyles="mb-3"
             />
           )}
         />
-
         <Controller
           name="headline.image"
           control={control}
@@ -134,9 +134,9 @@ export const EditNewsForm = ({ newsItem }: INewsForm) => {
                 successMessage=""
                 maxFiles={1}
                 trigger={
-                  <span className="_secondaryBtn text-sm">
-                    <CgAttachment size={24} /> Upload Wall Image
-                  </span>
+                  <>
+                    <CgAttachment size={24} /> Upload Headline Image
+                  </>
                 }
                 folder={`news/media-${new Date().getFullYear()}`}
                 hidePreview={true}
@@ -144,6 +144,7 @@ export const EditNewsForm = ({ newsItem }: INewsForm) => {
 
               <br />
               <hr />
+              <p className="font-thin text-sm">Select instead</p>
               <div className="flex gap-3 flex-wrap border-t pt-3">
                 {headlineImages?.map((img, i) => (
                   <img
@@ -229,9 +230,9 @@ export const EditNewsForm = ({ newsItem }: INewsForm) => {
                     folder={`news/media-${new Date().getFullYear()}`}
                     hidePreview={(field?.value?.length ?? 0) === 0}
                     trigger={
-                      <span className="mr-auto _secondaryBtn">
+                      <>
                         <CgAttachment size={24} /> Add Media
-                      </span>
+                      </>
                     }
                   />
                 )}

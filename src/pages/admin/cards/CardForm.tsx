@@ -1,22 +1,23 @@
-
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card } from "@/components/ui/card";
 import { Plus } from "lucide-react";
-import { toast } from "sonner";
-import { apiConfig } from "@/lib/configs";
 import { Button } from "@/components/buttons/Button";
 import { AVATAR } from "@/components/ui/avatar";
 import SELECT, { PrimarySelect } from "@/components/select/Select";
 import { Input, TextArea } from "@/components/input/Inputs";
 import { IPlayer } from "@/types/player.interface";
-import { IMatch } from "@/types/match.interface";
+import { EMatchStatus, IMatch } from "@/types/match.interface";
 import { z } from "zod";
 import { fireEscape } from "@/hooks/Esc";
-import { useFetch } from "@/hooks/fetch";
 import { ECardType, ICard } from "@/types/card.interface";
-import { useNavigate } from "react-router-dom";
-import { getErrorMessage } from "@/lib/error";
+import { useGetMatchesQuery } from "@/services/match.endpoints";
+import { useGetPlayersQuery } from "@/services/player.endpoints";
+import { smartToast } from "@/utils/toast";
+import {
+  useCreateCardMutation,
+  useUpdateCardMutation,
+} from "@/services/cards.endpoints";
 
 const cardSchema = z.object({
   player: z.string().min(1, "Player is required"),
@@ -35,26 +36,32 @@ interface IProps {
 }
 
 export function CardForm({ match, card, player: defaultPlayer }: IProps) {
-  const navigate = useNavigate();
   // Fetch players
-  const { results: players, loading: isLoadingPlayers } = useFetch<IPlayer[]>({
-    uri: "/players",
-  });
-  const { results: matches, loading: isLoadingMatches } = useFetch<IMatch[]>({
-    uri: "/matches",
-    filters: { status: "UPCOMING" },
-  });
+  const { data: playersData, isLoading: isLoadingPlayers } =
+    useGetPlayersQuery("");
+
+  // Fetch matches
+  const { data: matchesData, isLoading: isLoadingMatches } = useGetMatchesQuery(
+    { status: EMatchStatus.UPCOMING },
+  );
+
+  const [createCard, { isLoading: creating }] = useCreateCardMutation();
+  const [updateCard, { isLoading: updating }] = useUpdateCardMutation();
 
   const {
     control,
     handleSubmit,
     watch,
     reset,
-    formState: { isSubmitting},
+    formState: {},
   } = useForm<CardFormValues>({
     resolver: zodResolver(cardSchema),
     defaultValues: card
-      ? ({ ...card, player: card?.player?._id,match:card.match?._id } as CardFormValues)
+      ? ({
+          ...card,
+          player: card?.player?._id,
+          match: card.match?._id,
+        } as CardFormValues)
       : {
           player: defaultPlayer?._id,
           match: match?._id,
@@ -63,13 +70,15 @@ export function CardForm({ match, card, player: defaultPlayer }: IProps) {
           type: ECardType.YELLOW,
         },
   });
- 
+
   const selectedPlayerId = watch("player");
-  const selectedPlayer = players?.data?.find((p) => p._id === selectedPlayerId);
+  const selectedPlayer = playersData?.data?.find(
+    (p) => p._id === selectedPlayerId,
+  );
 
   const onSubmit = async (data: CardFormValues) => {
     try {
-      const player = players?.data?.find((p) => p._id === data.player);
+      const player = playersData?.data?.find((p) => p._id === data.player);
       if (!player) return;
 
       const payload = {
@@ -82,19 +91,15 @@ export function CardForm({ match, card, player: defaultPlayer }: IProps) {
         description: `🤕 ${data.description}`,
         type: data.type,
 
-        match: match ?? matches?.data?.find((m) => m._id == data?.match),
+        match: match ?? matchesData?.data?.find((m) => m._id == data?.match),
         minute: data.minute,
       } as ICard;
 
-      const res = await fetch(apiConfig.cards + (card ? `/${card?._id}` : ""), {
-        method: card ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const result = card
+        ? await updateCard({ ...payload, _id: card?._id }).unwrap()
+        : await createCard(payload).unwrap();
 
-      const result = await res.json();
-
-      toast(result.message, { position: "bottom-center" });
+      smartToast(result);
       if (result.success) {
         reset({
           player: "",
@@ -105,13 +110,10 @@ export function CardForm({ match, card, player: defaultPlayer }: IProps) {
 
         fireEscape();
       }
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    } finally {
-      navigate(0);
+    } catch (error) {
+      smartToast({ error });
     }
   };
-
 
   return (
     <Card className="p-6 rounded-none">
@@ -135,7 +137,7 @@ export function CardForm({ match, card, player: defaultPlayer }: IProps) {
                 <SELECT
                   {...field}
                   options={
-                    players?.data?.map((p) => ({
+                    playersData?.data?.map((p) => ({
                       label: `${p.number} - ${p.lastName} ${p.firstName}`,
                       value: p._id,
                     })) ?? []
@@ -150,7 +152,7 @@ export function CardForm({ match, card, player: defaultPlayer }: IProps) {
               )}
             />
           )}
-          {!(match||card) && (
+          {!(match || card) && (
             <Controller
               control={control}
               name="match"
@@ -158,7 +160,7 @@ export function CardForm({ match, card, player: defaultPlayer }: IProps) {
                 <SELECT
                   {...field}
                   options={
-                    matches?.data?.map((m) => ({
+                    matchesData?.data?.map((m) => ({
                       label: m.title,
                       value: m._id,
                     })) ?? []
@@ -226,7 +228,7 @@ export function CardForm({ match, card, player: defaultPlayer }: IProps) {
 
           <Button
             type="submit"
-            waiting={isSubmitting}
+            waiting={!card ? creating : updating}
             className="w-full _primaryBtn"
             primaryText={card ? "Edit card" : "Add card"}
             waitingText={card ? "Editing card" : "Adding card"}

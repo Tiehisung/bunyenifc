@@ -1,5 +1,4 @@
 import { GalleryUpload } from "@/components/Gallery/GalleryUpload";
-import { StackModal } from "@/components/modals/StackModal";
 import { GalleryDisplay } from "./Display";
 import { SearchGallery } from "./Search";
 import InfiniteLimitScroller from "@/components/InfiniteScroll";
@@ -25,7 +24,7 @@ export default function GalleriesAdmin() {
   } = useGetGalleriesQuery(queryString);
 
   // Fetch players for tagging
-  const { data: players, isLoading: playersLoading } = useGetPlayersQuery('');
+  const { data: players, isLoading: playersLoading } = useGetPlayersQuery("");
 
   const isLoading = galleriesLoading || playersLoading;
   const hasError = galleriesError;
@@ -55,14 +54,7 @@ export default function GalleriesAdmin() {
 
   return (
     <div className="pt-16 _page">
-      <StackModal
-        id="new-gallery"
-        trigger="Create Gallery"
-        variant="default"
-        className="p-4"
-      >
-        <GalleryUpload players={players?.data} />
-      </StackModal>
+      <GalleryUpload players={players?.data} trigger="Upload Files" />
 
       <br />
 

@@ -28,12 +28,12 @@ import { buildQueryString } from "@/lib/searchParams";
 
 export default function PlayerProfilePage() {
   const navigate = useNavigate();
-  const { playerId } = useParams<{ playerId: string }>();
+  const  playerSlug  = useParams().playerSlug;
 
   const { data: playerData, isLoading: playerLoading } = useGetPlayerQuery(
-    playerId || "",
+    playerSlug || "",
   );
-  const { data: galleriesData } = useGetGalleriesQuery(`?tags=${playerId}`);
+  const { data: galleriesData } = useGetGalleriesQuery(`?tags=${playerData?.data?._id}`);
   const { data: playersData } = useGetPlayersQuery(buildQueryString());
 
   const [updatePlayer] = useUpdatePlayerMutation();
@@ -45,7 +45,7 @@ export default function PlayerProfilePage() {
 
   const handleUpdateStatus = async (status: boolean) => {
     try {
-      const result = await updatePlayer({ _id: playerId, status:status?'former':'current' }).unwrap();
+      const result = await updatePlayer({ _id: player?._id, status:status?'former':'current' }).unwrap();
       if (result.success) {
         toast.success(result.message);
         navigate(0);
@@ -57,7 +57,7 @@ export default function PlayerProfilePage() {
 
   const handleDelete = async () => {
     try {
-      const result = await deletePlayer(playerId || "").unwrap();
+      const result = await deletePlayer(player?._id || "").unwrap();
       if (result.success) {
         toast.success(result.message);
         navigate("/admin/players");
@@ -168,7 +168,7 @@ export default function PlayerProfilePage() {
           <br />
 
           <GalleryUpload
-            tags={[fullname, playerId].filter(Boolean) as string[]}
+            tags={[fullname, player?._id].filter(Boolean) as string[]}
             players={players?.data}
           />
         </section>
