@@ -2,7 +2,6 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card } from "@/components/ui/card";
 import { Plus } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/buttons/Button";
 import { AVATAR } from "@/components/ui/avatar";
 import SELECT, { PrimarySelect } from "@/components/select/Select";
@@ -13,8 +12,6 @@ import { z } from "zod";
 import { fireEscape } from "@/hooks/Esc";
 import { enumToOptions } from "@/lib/select";
 import { IMVP } from "@/types/mvp.interface";
-import { useNavigate } from "react-router-dom";
-import { getErrorMessage } from "@/lib/error";
 import { useGetMatchesQuery } from "@/services/match.endpoints";
 import {
   useCreateMvpMutation,
@@ -22,6 +19,7 @@ import {
 } from "@/services/mvps.endpoints";
 import { useGetPlayersQuery } from "@/services/player.endpoints";
 import { IQueryResponse } from "@/types";
+import { smartToast } from "@/utils/toast";
 
 const mvpSchema = z.object({
   player: z.string().min(1, "Player is required"),
@@ -43,18 +41,15 @@ export function MVPForm({
   mvp: defaultMVP,
   player: defaultPlayer,
 }: IProps) {
-  const navigate = useNavigate();
-
- 
   // Fetch players
   const { data: playersData, isLoading: isLoadingPlayers } =
-    useGetPlayersQuery('');
-  const players = playersData?.data || [];
+    useGetPlayersQuery("");
 
   // Fetch matches
   const { data: matchesData, isLoading: isLoadingMatches } = useGetMatchesQuery(
     { status: EMatchStatus.UPCOMING },
   );
+  const players = playersData?.data || [];
   const matches = matchesData?.data || [];
 
   // Mutations
@@ -123,8 +118,6 @@ export function MVPForm({
         response = await createMvp(payload).unwrap();
       }
 
-      toast.success(response.message, { position: "bottom-center" });
-
       if (response.success) {
         reset({
           player: "",
@@ -134,15 +127,15 @@ export function MVPForm({
         });
 
         fireEscape();
-        navigate(0);
       }
-    } catch (err) {
-      toast.error(getErrorMessage(err));
+      smartToast(response);
+    } catch (error) {
+      smartToast({ error });
     }
   };
 
   return (
-    <Card className="p-6 rounded-none">
+    <Card className="p-6 rounded-none  bg-transparent">
       <form onSubmit={handleSubmit(onSubmit)}>
         <h2 className="mb-6 text-2xl font-bold flex items-center justify-between">
           {defaultMVP ? `Edit - ${defaultMVP?.player?.name}` : "Add MoTM"}:
@@ -170,7 +163,7 @@ export function MVPForm({
                   }
                   label="Player"
                   placeholder="Select"
-                  selectStyles="w-full"
+                  selectStyles="w-full    "
                   error={fieldState?.error?.message}
                   className="grid"
                   loading={isLoadingPlayers}

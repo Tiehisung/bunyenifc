@@ -1,5 +1,3 @@
- 
- 
 import {
   Activity,
   ActivityIcon,
@@ -24,7 +22,8 @@ import {
 } from "lucide-react";
 import { ILinkItem } from "./GroupedSidebarLinks";
 import { PrimaryCollapsible } from "@/components/Collapsible";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 export function PrimaryAdminSidebar() {
   return (
@@ -36,15 +35,26 @@ export function PrimaryAdminSidebar() {
   );
 }
 
-function SidebarLink({ item, depth = 0 }: { item: ILinkItem; depth?: number }) {
+export function SidebarLink({
+  item,
+  depth = 0,
+}: {
+  item: ILinkItem;
+  depth?: number;
+}) {
   const hasChildren = item.children?.length;
+  const pathname = useLocation().pathname;
+  const isActiveLink = (path: string) => pathname === path;
 
   if (!hasChildren)
     return (
       <div className="flex rounded ">
         <Link
           to={item.path}
-          className="flex items-center gap-2 flex-1 pl-1.5 py-1.5 mt-1 _hover text-sm transition-colors "
+          className={cn(
+            "flex items-center gap-2 flex-1 pl-1.5 py-1.5 mt-1 _hover text-sm transition-colors ",
+            isActiveLink(item.path) ? "text-Orange " : "",
+          )}
         >
           {item.icon && (
             <span className="text-xl bg-white/30 rounded-full p-1.5">
@@ -74,7 +84,7 @@ function SidebarLink({ item, depth = 0 }: { item: ILinkItem; depth?: number }) {
   );
 }
 
-const sidebarLinks: ILinkItem[] = [
+export const sidebarLinks: ILinkItem[] = [
   { title: "Home", path: "/", icon: <Home className="w-4 h-4" /> },
   {
     title: "Dashboard",
@@ -108,8 +118,7 @@ const sidebarLinks: ILinkItem[] = [
         path: "/admin/matches/live-match",
         icon: <Tv className="w-4 h-4" />,
       },
-      
-      
+
       {
         title: "Match Request",
         path: "/admin/request",
@@ -179,11 +188,12 @@ const sidebarLinks: ILinkItem[] = [
     title: "Cards",
     path: "/admin/cards",
     icon: <Square className="w-4 h-4" />,
-  },{
-        title: "MoTM",
-        path: "/admin/matches/mvps",
-        icon: <Trophy className="w-4 h-4" />,
-      },
+  },
+  {
+    title: "MoTM",
+    path: "/admin/matches/mvps",
+    icon: <Trophy className="w-4 h-4" />,
+  },
   {
     title: "Managers",
     path: "/admin/managers",

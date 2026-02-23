@@ -13,7 +13,7 @@ import { useGetPlayersQuery } from "@/services/player.endpoints";
 import { useGetTeamsQuery } from "@/services/team.endpoints";
 
 export default function MatchPage() {
-  const { slug } = useParams<{ slug: string }>();
+  const  slug  = useParams ().matchSlug
 
   const { data: matchData, isLoading: matchLoading } = useGetMatchQuery(
     slug || "",

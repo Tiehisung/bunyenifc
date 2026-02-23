@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { toast } from "sonner";
+ 
 import { Button } from "@/components/buttons/Button";
 import { DateTimeInput, IconInputWithLabel } from "@/components/input/Inputs";
 import { useForm, Controller, type Resolver } from "react-hook-form";
@@ -13,13 +12,12 @@ import { PrimarySelect } from "@/components/select/Select";
 import { Label } from "@/components/ui/label";
 import { enumToOptions } from "@/lib/select";
 import QuillEditor from "@/components/editor/Quill";
-import { getErrorMessage } from "@/lib/error";
-import { useNavigate } from "react-router-dom";
 import {
   useCreatePlayerMutation,
   useUpdatePlayerMutation,
 } from "@/services/player.endpoints";
 import { ImageUploadWidget } from "@/components/cloudinary/AvatarUploadWidget";
+import { smartToast } from "@/utils/toast";
 
 // Zod Schemas
 const playerManagerSchema = z.object({
@@ -63,10 +61,8 @@ export default function PlayerProfileForm({
 }: {
   player?: IPlayer | null;
 }) {
-  const navigate = useNavigate();
-  const [waiting, setWaiting] = useState(false);
-  const [createPlayer] = useCreatePlayerMutation();
-  const [updatePlayer] = useUpdatePlayerMutation();
+  const [createPlayer, { isLoading: creating }] = useCreatePlayerMutation();
+  const [updatePlayer, { isLoading: updating }] = useUpdatePlayerMutation();
 
   const { control, handleSubmit, reset } = useForm<IFormData>({
     resolver: zodResolver(playerSchema) as Resolver<IFormData>,
@@ -97,8 +93,6 @@ export default function PlayerProfileForm({
 
   const onSubmit = async (data: IFormData) => {
     try {
-      setWaiting(true);
-
       const payload: Partial<IPlayer> = {
         ...data,
         number: String(data.number),
@@ -111,17 +105,11 @@ export default function PlayerProfileForm({
         result = await createPlayer(payload).unwrap();
       }
 
-      if (result.success) {
-        toast.success(result.message);
-        reset();
-        navigate(0);
-      } else {
-        toast.error(result.message);
-      }
+      if (result.success) reset();
+
+      smartToast(result);
     } catch (error) {
-      toast.error(getErrorMessage(error, "Error saving player."));
-    } finally {
-      setWaiting(false);
+      smartToast({ error });
     }
   };
 
@@ -141,7 +129,7 @@ export default function PlayerProfileForm({
           >
             <div className="flex flex-col gap-10 mx-auto grow w-full">
               {/* Avatar Section */}
-              <DiveUpwards layoutId="lid1">
+              <DiveUpwards layoutId="lid1" y={6}>
                 <div className="flex flex-col gap-1 items-center w-full sm:min-w-72">
                   <h2 className="_label">Avatar</h2>
                   <Controller
@@ -154,6 +142,7 @@ export default function PlayerProfileForm({
                           cropping
                           folder="/players/"
                           initialImage={value || staticImages.avatar}
+                          shape="rounded"
                         />
 
                         {fieldState.error && (
@@ -170,7 +159,7 @@ export default function PlayerProfileForm({
               {/* Personal Information */}
               <DiveUpwards layoutId="lid2">
                 <div className="p-3 grid gap-8 md:min-w-md lg:min-w-lg">
-                  <h2 className="_label">PERSONAL INFORMATION</h2>
+                  <h2 className="_label text-center">PERSONAL INFORMATION</h2>
                   <Controller
                     control={control}
                     name="firstName"
@@ -347,10 +336,11 @@ export default function PlayerProfileForm({
 
                   <Button
                     type="submit"
-                    waiting={waiting}
+                    waiting={player ? updating : creating}
                     waitingText="Please wait..."
                     primaryText={player ? "Update Player" : "Create Player"}
                     className="justify-center px-12 h-10 py-1 w-full flex-wrap-reverse"
+                    variant={"outline"}
                   />
                 </div>
               </DiveUpwards>

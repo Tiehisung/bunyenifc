@@ -12,22 +12,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { teamKFC } from "@/data/teams";
-import { fireDoubleEscape, fireEscape } from "@/hooks/Esc";
+ 
+import { fireEscape } from "@/hooks/Esc";
 import { customStyles } from "@/styles";
 import { ISelectOptionLV } from "@/types";
 import React, { useState } from "react";
 import Select from "react-select";
-import { toast } from "sonner";
 import { checkTeams } from "@/lib/compute/match";
 import { IMatch, ITeam } from "@/types/match.interface";
-import { getErrorMessage } from "@/lib/error";
-import { useNavigate } from "react-router-dom";
-import { useCreateMatchMutation, useUpdateMatchMutation } from "@/services/match.endpoints";
-
+import {
+  useCreateMatchMutation,
+  useUpdateMatchMutation,
+} from "@/services/match.endpoints";
+import { smartToast } from "@/utils/toast";
+import { teamBnfc } from "@/data/teamBnfc";
 
 const CreateFixture = ({ teams }: { teams?: ITeam[] }) => {
-  const navigate = useNavigate();
   const [waiting, setWaiting] = useState(false);
   const [createMatch] = useCreateMatchMutation();
 
@@ -54,29 +54,26 @@ const CreateFixture = ({ teams }: { teams?: ITeam[] }) => {
         opponent: teams?.find((t) => t._id === opponent?.value) || null,
         title:
           matchType === "home"
-            ? `${teamKFC.name} VS ${opponent?.label}`
-            : `${opponent?.label} VS ${teamKFC.name}`,
+            ? `${teamBnfc.name} VS ${opponent?.label}`
+            : `${opponent?.label} VS ${teamBnfc.name}`,
         venue: {
           files: [],
-          name: matchType === "home" ? teamKFC.name : opponent?.label,
+          name: matchType === "home" ? teamBnfc.name : opponent?.label,
         },
       } as Partial<IMatch>;
 
       const result = await createMatch(body).unwrap();
 
       if (result.success) {
-        toast.success(result.message);
         fireEscape();
         setTime("");
         setDate("");
         setMatchType("");
         setOpponent(null);
-        navigate(0);
-      } else {
-        toast.error(result.message);
       }
+      smartToast(result);
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      smartToast({ error });
     } finally {
       setWaiting(false);
     }
@@ -158,7 +155,6 @@ export const UpdateFixtureMatch = ({
   fixture?: IMatch;
   teams?: ITeam[];
 }) => {
-  const navigate = useNavigate();
   const [waiting, setWaiting] = useState(false);
   const [updateMatch] = useUpdateMatchMutation();
 
@@ -187,24 +183,20 @@ export const UpdateFixtureMatch = ({
       date,
       time,
       isHome: matchType === "home",
-      opponent:teams?.find(t=>t._id === opponent?.value) || null,
+      opponent: teams?.find((t) => t._id === opponent?.value) || null,
       title:
         matchType === "home"
-          ? `${teamKFC.name} VS ${fx?.opponent?.name}`
-          : `${fx?.opponent?.name} VS ${teamKFC.name}`,
+          ? `${teamBnfc.name} VS ${fx?.opponent?.name}`
+          : `${fx?.opponent?.name} VS ${teamBnfc.name}`,
     };
 
     try {
       const result = await updateMatch(body as Partial<IMatch>).unwrap();
-      if (result.success) {
-        toast.success(result.message);
-        fireDoubleEscape();
-        navigate(0);
-      } else {
-        toast.error(result.message);
-      }
+      if (result.success) fireEscape();
+
+      smartToast(result);
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      smartToast({ error });
     } finally {
       setWaiting(false);
     }

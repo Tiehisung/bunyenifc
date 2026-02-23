@@ -4,9 +4,7 @@ import { IUser } from "@/types/user";
 import { Edit } from "lucide-react";
 import { MdOutlineDelete } from "react-icons/md";
 import UserForm from "./UserForm";
-import { Button } from "@/components/buttons/Button";
 import { DIALOG } from "@/components/Dialog";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useDeleteUserMutation } from "@/services/user.endpoints";
 
@@ -15,10 +13,8 @@ interface IProps {
 }
 
 export function UserActions({ user }: IProps) {
-  const navigate = useNavigate();
   const [deleteUser] = useDeleteUserMutation();
 
-  const className = `flex items-center gap-2 grow _hover _shrink p-2 text-sm`;
 
   const handleDelete = async () => {
     if (!user?._id) return;
@@ -27,7 +23,6 @@ export function UserActions({ user }: IProps) {
       const result = await deleteUser(user._id).unwrap();
       if (result.success) {
         toast.success(result.message);
-        navigate(0);
       }
     } catch (error) {
       toast.error("Failed to delete user");
@@ -37,17 +32,17 @@ export function UserActions({ user }: IProps) {
   return (
     <PrimaryDropdown id={user?._id}>
       <ul>
+        <li className="p-2 text-sm font-light border-b ">{user?.name}</li>
         <li>
           <DIALOG
             trigger={
-              <Button
-                variant="ghost"
-                className={`_shrink w-full justify-start rounded-none ${className}`}
-              >
+              <>
                 <Edit className="text-muted-foreground" /> Edit
-              </Button>
+              </>
             }
             title={<p>Edit User - {user?.name}</p>}
+            triggerStyles="w-full justify-start"
+            variant={"ghost"}
           >
             <UserForm user={user} />
           </DIALOG>
@@ -57,10 +52,11 @@ export function UserActions({ user }: IProps) {
           <ConfirmActionButton
             primaryText="Delete"
             trigger={
-              <div className={className}>
+              <>
                 <MdOutlineDelete size={24} /> Delete
-              </div>
+              </>
             }
+            triggerStyles="w-full justify-start"
             onConfirm={handleDelete}
             variant="destructive"
             title="Delete User"

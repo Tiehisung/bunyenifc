@@ -17,7 +17,7 @@ export default function OtherAdminNews({
       ) : (
         news?.data?.slice(0, 6)?.map((item, index) => (
           <AnimateOnView key={item._id} index={index}>
-            <Link to={`/admin/news/${item?._id}`}>
+            <Link to={`/admin/news/${item?.slug||item?._id}`}>
               <div className="w-full overflow-hidden group relative">
                 <img
                   src={item?.headline?.image as string}

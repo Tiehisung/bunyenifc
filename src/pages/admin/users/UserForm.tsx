@@ -4,7 +4,7 @@ import { z } from "zod";
 import { IconInputWithLabel } from "@/components/input/Inputs";
 import { EUserRole, IUser } from "../../../types/user";
 import { toast } from "sonner";
-import { fireDoubleEscape } from "@/hooks/Esc";
+import {  fireEscape} from "@/hooks/Esc";
 import { useUpdateUserMutation } from "@/services/user.endpoints";
 import { getErrorMessage } from "@/lib/error";
 import { useSignUpMutation } from "@/services/auth.endpoints";
@@ -44,7 +44,7 @@ export default function UserForm({ user }: { user?: IUser }) {
 
       reset({ name: "", email: "", password: "", role: EUserRole.ADMIN });
       toast.success(result.message || "User created successfully");
-      fireDoubleEscape();
+      fireEscape();
     } catch (e) {
       toast.error(getErrorMessage(e));
     }
@@ -126,7 +126,7 @@ export const createUserSchema = z.object({
     .refine((val) => !val || val.length >= 4, {
       message: "Password must be at least 4 characters",
     }),
-  role: z.nativeEnum(EUserRole),
+  role: z.enum(EUserRole),
 });
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;

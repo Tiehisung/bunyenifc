@@ -50,9 +50,9 @@ export function PrimaryCollapsible({
           if (header.path) navigate(header.path);
         }}
         className={cn(
-          `w-full flex items-center justify-between p-3 pr-0 rounded-lg _hover _transition ${
+          `w-full flex items-center justify-between p-3 pr-0 rounded-lg _transition ${
             isActiveLink(header?.path || "")
-              ? "bg-primary/10 text-muted-foreground"
+              ? "text-Orange"
               : ""
           }  ${isOpen ? "rounded-b-none ring" : ""}`,
           header?.className

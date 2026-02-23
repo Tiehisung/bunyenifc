@@ -92,7 +92,7 @@ const NewsItemClient: FC<{ newsItem: INewsProps }> = ({ newsItem }) => {
 
             <div className="flex items-center gap-5 flex-wrap p-4 py-8 border-y">
               <Link
-                to={`/admin/news/edit/${newsItem?._id}`}
+                to={`/admin/news/edit?newsSlug=${newsItem?.slug || newsItem?._id}`}
                 className="_primaryBtn"
               >
                 Edit
@@ -101,7 +101,7 @@ const NewsItemClient: FC<{ newsItem: INewsProps }> = ({ newsItem }) => {
               {newsItem?.isPublished ? (
                 <ConfirmActionButton
                   primaryText="Unpublish"
-                  trigger={<span className="_primaryBtn">Unpublish</span>}
+                  trigger={"Unpublish"}
                   onConfirm={() => handlePublishToggle(false)}
                   variant="destructive"
                   title="Unpublish News"
@@ -113,7 +113,8 @@ const NewsItemClient: FC<{ newsItem: INewsProps }> = ({ newsItem }) => {
               ) : (
                 <ConfirmActionButton
                   primaryText="Publish"
-                  trigger={<span className="_primaryBtn">Publish</span>}
+                  trigger={"Publish"}
+                  variant={"outline"}
                   onConfirm={() => handlePublishToggle(true)}
                   title="Publish News to public"
                   confirmText={`Confirm to publish "<b>${shortText(
@@ -124,7 +125,7 @@ const NewsItemClient: FC<{ newsItem: INewsProps }> = ({ newsItem }) => {
               )}
 
               <ConfirmActionButton
-                trigger={<span className="_deleteBtn">Delete</span>}
+                trigger={"Delete"}
                 primaryText="Delete News"
                 onConfirm={handleDelete}
                 variant="destructive"

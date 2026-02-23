@@ -13,7 +13,7 @@ const sponsorApi = api.injectEndpoints({
         }),
 
         // GET sponsor by ID
-        getSponsorById: builder.query<IQueryResponse<ISponsor>, string>({
+        getSponsor: builder.query<IQueryResponse<ISponsor>, string>({
             query: (id) => `/sponsors/${id}`,
             providesTags: ["Sponsors"],
         }),
@@ -80,7 +80,7 @@ const sponsorApi = api.injectEndpoints({
 
 export const {
     useGetSponsorsQuery,
-    useGetSponsorByIdQuery,
+    useGetSponsorQuery,
     useGetTopSponsorsQuery,
     useGetSponsorStatsQuery,
     useCreateSponsorMutation,

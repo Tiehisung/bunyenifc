@@ -11,10 +11,10 @@ import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function NewsItemPage() {
-  const { slug } = useParams<{ slug: string }>();
+  const slug = useParams().newsSlug;
   const [searchParams] = useSearchParams();
   const paramsString = searchParams.toString();
-  console.log(paramsString)
+  console.log(paramsString);
 
   const {
     data: newsItemData,
@@ -22,8 +22,7 @@ export default function NewsItemPage() {
     error: itemError,
   } = useGetNewsItemQuery(slug || "");
 
-  const { data: newsData, isLoading: newsLoading } =
-    useGetNewsQuery({});
+  const { data: newsData, isLoading: newsLoading } = useGetNewsQuery({});
 
   const isLoading = itemLoading || newsLoading;
   const newsItem = newsItemData?.data;

@@ -1,5 +1,4 @@
 import { useEffect, ReactNode, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
@@ -14,15 +13,14 @@ import { PrimaryCollapsible } from "@/components/Collapsible";
 import { DIALOG } from "@/components/Dialog";
 import { formatDate } from "@/lib/timeAndDate";
 import { symbols } from "@/data";
-import { useFetch } from "@/hooks/fetch";
-import { apiConfig } from "@/lib/configs";
 
 import { IMatch, IMatchHighlight } from "@/types/match.interface";
-import { IPlayer } from "@/types/player.interface";
 import { ICldFileUploadResult } from "@/types/file.interface";
-import { IQueryResponse } from "@/types";
 import { toggleClick } from "@/lib/dom";
-import { getErrorMessage } from "@/lib/error";
+import { useGetPlayersQuery } from "@/services/player.endpoints";
+import { useCreateHighlightMutation } from "@/services/highlights.endpoints";
+import { smartToast } from "@/utils/toast";
+import { useGetMatchesQuery } from "@/services/match.endpoints";
 
 interface GalleryUploadProps {
   trigger?: ReactNode;
@@ -47,18 +45,19 @@ type HighlightForm = z.infer<typeof highlightSchema>;
 ----------------------------------- */
 
 export function HighlightUpload({
-  trigger = <span className="_primaryBtn">Upload Highlight</span>,
+  trigger = "Upload Highlight",
   matches,
 }: GalleryUploadProps) {
-  const navigate = useNavigate();
   const [file, setFile] = useState<ICldFileUploadResult | null>(null);
   const [clearTrigger, setClearTrigger] = useState(0);
 
-  const { results, loading: fetchingPlayers } = useFetch<IPlayer[]>({
-    uri: "/players",
-  });
+  const { data: fixtures, isLoading: fixturesLoading } = useGetMatchesQuery({});
+  // RTK Query mutation hook
+  const [createHighlight, { isLoading: isCreating }] =
+    useCreateHighlightMutation();
 
-  const players = results?.data ?? [];
+  const { data: playersData, isLoading: playersLoading } =
+    useGetPlayersQuery("");
 
   const {
     control,
@@ -108,25 +107,17 @@ export function HighlightUpload({
         ].filter(Boolean),
       };
 
-      const res = await fetch(apiConfig.highlights, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const result: IQueryResponse = await res.json();
+      // Use RTK Query mutation instead of fetch
+      const result = await createHighlight(payload).unwrap();
 
       if (result.success) {
-        toast.success("Highlight saved");
         reset();
         setFile(null);
         setClearTrigger((n) => n + 1);
-        navigate(0);
-      } else {
-        toast.error(result.message);
       }
-    } catch (err) {
-      toast.error(getErrorMessage(err));
+      smartToast(result);
+    } catch (error) {
+      smartToast({ error });
     }
   };
 
@@ -142,6 +133,7 @@ export function HighlightUpload({
         multiple={false}
         hidePreview
         maxFileSize="100_000_000"
+        variant={"outline"}
       />
 
       {file && (
@@ -178,22 +170,23 @@ export function HighlightUpload({
                   onChange={field.onChange}
                   error={errors.match?.message}
                   options={
-                    matches
+                    fixtures?.data
                       ?.filter((m) => m.status !== "UPCOMING")
                       .map((m) => ({
                         label: m.title + symbols.longDash + formatDate(m.date),
                         value: m._id,
                       })) ?? []
                   }
+                  loading={fixturesLoading}
                 />
               )}
             />
 
             {/* Tags */}
-            {players.length > 0 && (
+            {(playersData?.data?.length || 0) > 0 && (
               <PrimaryCollapsible
                 header={{ icon: "#", label: "Tag Players" }}
-                loading={fetchingPlayers}
+                loading={playersLoading}
               >
                 <Controller
                   control={control}
@@ -205,7 +198,7 @@ export function HighlightUpload({
                       onChange={(items) =>
                         field.onChange(items.map((t) => t.value))
                       }
-                      options={players.map((p) => ({
+                      options={playersData?.data?.map((p) => ({
                         label: `${p.firstName} ${p.lastName}`,
                         value: `${p._id} ${p.firstName} ${p.lastName}`,
                       }))}
@@ -217,7 +210,7 @@ export function HighlightUpload({
 
             <Button
               type="submit"
-              waiting={isSubmitting}
+              waiting={isSubmitting || isCreating}
               primaryText="SAVE HIGHLIGHT"
             />
 

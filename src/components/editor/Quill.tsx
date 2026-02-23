@@ -276,11 +276,11 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
   return (
     <div className={className}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-sm font-medium  mb-3">
           {label}
         </label>
       )}
-      <div className="border border-gray-300 rounded-xl overflow-hidden bg-white">
+      <div className="border rounded-xl overflow-hidden bg-white">
         {/* Placeholder div - will be replaced by Quill's DOM */}
         <div ref={editorRef} className="min-h-30 min-w-125 px-2" />
       </div>

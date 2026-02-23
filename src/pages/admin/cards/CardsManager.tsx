@@ -35,7 +35,7 @@ export function CardsManager({ cardsData }: IProps) {
     }
 
     // Sort by date (newest first)
-    return cards?.sort(
+    return [...(cardsData?.data||[])]?.sort(
       (a, b) =>
         new Date(b?.createdAt as string).getTime() -
         new Date(a?.createdAt as string).getTime()

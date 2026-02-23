@@ -2,17 +2,14 @@ import { Button } from "@/components/buttons/Button";
 import { IconInputWithLabel } from "@/components/input/Inputs";
 import ContentShowcaseWrapper from "@/components/ShowcaseWrapper";
 import { Edit } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { toast } from "sonner";
 import BottomSheetLite from "@/components/modals/BottomSheetLite";
-import { getErrorMessage } from "@/lib/error";
 import { ISponsorProps } from "@/pages/sponsorship/page";
 import { useUpdateSponsorMutation } from "@/services/sponsor.endpoints";
 import { ImageUploadWidget } from "@/components/cloudinary/AvatarUploadWidget";
+import { smartToast } from "@/utils/toast";
 
 export function EditSponsor({ sponsor }: { sponsor?: ISponsorProps }) {
-  const navigate = useNavigate();
   const [updateSponsor] = useUpdateSponsorMutation();
   const [formData, setFormData] = useState({ ...initialForm });
   const [waiting, setWaiting] = useState(false);
@@ -46,14 +43,9 @@ export function EditSponsor({ sponsor }: { sponsor?: ISponsorProps }) {
         ...formData,
       }).unwrap();
 
-      if (result.success) {
-        toast.success(result.message);
-        navigate(0);
-      } else {
-        toast.error(result.message);
-      }
+      smartToast(result);
     } catch (error) {
-      toast.error(getErrorMessage(error, "Edit sponsor failed"));
+      smartToast({error});
     } finally {
       setWaiting(false);
     }

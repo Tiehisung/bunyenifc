@@ -1,20 +1,23 @@
 import { FC } from "react";
 import Header from "../../../../components/Element";
 import { EditNewsForm } from "./EditNewsForm";
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useGetNewsItemQuery } from "@/services/news.endpoints";
 
 const NewsEditingPage: FC = () => {
-  const { newsId } = useParams<{ newsId: string }>();
+  const [searchParams] = useSearchParams();
+
+  // Get specific parameter
+  const newsSlug = searchParams.get("newsSlug");
 
   const {
     data: newsItem,
     isLoading,
     error,
-  } = useGetNewsItemQuery(newsId || "");
+  } = useGetNewsItemQuery(newsSlug || "");
 
   if (isLoading) {
     return (

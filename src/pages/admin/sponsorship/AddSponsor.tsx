@@ -4,16 +4,13 @@ import { IconInputWithLabel } from "@/components/input/Inputs";
 import BottomSheetLite from "@/components/modals/BottomSheetLite";
 import ContentShowcaseWrapper from "@/components/ShowcaseWrapper";
 import { Plus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/error";
 import { ISponsorProps } from "@/pages/sponsorship/page";
 import { useCreateSponsorMutation } from "@/services/sponsor.endpoints";
 import { ImageUploadWidget } from "@/components/cloudinary/AvatarUploadWidget";
+import { smartToast } from "@/utils/toast";
 
 export function AddNewSponsor({ sponsors }: { sponsors?: ISponsorProps[] }) {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({ ...initialForm });
   const [waiting, setWaiting] = useState(false);
   const [error, setError] = useState("");
@@ -31,15 +28,11 @@ export function AddNewSponsor({ sponsors }: { sponsors?: ISponsorProps[] }) {
     try {
       const result = await createSponsor(formData).unwrap();
 
-      if (result.success) {
-        setFormData(initialForm);
-        toast.success(result.message);
-        navigate(0);
-      } else {
-        toast.error(result.message);
-      }
+      if (result.success) setFormData(initialForm);
+
+      smartToast(result);
     } catch (error) {
-      toast.error(getErrorMessage(error, "Add sponsor failed"));
+      smartToast({ error });
     } finally {
       setWaiting(false);
     }

@@ -1,7 +1,7 @@
  
 
 import { IGallery } from "@/types/file.interface";
-import { GalleryCard } from "./GalleryCard";
+import { SecondaryGalleryCard } from "./GalleryCardSecondary";
 
 interface GalleryGridProps {
   galleries: IGallery[];
@@ -27,7 +27,7 @@ export default function GalleryGrid({
         id="gallery"
       >
         {galleries?.map((gallery) => (
-          <GalleryCard key={gallery?._id} gallery={gallery} />
+          <SecondaryGalleryCard key={gallery?._id} gallery={gallery} />
         ))}
       </div>
     </>

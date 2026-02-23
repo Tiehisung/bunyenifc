@@ -1,9 +1,7 @@
-import   { useState } from "react";
+ 
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 
-import { Input } from "@/components/input/Inputs";
+import { TextArea } from "@/components/input/Inputs";
 import { Button } from "@/components/buttons/Button";
 
 import { Plus } from "lucide-react";
@@ -12,20 +10,19 @@ import { CgAttachment, CgRemove } from "react-icons/cg";
 import QuillEditor from "@/components/editor/Quill";
 import { INewsProps, IPostNews } from "@/types/news.interface";
 import { useCreateNewsMutation } from "@/services/news.endpoints";
-import { getErrorMessage } from "@/lib/error";
 import { dummyUser } from "@/data/user";
-
- 
+import { formatDate } from "@/lib/timeAndDate";
+import { smartToast } from "@/utils/toast";
 
 interface INewsForm {
   newsItem?: INewsProps | null;
 }
 
 export const NewsForm = ({ newsItem = null }: INewsForm) => {
-  const   user   = dummyUser
-  const navigate = useNavigate();
-  const [waiting, setWaiting] = useState(false);
-  const [createNews] = useCreateNewsMutation();
+  const user = dummyUser;
+
+ 
+  const [createNews,{isLoading}] = useCreateNewsMutation();
 
   const { control, handleSubmit, reset } = useForm<IPostNews>({
     defaultValues: newsItem ?? {
@@ -45,37 +42,31 @@ export const NewsForm = ({ newsItem = null }: INewsForm) => {
 
   const onSubmit = async (data: IPostNews) => {
     try {
-      setWaiting(true);
+      
       const result = await createNews(data).unwrap();
 
-      if (result.success) {
-        reset();
-        toast.success(result.message);
-        navigate(0);
-      } else {
-        toast.error(result.message);
-      }
-    } catch (err) {
-      toast.error(getErrorMessage(err, "News post failed"));
-    } finally {
-      setWaiting(false);
-    }
+      if (result.success) reset();
+
+      smartToast(result);
+    } catch (error) {
+      smartToast({ error });
+    }  
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-6">
       {/* Headline Section */}
       <header className="border-b-2 grid gap-4 py-4 mb-6 border px-2 border-border">
+        <h1 className="_subtitle">Headline</h1>
         <Controller
           name="headline.text"
           control={control}
           rules={{ required: "Headline is required" }}
           render={({ field }) => (
-            <Input
+            <TextArea
               {...field}
-              label="Headline text"
+              // label="Headline text"
               placeholder="Type headline here..."
-              labelStyles="mb-3"
             />
           )}
         />
@@ -90,9 +81,9 @@ export const NewsForm = ({ newsItem = null }: INewsForm) => {
               successMessage=""
               maxFiles={1}
               trigger={
-                <span className="mr-auto _secondaryBtn">
-                  <CgAttachment size={24} /> Upload Wall Image
-                </span>
+                <>
+                  <CgAttachment size={24} /> Upload Feature Image
+                </>
               }
               folder={`news/media-${new Date().getFullYear()}`}
               multiple={false}
@@ -126,16 +117,15 @@ export const NewsForm = ({ newsItem = null }: INewsForm) => {
                   name={`details.${index}.media`}
                   render={({ field }) => (
                     <CloudinaryUploader
-                      triggerId=""
-                      setUploadedFiles={(fs) => field.onChange(fs)}
+                      setUploadedFiles={field.onChange}
                       successMessage=""
                       maxFiles={30}
                       trigger={
-                        <span className="hover:bg-accent p-1.5 rounded-md flex text-xs items-center font-light">
+                        <>
                           <CgAttachment size={24} /> Attach Media
-                        </span>
+                        </>
                       }
-                      folder={`news/media-${new Date().getFullYear()}`}
+                      folder={`news/media-${formatDate(new Date().toString(), "yyyy-mm-dd")}`}
                     />
                   )}
                 />
@@ -169,8 +159,7 @@ export const NewsForm = ({ newsItem = null }: INewsForm) => {
       <Button
         type="submit"
         primaryText="Post news"
-        waiting={waiting}
-        disabled={waiting}
+        waiting={isLoading}
         waitingText="Posting..."
         className="_primaryBtn p-3 ml-auto w-full justify-center h-12 uppercase"
       />

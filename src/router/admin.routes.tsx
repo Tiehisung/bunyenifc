@@ -13,7 +13,6 @@ import AdminNewsPage from "@/pages/admin/news/page";
 import AdminPlayersLayout from "@/pages/admin/players/AdminPlayersLayout";
 import CaptaincyPage from "@/pages/admin/players/captaincy/page";
 import AdminPlayerSignupPage from "@/pages/admin/players/new/page";
-import AdminPlayer from "@/pages/admin/players/new/page";
 import AdminPlayers from "@/pages/admin/players/page";
 import PlayerProfilePage from "@/pages/admin/players/player/page";
 import { RouteObject } from "react-router-dom";
@@ -34,6 +33,7 @@ import AdminSponsorshipPage from "@/pages/admin/sponsorship/page";
 import AdminSponsor from "@/pages/admin/sponsorship/sponsor/page";
 import LogsPage from "@/pages/admin/activity-logs/page";
 import UsersPage from "@/pages/admin/users/page";
+import NewsItemPage from "@/pages/admin/news/newsItem/page";
 
 export const adminRoutes: RouteObject[] = [
   { path: "", element: <AdminDashboardPage /> },
@@ -55,7 +55,7 @@ export const adminRoutes: RouteObject[] = [
     children: [
       { index: true, element: <AdminNewsPage /> },
       { path: "edit", element: <NewsEditingPage /> },
-      { path: ":newsSlug", element: <AdminPlayer /> },
+      { path: ":newsSlug", element: <NewsItemPage /> },
     ],
   },
   {

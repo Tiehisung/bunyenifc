@@ -23,7 +23,7 @@ export function PrimaryDropdown({
   hideAngle = true,
   align = "end",
   size = "icon-sm",
-  variant,
+  variant='secondary',
 }: {
   children: ReactNode;
   trigger?: ReactNode;

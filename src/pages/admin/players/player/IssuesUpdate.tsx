@@ -3,7 +3,6 @@ import { Button } from "@/components/buttons/Button";
 import { Input, TextArea } from "@/components/input/Inputs";
 import { FormEvent, useState } from "react"; // Add FormEvent import
 import { TbRibbonHealth } from "react-icons/tb";
-import { toast } from "sonner";
 import { icons } from "@/assets/icons/icons";
 import { DIALOG } from "@/components/Dialog";
 import { TITLE } from "@/components/Element";
@@ -11,27 +10,23 @@ import { PrimaryCollapsible } from "@/components/Collapsible";
 import { getTimeAgo } from "@/lib/timeAndDate";
 import { IAccordionProps, PrimaryAccordion } from "@/components/ui/accordion";
 import { shortText } from "@/lib";
-import { getErrorMessage } from "@/lib/error";
-import { useNavigate } from "react-router-dom";
 import { useUpdatePlayerMutation } from "@/services/player.endpoints";
+import { smartToast } from "@/utils/toast";
+import { fireEscape } from "@/hooks/Esc";
 
 export default function UpdatePlayerIssuesAndFitness({
   player,
 }: {
   player: IPlayer;
 }) {
-  const navigate = useNavigate();
-  const [waiting, setWaiting] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [updatePlayer] = useUpdatePlayerMutation();
+  const [updatePlayer, { isLoading }] = useUpdatePlayerMutation();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     // Fixed type here
     e.preventDefault();
     try {
-      setWaiting(true);
-
       const updatedIssues = [
         { title, description, date: new Date().toISOString() },
         ...player?.issues?.map((issue) =>
@@ -49,15 +44,12 @@ export default function UpdatePlayerIssuesAndFitness({
       if (result.success) {
         setTitle("");
         setDescription("");
-        toast.success(result.message);
-        navigate(0);
-      } else {
-        toast.error(result.message);
+        fireEscape()
       }
+
+      smartToast(result);
     } catch (error) {
-      toast.error(getErrorMessage(error));
-    } finally {
-      setWaiting(false);
+      smartToast({ error });
     }
   };
 
@@ -112,9 +104,9 @@ export default function UpdatePlayerIssuesAndFitness({
             <Button
               type="submit"
               primaryText="Update"
-              waiting={waiting}
+              waiting={isLoading}
               waitingText="Updating, wait..."
-              disabled={waiting || !title}
+              disabled={!title}
               className="_primaryBtn grow px-5 rounded shadow md:w-64 justify-center"
             />
           </form>
