@@ -5,7 +5,7 @@ import { Pagination } from "@/components/pagination/Pagination";
 import { IQueryResponse } from "@/types";
 import { AdminMatchCard } from "./MatchCard";
 import { IPlayer } from "@/types/player.interface";
-import { IManager } from "../managers/page";
+import { IStaff } from "@/types/staff.interface";
 import { IMatch, ITeam } from "@/types/match.interface";
 import { useUpdateMatchStatusMutation } from "@/services/match.endpoints";
 import { showToast } from "@/utils/toast";
@@ -14,14 +14,14 @@ interface DisplayFixturesProps {
   fixtures: IQueryResponse<IMatch[]>;
   teams?: ITeam[];
   players?: IPlayer[];
-  managers?: IManager[];
+  staff?: IStaff[];
 }
 // Fixture is  match that is not yet played successfully
 
 export function DisplayFixtures({
   fixtures,
   teams,
-  managers,
+  staff,
   players,
 }: DisplayFixturesProps) {
   return (
@@ -32,7 +32,7 @@ export function DisplayFixtures({
             key={fx?._id}
             match={fx}
             teams={teams}
-            managers={managers}
+            staff={staff}
             matches={fixtures?.data}
             players={players}
           />

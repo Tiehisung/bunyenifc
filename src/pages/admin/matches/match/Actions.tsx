@@ -6,13 +6,13 @@ import { DIALOG } from "@/components/Dialog";
 import SquadCard from "../../squad/SquadCard";
 import SquadForm from "../../squad/SquadForm";
 import { IPlayer } from "@/types/player.interface";
-import { useGetManagersQuery } from "@/services/manager.endpoints";
 import {
   useUpdateMatchMutation,
   useDeleteMatchMutation,
 } from "@/services/match.endpoints";
- 
+
 import { smartToast } from "@/utils/toast";
+import { useGetStaffMembersQuery } from "@/services/staff.endpoints";
 
 const MatchActions = ({
   match,
@@ -29,8 +29,8 @@ const MatchActions = ({
   const [updateMatch] = useUpdateMatchMutation();
   const [deleteMatch] = useDeleteMatchMutation();
 
-  const { data: managersData } = useGetManagersQuery({});
-  const managers = managersData;
+  const { data: staffData } = useGetStaffMembersQuery({});
+ 
 
   const handleStatusUpdate = async (newStatus: "LIVE" | "FT") => {
     try {
@@ -81,7 +81,7 @@ const MatchActions = ({
           >
             <SquadForm
               players={players}
-              managers={managers?.data}
+              staff={staffData?.data}
               matches={matches}
               defaultMatch={match}
             />

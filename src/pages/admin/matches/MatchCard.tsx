@@ -14,7 +14,7 @@ import SquadCard from "../squad/SquadCard";
 import { UpdateFixtureMatch } from "./CreateFixture";
 import SquadForm from "../squad/SquadForm";
 import { IPlayer } from "@/types/player.interface";
-import { IManager } from "../managers/page";
+import { IStaff } from "@/types/staff.interface";
 import { IMatch, ITeam } from "@/types/match.interface";
 import { ResizableContent } from "@/components/resizables/ResizableContent";
 import { Link } from "react-router-dom";
@@ -25,14 +25,14 @@ import { useDeleteMatchMutation } from "@/services/match.endpoints";
 export function AdminMatchCard({
   match,
   teams,
-  managers,
+  staff,
   matches,
   players,
 }: {
   match?: IMatch;
   teams?: ITeam[];
   players?: IPlayer[];
-  managers?: IManager[];
+  staff?: IStaff[];
   matches?: IMatch[];
 }) {
   const { away, home } = checkTeams(match);
@@ -139,7 +139,7 @@ export function AdminMatchCard({
           >
             <SquadForm
               players={players}
-              managers={managers}
+              staff={staff}
               matches={matches}
               defaultMatch={match}
             />

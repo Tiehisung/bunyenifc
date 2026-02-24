@@ -1,32 +1,33 @@
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { useState } from "react";
-import { ISelectOptionLV } from "@/types";
 import { DateTimeInput, IconInputWithLabel } from "@/components/input/Inputs";
-import { IManager } from "./page";
 import { Button } from "@/components/buttons/Button";
-import { COMBOBOX } from "@/components/ComboBox";
-import { getErrorMessage } from "@/lib/error";
-import { useCreateManagerMutation, useUpdateManagerMutation } from "@/services/manager.endpoints";
- 
 
-export default function TechnicalManagerForm({
-  existingManager,
-  availableRoles,
-  className,
-}: {
-  existingManager?: IManager;
-  availableRoles: ISelectOptionLV[];
+import { ImageUploadWidget } from "@/components/cloudinary/AvatarUploadWidget";
+import { staticImages } from "@/assets/images";
+import { smartToast } from "@/utils/toast";
+import { IStaff } from "@/types/staff.interface";
+import {
+  useCreateStaffMutation,
+  useUpdateStaffMutation,
+} from "@/services/staff.endpoints";
+
+type Props = {
+  existingStaff?: IStaff;
   className?: string;
-}) {
-  const navigate = useNavigate();
+};
+
+export default function TechnicalStaffForm({
+  existingStaff,
+
+  className,
+}: Props) {
   const [waiting, setWaiting] = useState(false);
-  const [formData, setFormData] = useState<Partial<IManager>>(
-    existingManager ?? {},
+  const [formData, setFormData] = useState<Partial<IStaff>>(
+    existingStaff ?? {},
   );
 
-  const [createManager] = useCreateManagerMutation();
-  const [updateManager] = useUpdateManagerMutation();
+  const [createStaff] = useCreateStaffMutation();
+  const [updateStaff] = useUpdateStaffMutation();
 
   const OnchangeManager = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -45,59 +46,54 @@ export default function TechnicalManagerForm({
       setWaiting(true);
 
       let result;
-      if (existingManager) {
-        result = await updateManager({
-          _id: existingManager._id,
+      if (existingStaff) {
+        result = await updateStaff({
+          _id: existingStaff._id,
           ...formData,
         }).unwrap();
       } else {
-        result = await createManager(formData).unwrap();
+        result = await createStaff(formData).unwrap();
       }
 
-      toast.success(result.message);
-      if (result.success) {
-        setFormData({});
-        navigate(0);
-      }
+      if (result.success) setFormData({});
+
+      smartToast(result);
     } catch (error) {
-      toast.error(getErrorMessage(error));
-    } finally {
-      setWaiting(false);
+      smartToast({ error });
     }
   };
 
   return (
     <div className="container mx-auto w-full transition-all duration-300 p-2">
       <h1 className="_title text-Green text-center uppercase p-3">
-        {existingManager
-          ? `${existingManager.fullname} details`
+        {existingStaff
+          ? `${existingStaff.fullname} details`
           : "Manager registration"}
       </h1>
       <h2 className="mt-5 mb-2 text-teal-700 text-xl text-center">
-        {existingManager?.role}
+        {existingStaff?.role}
       </h2>
       <form
         id="manager-form"
         onSubmit={handleCreateNewManager}
         className="grid bg-card gap-9 w-full transition-all duration-300 delay-75 ease-in shadow border _borderColor rounded-md p-6 pt-10 text-sm"
       >
-        {/* <div className="flex flex-col items-center gap-2">
-          <CloudinaryUploadWidget 
-            initialAvatar={existingManager?.avatar ?? staticImages.avatar}
-            label="Upload"
-            onUploaded={(file) =>
+        <div className="flex flex-col items-center gap-2">
+          <ImageUploadWidget
+            initialImage={existingStaff?.avatar ?? staticImages.avatar}
+            onUpload={(file) =>
               setFormData((prev) => ({
                 ...prev,
                 avatar: file?.secure_url ?? "",
               }))
             }
-            className="flex text-sm items-center gap-2 border"
+            shape="rounded"
           />
 
           {!formData.avatar && (
             <p className="text-red-500 text-xs">Avatar is required</p>
           )}
-        </div> */}
+        </div>
 
         <section className={`grid gap-8 ${className || ""}`}>
           <IconInputWithLabel
@@ -139,25 +135,15 @@ export default function TechnicalManagerForm({
             value={formData?.dateSigned}
             className="px-2 w-52 sm:w-60 rounded font-semibold"
           />
-
-          <div>
-            <p className="_label mb-2">
-              Assigned Role: <strong>{existingManager?.role ?? ""}</strong>
-            </p>
-
-            <COMBOBOX
-              placeholder="Role"
-              name="role"
-              options={availableRoles}
-              onChange={(opt) => {
-                setFormData((p) => ({
-                  ...p,
-                  role: opt.value,
-                }));
-              }}
-              className="w-full h-10"
-            />
-          </div>
+          <IconInputWithLabel
+            label="Role"
+            onChange={OnchangeManager}
+            type="text"
+            required
+            name="role"
+            value={formData?.role}
+            className="px-2 w-52 sm:w-60 rounded font-semibold"
+          />
         </section>
 
         <Button

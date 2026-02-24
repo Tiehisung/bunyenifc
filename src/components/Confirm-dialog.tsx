@@ -25,11 +25,9 @@ interface ConfirmDialogProps {
   trigger?: React.ReactNode;
   triggerStyles?: string;
   className?: string;
-
-  // New onConfirm callback
   onConfirm?: () => Promise<void> | void;
-  isLoading?: boolean; // Optional loading state
-  loadingText?: string; // Optional loading text
+  isLoading?: boolean;
+  loadingText?: string;
 }
 
 export function ConfirmDialog({
@@ -48,22 +46,28 @@ export function ConfirmDialog({
   loadingText = "Please wait...",
 }: ConfirmDialogProps) {
   const [internalLoading, setInternalLoading] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const isLoading = externalLoading ?? internalLoading;
 
-  const handleConfirm = async () => {
+  const handleConfirm = async (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent default AlertDialogAction behavior
     if (!onConfirm) return;
 
     try {
       setInternalLoading(true);
       await onConfirm();
+      setOpen(false); // Close dialog only on success
+    } catch (error) {
+      // Keep dialog open on error
+      console.error("Confirm action failed:", error);
     } finally {
       setInternalLoading(false);
     }
   };
 
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <Button
           variant={variant}
@@ -71,6 +75,7 @@ export function ConfirmDialog({
           title={typeof title === "string" ? title : ""}
           className={cn("h-fit", triggerStyles)}
           disabled={disabled}
+          onClick={() => setOpen(true)}
         >
           {trigger}
         </Button>
@@ -93,6 +98,7 @@ export function ConfirmDialog({
             {cancelText}
           </AlertDialogCancel>
 
+          {/* Option 1: Use AlertDialogAction with preventDefault */}
           <AlertDialogAction asChild>
             <Button
               variant={variant}
@@ -102,6 +108,15 @@ export function ConfirmDialog({
               {isLoading ? loadingText : confirmText}
             </Button>
           </AlertDialogAction>
+
+          {/* Option 2: Or just use a regular Button without AlertDialogAction */}
+          {/* <Button
+            variant={variant}
+            onClick={handleConfirm}
+            disabled={isLoading}
+          >
+            {isLoading ? loadingText : confirmText}
+          </Button> */}
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

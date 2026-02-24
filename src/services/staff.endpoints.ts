@@ -1,27 +1,15 @@
 // manager.endpoint.ts
 import type { IQueryResponse, IRecord } from "@/types";
 import { api } from "./api";
+import { IStaff } from "@/types/staff.interface";
 
-export interface IManager {
-    email: string;
-    dob: string;
-    _id: string;
-    avatar: string;
-    role: string;
-    fullname: string;
-    dateSigned: string;
-    phone: string;
-    startDate: string;
-    endDate: string;
-    createdAt: string;
-    updatedAt: string;
-}
 
-const managerApi = api.injectEndpoints({
+
+const staffMemberApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
         // GET all managers
-        getManagers: builder.query<IQueryResponse<IManager[]>, {
+        getStaffMembers: builder.query<IQueryResponse<IStaff[]>, {
             page?: number;
             limit?: number;
             search?: string;
@@ -40,7 +28,7 @@ const managerApi = api.injectEndpoints({
         }),
 
         // GET active managers
-        getActiveManagers: builder.query<IQueryResponse<IManager[]>, {
+        getActiveStaffMembers: builder.query<IQueryResponse<IStaff[]>, {
             page?: number;
             limit?: number;
         }>({
@@ -55,7 +43,7 @@ const managerApi = api.injectEndpoints({
         }),
 
         // GET managers by role
-        getManagersByRole: builder.query<IQueryResponse<IManager[]>, {
+        getStaffMemberByRole: builder.query<IQueryResponse<IStaff[]>, {
             role: string;
             page?: number;
             limit?: number;
@@ -66,21 +54,21 @@ const managerApi = api.injectEndpoints({
             }),
             providesTags: ["Managers"],
         }),
+        getStaffMember: builder.query<IQueryResponse<IStaff>, string>({
 
-        // GET manager by ID
-        getManagerById: builder.query<IQueryResponse<IManager>, string>({
+            // GET manager by ID
             query: (id) => `/managers/${id}`,
             providesTags: ["Managers"],
         }),
 
         // GET manager statistics
-        getManagerStats: builder.query<IQueryResponse<any>, void>({
+        getStaffMemberStats: builder.query<IQueryResponse<any>, void>({
             query: () => "/managers/stats",
             providesTags: ["Managers"],
         }),
 
         // CREATE manager
-        createManager: builder.mutation<IQueryResponse<IManager>, Partial<IManager>>({
+        createStaff: builder.mutation<IQueryResponse<IStaff>, Partial<IStaff>>({
             query: (body) => ({
                 url: "/managers",
                 method: "POST",
@@ -90,7 +78,7 @@ const managerApi = api.injectEndpoints({
         }),
 
         // UPDATE manager
-        updateManager: builder.mutation<IQueryResponse<IManager>, Partial<IManager>>({
+        updateStaff: builder.mutation<IQueryResponse<IStaff>, Partial<IStaff>>({
             query: ({ _id, ...body }) => ({
                 url: `/managers/${_id}`,
                 method: "PUT",
@@ -100,7 +88,7 @@ const managerApi = api.injectEndpoints({
         }),
 
         // DEACTIVATE manager
-        deactivateManager: builder.mutation<IQueryResponse<IManager>, {
+        deactivateStaff: builder.mutation<IQueryResponse<IStaff>, {
             id: string;
             reason?: string;
         }>({
@@ -113,7 +101,7 @@ const managerApi = api.injectEndpoints({
         }),
 
         // ACTIVATE manager
-        activateManager: builder.mutation<IQueryResponse<IManager>, {
+        activateStaff: builder.mutation<IQueryResponse<IStaff>, {
             id: string;
         }>({
             query: ({ id }) => ({
@@ -124,7 +112,7 @@ const managerApi = api.injectEndpoints({
         }),
 
         // DELETE manager
-        deleteManager: builder.mutation<IQueryResponse<IManager>, string>({
+        deleteStaff: builder.mutation<IQueryResponse<IStaff>, string>({
             query: (id) => ({
                 url: `/managers/${id}`,
                 method: "DELETE",
@@ -136,16 +124,16 @@ const managerApi = api.injectEndpoints({
 });
 
 export const {
-    useGetManagersQuery,
-    useGetActiveManagersQuery,
-    useGetManagersByRoleQuery,
-    useGetManagerByIdQuery,
-    useGetManagerStatsQuery,
-    useCreateManagerMutation,
-    useUpdateManagerMutation,
-    useDeactivateManagerMutation,
-    useActivateManagerMutation,
-    useDeleteManagerMutation,
-} = managerApi;
+    useGetStaffMembersQuery,
+    useGetStaffMemberQuery,
+    useGetActiveStaffMembersQuery,
+    useGetStaffMemberByRoleQuery,
+    useGetStaffMemberStatsQuery,
+    useCreateStaffMutation,
+    useUpdateStaffMutation,
+    useDeactivateStaffMutation,
+    useActivateStaffMutation,
+    useDeleteStaffMutation,
+} = staffMemberApi;
 
-export default managerApi;
+export default staffMemberApi;

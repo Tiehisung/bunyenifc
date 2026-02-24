@@ -20,22 +20,23 @@ import {
 } from "@/components/ui/table";
 import { PrimarySelect } from "@/components/select/Select";
 import { Button } from "@/components/buttons/Button";
-import { IManager } from "../managers/page";
+import { IStaff } from "@/types/staff.interface";
 import { MdCheckBox, MdCheckBoxOutlineBlank } from "react-icons/md";
 import { TextArea } from "@/components/input/Inputs";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
-import { ISquad } from "./page";
+ 
 import { formatDate, getTimeLeftOrAgo } from "@/lib/timeAndDate";
 import { enumToOptions } from "@/lib/select";
 import { IMatch } from "@/types/match.interface";
 import { useCreateSquadMutation } from "@/services/squad.endpoints";
 import { getErrorMessage } from "@/lib/error";
+import { ISquad } from "@/types/squad.interface";
 
 interface IProps {
   players?: IPlayer[];
-  managers?: IManager[];
+  staff?: IStaff[];
   matches?: IMatch[];
   defaultMatch?: IMatch;
 }
@@ -59,7 +60,7 @@ export type IPostSquad = z.infer<typeof squadSchema>;
 const SquadForm = ({
   defaultMatch,
   players = [],
-  managers = [],
+  staff = [],
   matches = [],
 }: IProps) => {
   const [waiting, setWaiting] = useState(false);
@@ -96,8 +97,8 @@ const SquadForm = ({
         return;
       }
 
-      const coachObj = managers?.find((m) => m._id === data.coach);
-      const assistantObj = managers?.find((m) => m._id === data.assistant);
+      const coachObj = staff?.find((m) => m._id === data.coach);
+      const assistantObj = staff?.find((m) => m._id === data.assistant);
 
       const payload: ISquad = {
         description: data.description,
@@ -314,7 +315,7 @@ const SquadForm = ({
                       control={control}
                       render={({ field, fieldState }) => (
                         <PrimarySelect
-                          options={managers?.map((m) => ({
+                          options={staff?.map((m) => ({
                             label: m.fullname,
                             value: m._id,
                           }))}
@@ -334,7 +335,7 @@ const SquadForm = ({
                       control={control}
                       render={({ field, fieldState }) => (
                         <PrimarySelect
-                          options={managers?.map((m) => ({
+                          options={staff?.map((m) => ({
                             label: m.fullname,
                             value: m._id,
                           }))}

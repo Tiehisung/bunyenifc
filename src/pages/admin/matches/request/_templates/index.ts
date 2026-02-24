@@ -5,7 +5,7 @@ import { youthTemplates } from "./youth"
 import { tournamentTemplates } from "./tournament"
 import { replayTemplates } from "./replay"
 import { IMatch } from "@/types/match.interface"
-import { IManager } from "@/services/manager.endpoints"
+import { IStaff } from "@/types/staff.interface"
 
 
 export interface ITemplate {
@@ -26,7 +26,7 @@ export enum ETemplateTag {
 }
 
 export function generateMatchRequestTemplates(
-    match: IMatch, official: { requester: IManager }
+    match: IMatch, official: { requester: IStaff }
 ): ITemplate[] {
     return [
         ...friendlyTemplates(match, official),

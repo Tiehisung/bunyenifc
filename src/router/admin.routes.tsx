@@ -23,8 +23,8 @@ import DocsPage from "@/pages/admin/docs/page";
 import AllDocsPage from "@/pages/admin/docs/files/page";
 import FolderPage from "@/pages/admin/docs/[folder]/page";
 import CardsPage from "@/pages/admin/cards/page";
-import TechnicalManagersPage from "@/pages/admin/managers/page";
-import ManagerPage from "@/pages/admin/managers/manager/page";
+import StaffMembersPage from "@/pages/admin/managing-staff/page";
+import StaffMemberPage from "@/pages/admin/managing-staff/member/page";
 import TeamsFeature from "@/pages/admin/teams/page";
 import TrainingSettingsAdm from "@/pages/admin/training/page";
 import AttendancePage from "@/pages/admin/training/attendance/page";
@@ -84,11 +84,11 @@ export const adminRoutes: RouteObject[] = [
     ],
   },
   {
-    path: "managers",
+    path: "staff",
     element: <LAYOUT />,
     children: [
-      { index: true, element: <TechnicalManagersPage /> },
-      { path: ":managerSlug", element: <ManagerPage /> },
+      { index: true, element: <StaffMembersPage /> },
+      { path: "staffSlug", element: <StaffMemberPage /> },
     ],
   },
   {

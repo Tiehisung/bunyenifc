@@ -1,5 +1,3 @@
- 
-
 import { useState, useMemo, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -31,7 +29,7 @@ export function SlicePagination<T>({
     const start = (page - 1) * limit;
     const end = start + limit;
     const sliced = data.slice(start, end);
-    onPageChange?.(sliced, page);
+   onPageChange?.(sliced, page);
   }, [page, data, limit]);
 
   const handlePrev = () => {

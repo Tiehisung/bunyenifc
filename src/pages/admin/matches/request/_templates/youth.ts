@@ -1,10 +1,10 @@
 import { teamBnfc } from "@/data/teamBnfc";
 import { checkTeams } from "@/lib/compute/match";
 import { formatDate } from "@/lib/timeAndDate";
-import { IManager } from "@/services/manager.endpoints";
 import { IMatch } from "@/types/match.interface";
+import { IStaff } from "@/types/staff.interface";
 
-export const youthTemplates = (match: IMatch, official: { requester: IManager }) => {
+export const youthTemplates = (match: IMatch, official: { requester: IStaff }) => {
     const { home, away } = checkTeams(match);
     const homeName = home?.name ?? "Home Team";
     const awayName = away?.name ?? "Away Team";

@@ -195,8 +195,8 @@ export const sidebarLinks: ILinkItem[] = [
     icon: <Trophy className="w-4 h-4" />,
   },
   {
-    title: "Managers",
-    path: "/admin/managers",
+    title: "Staff",
+    path: "/admin/staff",
     icon: <UserCheck className="w-4 h-4" />,
   },
 

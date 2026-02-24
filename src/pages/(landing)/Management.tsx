@@ -1,5 +1,5 @@
 import { ICaptainProps } from "../admin/players/captaincy/Captaincy";
-import { IManager } from "../admin/managers/page";
+
 import SimpleCarousel from "@/components/carousel/SimpleCarousel";
 import CardCarousel from "@/components/carousel/cards";
 import { CgShapeRhombus } from "react-icons/cg";
@@ -9,7 +9,8 @@ import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useGetCaptainsQuery } from "@/services/captain.endpoints";
-import { useGetManagersQuery } from "@/services/manager.endpoints";
+import { useGetManagersQuery } from "@/services/staff.endpoints";
+import { IStaff } from "@/types/staff.interface";
 
 export const TechnicalManagement = () => {
   const {
@@ -22,7 +23,7 @@ export const TechnicalManagement = () => {
     useGetCaptainsQuery("isActive=true");
 
   const isLoading = managersLoading || captainsLoading;
-  const managers = managersData?.data as IManager[];
+  const managers = managersData?.data as IStaff[];
   const captains = captainsData?.data as ICaptainProps[];
 
   if (isLoading) {
@@ -84,7 +85,7 @@ export const TechnicalManagement = () => {
 
         <CardCarousel
           cards={
-            managers?.map((manager: IManager) => (
+            managers?.map((manager: IStaff) => (
               <div
                 key={manager._id}
                 className="flex flex-col w-fit justify-center items-center gap-2 pb-6"
@@ -107,7 +108,7 @@ export const TechnicalManagement = () => {
 };
 
 export const CaptaincySlides = () => {
-  const { data: captainsData, isLoading, error } = useGetCaptainsQuery('');
+  const { data: captainsData, isLoading, error } = useGetCaptainsQuery("");
   const captains = captainsData?.data as ICaptainProps[];
 
   if (isLoading) {

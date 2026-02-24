@@ -4,12 +4,13 @@ import FixtureSelector from "./FixtureSelector";
 import { EMatchStatus, IMatch } from "@/types/match.interface";
 import { useSearchParams } from "react-router-dom";
 import { useGetMatchesQuery } from "@/services/match.endpoints";
-import { IManager, useGetManagersQuery } from "@/services/manager.endpoints";
 import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { dummyUser } from "@/data/user";
 import { teamBnfc } from "@/data/teamBnfc";
+import { IStaff } from "@/types/staff.interface";
+import { useGetStaffMembersQuery } from "@/services/staff.endpoints";
 
 const MatchRequestPage = () => {
   const user = dummyUser;
@@ -20,20 +21,20 @@ const MatchRequestPage = () => {
     { status: EMatchStatus.UPCOMING },
   );
 
-  const { data: managersData, isLoading: managersLoading } =
-    useGetManagersQuery({});
+  const { data: staffData, isLoading: staffLoading } = useGetStaffMembersQuery(
+    {},
+  );
 
-  const isLoading = fixturesLoading || managersLoading;
+  const isLoading = fixturesLoading || staffLoading;
   const fixtures = fixturesData;
-  const managers = managersData;
 
   const requester =
-    managers?.data?.[0] ??
+    staffData?.data?.[0] ??
     ({
       fullname: user?.name,
       role: `${teamBnfc.name} Official`,
       phone: teamBnfc.contact,
-    } as IManager);
+    } as IStaff);
 
   const selectedFixture = fixtures?.data?.find((f) => f?._id === fixtureId);
 

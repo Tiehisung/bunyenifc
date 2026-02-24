@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Users, CalendarDays, MapPin, Clock, UserCog } from "lucide-react";
-import { ISquad } from "./page";
+ 
 import { formatDate, getTimeAgo } from "@/lib/timeAndDate";
 import { ConfirmActionButton } from "@/components/buttons/ConfirmAction";
 import { IMatch } from "@/types/match.interface";
@@ -18,6 +18,7 @@ import { useDeleteSquadMutation } from "@/services/squad.endpoints";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { dummyUser } from "@/data/user";
+import { ISquad } from "@/types/squad.interface";
 
 interface SquadDisplayProps {
   squad?: ISquad;

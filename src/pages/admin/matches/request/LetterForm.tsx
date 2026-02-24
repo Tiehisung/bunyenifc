@@ -2,9 +2,9 @@ import QuillEditor from "@/components/editor/Quill";
 import { useEffect, useState } from "react";
 import { generateMatchRequestTemplates } from "./_templates";
 import useGetParam from "@/hooks/params";
-import { IManager } from "../../managers/page";
+import { IStaff } from "@/types/staff.interface";
 import { TemplatesSelector } from "./TemplatesSelectorModal";
- 
+
 import { Button } from "@/components/buttons/Button";
 import { printMatchRequestLetter } from "./Print";
 import { icons } from "@/assets/icons/icons";
@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 interface IProps {
   match: IMatch;
-  official: { requester: IManager };
+  official: { requester: IStaff };
 }
 
 export function MatchRequestForm({ match, official }: IProps) {

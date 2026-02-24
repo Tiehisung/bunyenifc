@@ -1,9 +1,6 @@
- 
-
 import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Filter, AlertTriangle, Plus } from "lucide-react";
-import { useFetch } from "@/hooks/fetch";
 import { IPlayer } from "@/types/player.interface";
 import { EInjurySeverity, IInjury } from "@/types/injury.interface";
 import { ClearBtn } from "@/components/buttons/ClearFilters";
@@ -16,43 +13,40 @@ import { DIALOG } from "@/components/Dialog";
 import { InjuryCard } from "./InjuryCard";
 import Loader from "@/components/loaders/Loader";
 import { SlicePagination } from "@/components/pagination/SlicePagination";
+import { useGetInjuriesQuery } from "@/services/injuries.endpoints";
 
 export function InjuriesManager() {
   const [selectedPlayer, setSelectedPlayer] = useState<IPlayer | null>(null);
   const [severityFilter, setSeverityFilter] = useState<string>("all");
 
-  // Fetch all injuries
-  const { results: allInjuries, loading: isLoadingInjuries } = useFetch<
-    IInjury[]
-  >({
-    uri: "/injuries",
-    refetchOnRefresh: true,
-  });
+  const { data: allInjuries, isLoading } = useGetInjuriesQuery("");
 
   // Get injuries for selected player or all injuries
   const playerInjuries = useMemo(() => {
     let injuries = selectedPlayer
       ? allInjuries?.data?.filter(
-          (injury) => injury.player._id === selectedPlayer._id
+          (injury) => injury.player._id === selectedPlayer._id,
         )
       : allInjuries?.data;
 
     // Apply severity filter
     if (severityFilter !== "all") {
       injuries = injuries?.filter(
-        (injury) => injury.severity === severityFilter
+        (injury) => injury.severity === severityFilter,
       );
     }
 
     // Sort by date (newest first)
-    return injuries?.sort(
+    return [...(injuries || [])]?.sort(
       (a, b) =>
         new Date(b?.createdAt as string).getTime() -
-        new Date(a?.createdAt as string).getTime()
+        new Date(a?.createdAt as string).getTime(),
     );
   }, [allInjuries, selectedPlayer, severityFilter]);
 
   const [inview, setInview] = useState<IInjury[]>([]);
+
+  const updateData = (data: IInjury[]) => setInview(data);
 
   return (
     <div className="container mx-auto p-4">
@@ -71,7 +65,7 @@ export function InjuriesManager() {
           <InjuryForm match={undefined} injury={undefined} />
         </DIALOG>
       </div>
-      <InjuryStats injuries={allInjuries} loading={isLoadingInjuries} />
+      <InjuryStats injuries={allInjuries} loading={isLoading} />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Panel: Player List */}
         <PlayerDisplayPanel onSelect={(p) => setSelectedPlayer(p as IPlayer)} />
@@ -117,7 +111,7 @@ export function InjuriesManager() {
           </div>
 
           <div className="p-4 md:max-h-[calc(100vh-300px)] overflow-y-auto">
-            {isLoadingInjuries ? (
+            {isLoading ? (
               <Loader message="Loading injuries ..." />
             ) : playerInjuries?.length === 0 ? (
               <div className="text-center py-12">
@@ -151,7 +145,7 @@ export function InjuriesManager() {
 
                 <SlicePagination
                   data={playerInjuries}
-                  onPageChange={setInview}
+                  onPageChange={updateData}
                 />
               </div>
             )}
