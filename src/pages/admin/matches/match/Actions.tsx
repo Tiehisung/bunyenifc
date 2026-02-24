@@ -29,7 +29,7 @@ const MatchActions = ({
   const [updateMatch] = useUpdateMatchMutation();
   const [deleteMatch] = useDeleteMatchMutation();
 
-  const { data: staffData } = useGetStaffMembersQuery({});
+  const { data: staffData } = useGetStaffMembersQuery('');
  
 
   const handleStatusUpdate = async (newStatus: "LIVE" | "FT") => {

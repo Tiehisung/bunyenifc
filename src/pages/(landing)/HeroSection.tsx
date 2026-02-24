@@ -13,7 +13,7 @@ export default function HERO({ metrics }: IProps) {
 
   const stats = [
     {
-      value: metrics?.data?.matchStats?.winRate,
+      value: metrics?.data?.matchStats?.winRate??'80%',
       label: "Win Rate",
       icon: <Trophy className="w-5 h-5" />,
       suffix: "%",
@@ -175,7 +175,7 @@ export default function HERO({ metrics }: IProps) {
                   countupSuffix={stat.suffix}
                   isCountUp={stat.isCountup}
                   description={stat.label}
-                  isLoading={!metrics?.data}
+                  isLoading={false}
                   key={index}
                 />
               ))}

@@ -24,7 +24,7 @@ const SquadPage = () => {
     useGetPlayersQuery(paramsString);
 
   const { data: managersData, isLoading: managersLoading } =
-    useGetStaffMembersQuery({});
+    useGetStaffMembersQuery('');
 
   const { data: matchesData, isLoading: matchesLoading } = useGetMatchesQuery({
     status: EMatchStatus.UPCOMING,

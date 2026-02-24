@@ -21,9 +21,8 @@ const MatchRequestPage = () => {
     { status: EMatchStatus.UPCOMING },
   );
 
-  const { data: staffData, isLoading: staffLoading } = useGetStaffMembersQuery(
-    {},
-  );
+  const { data: staffData, isLoading: staffLoading } =
+    useGetStaffMembersQuery("");
 
   const isLoading = fixturesLoading || staffLoading;
   const fixtures = fixturesData;

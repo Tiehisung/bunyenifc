@@ -17,13 +17,12 @@ export const TechnicalManagement = () => {
     data: staffData,
     isLoading: staffLoading,
     error: managersError,
-  } = useGetStaffMembersQuery({ isActive: "true" });
+  } = useGetStaffMembersQuery("isActive=true");
 
   const { data: captainsData, isLoading: captainsLoading } =
     useGetCaptainsQuery("isActive=true");
 
   const isLoading = staffLoading || captainsLoading;
-  
 
   if (isLoading) {
     return (

@@ -13,15 +13,7 @@ import PlayerStatistics from "./statistics/Statistics";
 import LandingPlayers from "./(landing)/Players";
 import LandingFixtures from "./matches/(fixturesAndResults)/LandingFixtures";
 
- 
-
 const LandingNewsHeadlines = lazy(() => import("./news/LandingNews"));
- 
-
-// Fallback components
-const HeroFallback = () => (
-  <div className="w-full h-[60vh] bg-linear-to-r from-gray-900 to-gray-800 animate-pulse" />
-);
 
 const GridFallback = () => (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -32,22 +24,16 @@ const GridFallback = () => (
 );
 
 export default function Home() {
-  // const { trackPageView } = useAnalytics();
-
-  // Track page view
-  // useEffect(() => {
-  //   trackPageView("home");
-  // }, [trackPageView]);
+ 
 
   return (
     <>
       <PageSEO page="home" />
 
       <main className="relative md:block space-y-10">
-        {/* Hero Section - Critical for LCP */}
-        <Suspense fallback={<HeroFallback />}>
-          <HERO />
-        </Suspense>
+  
+
+        <HERO />
 
         {/* Players Section */}
         <section className="container mx-auto px-4">
