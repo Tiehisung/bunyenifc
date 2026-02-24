@@ -1,6 +1,5 @@
- 
 import { teamKFC } from "@/data/teams";
-import { IManager } from "../../managers/page";
+import { IStaff } from "@/types/staff.interface";
 import { checkTeams } from "@/lib/compute/match";
 import { IMatch } from "@/types/match.interface";
 import { teamBnfc } from "@/data/teamBnfc";
@@ -8,7 +7,7 @@ import { teamBnfc } from "@/data/teamBnfc";
 export const printMatchRequestLetter = (
   template: { title: string; body: string },
   match: IMatch,
-  official: { requester: IManager },
+  official: { requester: IStaff },
 ) => {
   const printWindow = window.open("", "_blank");
   const { home, away } = checkTeams(match);

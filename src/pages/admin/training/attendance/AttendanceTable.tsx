@@ -4,19 +4,18 @@ import { AVATAR } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { getInitials } from "@/lib";
 import { ITrainingSession } from "./page";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { isToday } from "@/lib/timeAndDate";
 import { toast } from "sonner";
 import ContentShowcaseWrapper from "@/components/ShowcaseWrapper";
 import { Label } from "@/components/ui/label";
-import { getErrorMessage } from "@/lib/error";
 import {
   useCreateTrainingSessionMutation,
   useUpdateTrainingSessionMutation,
 } from "@/services/training.endpoints";
 import { staticImages } from "@/assets/images";
+import { smartToast } from "@/utils/toast";
 
 export interface IPostTrainingSession {
   date: string;
@@ -37,13 +36,13 @@ export function AttendanceTable({
   players = [],
   trainingSessions = [],
 }: IProps) {
-  const navigate = useNavigate();
-  const [waiting, setWaiting] = useState(false);
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [editing, setEditing] = useState(false);
 
-  const [createSession] = useCreateTrainingSessionMutation();
-  const [updateSession] = useUpdateTrainingSessionMutation();
+  const [createSession, { isLoading: isCreating }] =
+    useCreateTrainingSessionMutation();
+  const [updateSession, { isLoading: isUpdating }] =
+    useUpdateTrainingSessionMutation();
 
   const todaySession = trainingSessions.find((s) => isToday(s.createdAt));
 
@@ -78,7 +77,6 @@ export function AttendanceTable({
       return;
     }
 
-    setWaiting(true);
     try {
       const attendedBy = players
         .filter((p) => checked[p._id])
@@ -121,15 +119,10 @@ export function AttendanceTable({
         );
         reset();
         setChecked({});
-        setEditing(false);
-        navigate(0);
-      } else {
-        toast.error(result.message || "Failed to save attendance");
       }
-    } catch (err) {
-      toast.error(getErrorMessage(err, "An unexpected error occurred"));
-    } finally {
-      setWaiting(false);
+      smartToast(result);
+    } catch (error) {
+      smartToast({ error });
     }
   };
 
@@ -220,7 +213,7 @@ export function AttendanceTable({
               {(!todaySession || editing) && (
                 <Button
                   onClick={handleSubmit(onSubmit)}
-                  waiting={waiting}
+                  waiting={isCreating || isUpdating}
                   waitingText="Saving..."
                   primaryText={
                     todaySession ? "Update Attendance" : "Save Attendance"

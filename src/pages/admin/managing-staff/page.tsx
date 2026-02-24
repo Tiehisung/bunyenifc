@@ -1,47 +1,21 @@
-import TechnicalManagerForm from "./ManagerForm";
+import TechnicalManagerForm from "./StaffForm";
 import { PrimaryCollapsible } from "@/components/Collapsible";
 import { Plus } from "lucide-react";
 import Header from "../../../components/Element";
- 
 import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { IFeature, useGetFeatureByNameQuery } from "@/services/feature.endpoints";
-import { useGetManagersQuery } from "@/services/manager.endpoints";
-import AdminManagers from "./DisplayManagers";
-import { ISelectOptionLV } from "@/types";
+import AdminManagers from "./DisplayStaff";
+import { useGetStaffMembersQuery } from "@/services/staff.endpoints";
 
-export interface IManager {
-  email: string;
-  dob: string;
-  _id: string;
-  avatar: string;
-  role: string;
-  fullname: string;
-  dateSigned: string;
-  phone: string;
-  startDate: string;
-  endDate: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-const TechnicalManagersPage = () => {
+const AllManagingStaffPage = () => {
   const {
-    data: managersData,
+    data: staffData,
     isLoading: managersLoading,
     error: managersError,
-  } = useGetManagersQuery({});
+  } = useGetStaffMembersQuery({});
 
-  const { data: rolesData, isLoading: rolesLoading } = useGetFeatureByNameQuery(
-    "technical management",
-  );
-
-  const isLoading = managersLoading || rolesLoading;
-  const managers = managersData;
-  const roles = rolesData?.data;
-
-  if (isLoading) {
+  if (managersLoading) {
     return (
       <div className="_page pb-32 flex justify-center items-center min-h-100">
         <Loader message="Loading technical managers..." />
@@ -74,10 +48,7 @@ const TechnicalManagersPage = () => {
         title="Technical Management"
         subtitle="Staff and Managing Personnel"
       />
-      <AdminManagers
-        managers={managers?.data}
-        roles={roles as IFeature<ISelectOptionLV[]>}
-      />
+      <AdminManagers staffMembers={staffData?.data || []} />
       <PrimaryCollapsible
         header={{
           label: (
@@ -91,9 +62,7 @@ const TechnicalManagersPage = () => {
           className: "border",
         }}
       >
-        <TechnicalManagerForm
-          availableRoles={roles?.data as ISelectOptionLV[]}
-        />
+        <TechnicalManagerForm />
       </PrimaryCollapsible>
 
       <br />
@@ -101,4 +70,4 @@ const TechnicalManagersPage = () => {
   );
 };
 
-export default TechnicalManagersPage;
+export default AllManagingStaffPage;

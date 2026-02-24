@@ -4,28 +4,16 @@ import { formatDate } from "@/lib/timeAndDate";
 import { PrimarySearch } from "@/components/Search";
 import HEADER from "@/components/Element";
 import { PrimaryTabs } from "@/components/Tabs";
-import { EMatchStatus, IMatch } from "@/types/match.interface";
+import { EMatchStatus } from "@/types/match.interface";
 import { useSearchParams } from "react-router-dom";
 import { useGetSquadsQuery } from "@/services/squad.endpoints";
 import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { PrimaryAccordion } from "@/components/ui/accordion";
-import { useGetManagersQuery } from "@/services/manager.endpoints";
 import { useGetMatchesQuery } from "@/services/match.endpoints";
 import { useGetPlayersQuery } from "@/services/player.endpoints";
-
-export interface ISquad {
-  _id?: string;
-  description?: string;
-  title?: string;
-  players: { _id?: string; name: string; position: string; avatar?: string }[];
-  coach?: { _id?: string; name: string; avatar?: string };
-  assistant?: { _id?: string; name: string; avatar?: string };
-  match: IMatch;
-  createdAt?: string;
-  updatedAt?: string;
-}
+import { useGetStaffMembersQuery } from "@/services/staff.endpoints";
 
 const SquadPage = () => {
   const [searchParams] = useSearchParams();
@@ -36,7 +24,7 @@ const SquadPage = () => {
     useGetPlayersQuery(paramsString);
 
   const { data: managersData, isLoading: managersLoading } =
-    useGetManagersQuery({});
+    useGetStaffMembersQuery({});
 
   const { data: matchesData, isLoading: matchesLoading } = useGetMatchesQuery({
     status: EMatchStatus.UPCOMING,
@@ -52,7 +40,7 @@ const SquadPage = () => {
     playersLoading || managersLoading || matchesLoading || squadsLoading;
   const players = playersData;
   const managers = managersData;
-  console.log(managers)
+  console.log(managers);
   const matches = matchesData;
   const squads = squadsData;
 
@@ -119,7 +107,7 @@ const SquadPage = () => {
           <section>
             <SquadForm
               players={players?.data}
-              managers={[]} //managers?.data??
+              staff={[]} //managers?.data??
               matches={matches?.data}
               defaultMatch={targetMatch}
             />

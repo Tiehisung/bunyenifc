@@ -7,12 +7,12 @@ import { Separator } from "@/components/ui/separator";
 import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useGetManagersQuery } from "@/services/manager.endpoints";
 import { useGetMatchesQuery } from "@/services/match.endpoints";
 import { useGetPlayersQuery } from "@/services/player.endpoints";
 import { useGetTeamsQuery } from "@/services/team.endpoints";
 import { IQueryResponse } from "@/types";
 import { IMatch } from "@/types/match.interface";
+import { useGetStaffMembersQuery } from "@/services/staff.endpoints";
 
 export default function AdminFixtures() {
   // const [searchParams] = useSearchParams();
@@ -27,12 +27,14 @@ export default function AdminFixtures() {
 
   const { data: teams, isLoading: teamsLoading } = useGetTeamsQuery({});
 
-  const { data: players, isLoading: playersLoading } = useGetPlayersQuery('');
+  const { data: players, isLoading: playersLoading } = useGetPlayersQuery("");
 
-  const { data: managers, isLoading: managersLoading } = useGetManagersQuery({});
+  const { data: staff, isLoading: staffLoading } = useGetStaffMembersQuery(
+    {},
+  );
 
   const isLoading =
-    fixturesLoading || teamsLoading || playersLoading || managersLoading;
+    fixturesLoading || teamsLoading || playersLoading || staffLoading;
 
   if (isLoading) {
     return (
@@ -70,7 +72,7 @@ export default function AdminFixtures() {
         <DisplayFixtures
           fixtures={fixtures as IQueryResponse<IMatch[]>}
           teams={teams?.data}
-          managers={managers?.data}
+          staff={staff?.data}
           players={players?.data}
         />
 

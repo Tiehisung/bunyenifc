@@ -1,5 +1,5 @@
 import { ETemplateTag, generateMatchRequestTemplates } from "./_templates";
-import { IManager } from "../../managers/page";
+import { IStaff } from "@/types/staff.interface";
 import TemplateCard from "./TemplateCard";
 import { useUpdateSearchParams } from "@/hooks/params";
 import { fireEscape } from "@/hooks/Esc";
@@ -13,7 +13,7 @@ import { IMatch } from "@/types/match.interface";
 
 interface IProps {
   match: IMatch;
-  official: { requester: IManager };
+  official: { requester: IStaff };
   searchString?: string;
   modal?: boolean;
   modalVariant?: TButtonVariant;

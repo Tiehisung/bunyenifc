@@ -8,7 +8,7 @@ const injuryApi = api.injectEndpoints({
 
         // GET all injuries
         getInjuries: builder.query<IQueryResponse<IInjury[]>, string>({
-            query: (queryString = "") => `/injuries${queryString}`,
+            query: (queryString = "") => `/injuries?${queryString}`,
             providesTags: ["Injuries"],
         }),
 

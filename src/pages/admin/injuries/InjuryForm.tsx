@@ -17,9 +17,8 @@ import {
   useCreateInjuryMutation,
   useUpdateInjuryMutation,
 } from "@/services/injuries.endpoints";
-import { useNavigate } from "react-router-dom";
 import { useGetPlayersQuery } from "@/services/player.endpoints";
-import { getErrorMessage } from "@/lib/error";
+import { smartToast } from "@/utils/toast";
 
 const injurySchema = z.object({
   player: z.string().min(1, "Player is required"),
@@ -42,10 +41,9 @@ export function InjuryForm({
   injury,
   player: defaultPlayer,
 }: InjuryEventsTabProps) {
-  const navigate = useNavigate();
-
   // Fetch players using RTK Query
-  const { data: playersData, isLoading: playersLoading } = useGetPlayersQuery('');
+  const { data: playersData, isLoading: playersLoading } =
+    useGetPlayersQuery("");
   const players = playersData?.data || [];
 
   // RTK Query mutations
@@ -117,12 +115,7 @@ export function InjuryForm({
         result = await createInjury(payload).unwrap();
       }
 
-      toast.success(
-        result.message || (injury ? "Injury updated" : "Injury added"),
-        {
-          position: "bottom-center",
-        },
-      );
+      smartToast(result);
 
       if (result.success) {
         reset({
@@ -134,11 +127,9 @@ export function InjuryForm({
         });
 
         fireEscape();
-        // Soft refresh to show updated data
-        navigate(0);
       }
-    } catch (err) {
-      toast.error(getErrorMessage(err));
+    } catch (error) {
+      smartToast({error});
     }
   };
 

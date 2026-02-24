@@ -15,8 +15,7 @@ import { InjuryForm } from "./InjuryForm";
 import { IPlayer } from "@/types/player.interface";
 import { Badge } from "@/components/ui/badge";
 import { useDeleteInjuryMutation } from "@/services/injuries.endpoints";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { smartToast } from "@/utils/toast";
 
 export function InjuryCard({
   injury,
@@ -25,8 +24,7 @@ export function InjuryCard({
   injury: IInjury;
   selectedPlayer?: IPlayer;
 }) {
-  const navigate = useNavigate();
-  const [deleteInjury] = useDeleteInjuryMutation();
+  const [deleteInjury, { isLoading }] = useDeleteInjuryMutation();
 
   const SeverityBadge = ({ severity }: { severity: string }) => {
     const config = {
@@ -66,12 +64,9 @@ export function InjuryCard({
   const handleDelete = async () => {
     try {
       const result = await deleteInjury(injury?._id as string).unwrap();
-      if (result.success) {
-        toast.success(result.message);
-        navigate(0);
-      }
+      smartToast(result);
     } catch (error) {
-      toast.error("Failed to delete injury");
+      smartToast({ error });
     }
   };
 
@@ -140,6 +135,7 @@ export function InjuryCard({
               triggerStyles="text-sm p-1.5 px-2 grow w-full justify-start"
               variant="destructive"
               title={injury.title}
+              isLoading={isLoading}
             />
           </POPOVER>
         </div>

@@ -1,5 +1,5 @@
-import { IManager } from "./page";
-import TechnicalManagerForm from "./ManagerForm";
+import { IStaff } from "@/types/staff.interface";
+import TechnicalManagerForm from "./StaffForm";
 import { POPOVER } from "@/components/ui/popover";
 import { Edit3, TrashIcon } from "lucide-react";
 import { HiOutlineUserRemove } from "react-icons/hi";
@@ -7,20 +7,13 @@ import { Button } from "@/components/buttons/Button";
 import { useUpdateSearchParams } from "@/hooks/params";
 import { fireEscape } from "@/hooks/Esc";
 import { StackModal } from "@/components/modals/StackModal";
-import { ISelectOptionLV } from "@/types";
 import { RtkActionButton } from "@/components/buttons/ActionButtonRTK";
 import {
-  useDeleteManagerMutation,
-  useUpdateManagerMutation,
-} from "@/services/manager.endpoints";
+  useDeleteStaffMutation,
+  useUpdateStaffMutation,
+} from "@/services/staff.endpoints";
 
-const ManagerActionsPopper = ({
-  manager,
-  availableRoles,
-}: {
-  manager: IManager;
-  availableRoles: ISelectOptionLV[];
-}) => {
+const StaffActionsPopper = ({ staff }: { staff: IStaff }) => {
   const { setParam } = useUpdateSearchParams();
 
   return (
@@ -30,7 +23,7 @@ const ManagerActionsPopper = ({
           <Button
             className="w-full _hover bg-transparent _shrink _secondaryBtn"
             onClick={() => {
-              setParam("stackModal", manager._id);
+              setParam("stackModal", staff._id);
               fireEscape();
             }}
           >
@@ -38,8 +31,8 @@ const ManagerActionsPopper = ({
           </Button>
 
           <RtkActionButton
-            mutation={useUpdateManagerMutation}
-            data={{ id: manager._id, isActive: false }}
+            mutation={useUpdateStaffMutation}
+            data={{ id: staff._id, isActive: false }}
             primaryText="Disengage Manager"
             loadingText="Disengaging..."
             variant="secondary"
@@ -51,28 +44,26 @@ const ManagerActionsPopper = ({
           </RtkActionButton>
 
           <RtkActionButton
-            mutation={useDeleteManagerMutation}
-            data={manager._id}
+            mutation={useDeleteStaffMutation}
+            data={staff._id}
             primaryText="Delete Manager"
             loadingText="Deleting..."
             variant="destructive"
             onSuccess={(res) => {
-              console.log("manager deleted",res);
+              console.log("manager deleted", res);
             }}
           >
             <TrashIcon />
           </RtkActionButton>
-
         </div>
       </POPOVER>
 
       <StackModal
-        id={manager._id}
+        id={staff._id}
         className="bg-accent rounded-2xl _hideScrollbar"
       >
         <TechnicalManagerForm
-          existingManager={manager}
-          availableRoles={availableRoles}
+          existingStaff={staff}
           className="lg:flex flex-col min-w-[70vw]"
         />
       </StackModal>
@@ -80,4 +71,4 @@ const ManagerActionsPopper = ({
   );
 };
 
-export default ManagerActionsPopper;
+export default StaffActionsPopper;

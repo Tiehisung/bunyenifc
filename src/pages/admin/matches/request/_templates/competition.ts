@@ -2,12 +2,13 @@
 import { teamBnfc } from "@/data/teamBnfc";
 import { checkTeams } from "@/lib/compute/match";
 import { formatDate } from "@/lib/timeAndDate";
-import { IManager } from "@/services/manager.endpoints";
+ 
 import { IMatch } from "@/types/match.interface";
+import { IStaff } from "@/types/staff.interface";
 
 export const competitionTemplates = (
   match: IMatch,
-  official: { requester: IManager }
+  official: { requester: IStaff }
 ) => {
   const { home, away } = checkTeams(match);
 

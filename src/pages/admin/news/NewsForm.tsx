@@ -1,4 +1,3 @@
- 
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 
 import { TextArea } from "@/components/input/Inputs";
@@ -21,8 +20,7 @@ interface INewsForm {
 export const NewsForm = ({ newsItem = null }: INewsForm) => {
   const user = dummyUser;
 
- 
-  const [createNews,{isLoading}] = useCreateNewsMutation();
+  const [createNews, { isLoading }] = useCreateNewsMutation();
 
   const { control, handleSubmit, reset } = useForm<IPostNews>({
     defaultValues: newsItem ?? {
@@ -42,7 +40,6 @@ export const NewsForm = ({ newsItem = null }: INewsForm) => {
 
   const onSubmit = async (data: IPostNews) => {
     try {
-      
       const result = await createNews(data).unwrap();
 
       if (result.success) reset();
@@ -50,7 +47,7 @@ export const NewsForm = ({ newsItem = null }: INewsForm) => {
       smartToast(result);
     } catch (error) {
       smartToast({ error });
-    }  
+    }
   };
 
   return (
@@ -67,6 +64,7 @@ export const NewsForm = ({ newsItem = null }: INewsForm) => {
               {...field}
               // label="Headline text"
               placeholder="Type headline here..."
+              className="border border-border bg-white text-gray-800"
             />
           )}
         />
