@@ -5,14 +5,12 @@ import { ActionButton } from "@/components/buttons/ActionButton";
 import { apiConfig } from "@/lib/configs";
 import { POPOVER } from "@/components/ui/popover";
 import SocialShare from "@/components/SocialShare";
-import { useAction } from "@/hooks/action";
 import { FormEvent, useEffect, useState } from "react";
 import { staticImages } from "@/assets/images";
 import { LiaCommentSolid } from "react-icons/lia";
 import { IoShareSocial } from "react-icons/io5";
 import { AVATAR } from "@/components/ui/avatar";
 import { getTimeLeftOrAgo } from "@/lib/timeAndDate";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { shortText } from "@/lib";
 import { BsDot } from "react-icons/bs";
@@ -25,32 +23,26 @@ import { icons } from "@/assets/icons/icons";
 import LoginController from "@/components/auth/Login";
 import { useUpdateNewsMutation } from "@/services/news.endpoints";
 import { toggleClick, markupToPlainText } from "@/lib/dom";
-import { getErrorMessage } from "@/lib/error";
 import { dummyUser } from "@/data/user";
+import { smartToast } from "@/utils/toast";
 
 export function NewsReactions({ newsItem }: { newsItem: INewsProps }) {
-  const navigate = useNavigate();
-  const { handleAction: handleShare } = useAction();
-  
   const [comment, setComment] = useState("");
-  const user  = dummyUser
-  const [updateNews] = useUpdateNewsMutation();
+  const user = dummyUser;
+  const [updateNews, { isLoading: isUpdating }] = useUpdateNewsMutation();
 
-  const [waiting, setWaiting] = useState(false);
   const maxLength = 3500;
 
   const onComment = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      setWaiting(true);
-
       const result = await updateNews({
         _id: newsItem?._id,
         comments: [
           {
             email: user?.email ?? "unknown",
             name: user?.name ?? "unknown",
-            image: user?.image ,
+            image: user?.image,
             date: new Date().toISOString(),
             comment,
           },
@@ -59,15 +51,12 @@ export function NewsReactions({ newsItem }: { newsItem: INewsProps }) {
       }).unwrap();
 
       if (result.success) {
-        toast.success("Comment sent");
+        smartToast({ message: "Comment sent", success: true });
         setComment("");
         fireEscape();
-        navigate(0);
       }
     } catch (error) {
-      toast.error(getErrorMessage(error));
-    } finally {
-      setWaiting(false);
+      smartToast({ error });
     }
   };
 
@@ -109,6 +98,21 @@ export function NewsReactions({ newsItem }: { newsItem: INewsProps }) {
     updateViews();
   }, []);
 
+  const handleShare = async () => {
+    await updateNews({
+      _id: newsItem?._id,
+      shares: [
+        ...(newsItem?.shares ?? []),
+        {
+          email: user?.email ?? "unknown",
+          name: user?.name ?? "unknown",
+          date: new Date().toISOString(),
+          device: "unknown",
+        },
+      ],
+    });
+  };
+
   return (
     <div>
       <ul className="flex items-center flex-wrap gap-4">
@@ -144,24 +148,7 @@ export function NewsReactions({ newsItem }: { newsItem: INewsProps }) {
             triggerClassNames="rounded-full"
             id="shares-trigger"
           >
-            <SocialShare
-              onShare={() =>
-                handleShare({
-                  method: "PUT",
-                  uri: `${apiConfig.news}/${newsItem?._id}`,
-                  body: {
-                    shares: [
-                      ...(newsItem?.shares ?? []),
-                      {
-                        name: user?.name ?? "unknown",
-                        date: new Date().toISOString(),
-                        device: "unknown",
-                      },
-                    ],
-                  },
-                })
-              }
-            />
+            <SocialShare onShare={handleShare} />
           </POPOVER>
           <div
             className="font-light text-xs"
@@ -213,7 +200,7 @@ export function NewsReactions({ newsItem }: { newsItem: INewsProps }) {
                 <Button
                   type="submit"
                   className="backdrop-blur-2xl w-full mt-5 justify-center"
-                  waiting={waiting}
+                  waiting={isUpdating}
                   waitingText=""
                   primaryText="Comment"
                   size="lg"

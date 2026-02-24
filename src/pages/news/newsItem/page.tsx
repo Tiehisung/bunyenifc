@@ -6,23 +6,23 @@ import {
   useGetNewsItemQuery,
   useGetNewsQuery,
 } from "@/services/news.endpoints";
-import { Helmet } from "react-helmet";
 import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { teamBnfc } from "@/data/teamBnfc";
+import { PageSEO } from "@/utils/PageSEO";
 
 export default function NewsItemPage() {
-  const { newsId } = useParams<{ newsId: string }>();
+  const newsSlug = useParams().newsSlug;
   const [searchParams] = useSearchParams();
   const paramsString = searchParams.toString();
-  console.log(paramsString)
+  console.log(paramsString);
 
   const {
     data: newsItemData,
     isLoading: itemLoading,
     error: itemError,
-  } = useGetNewsItemQuery(newsId || "");
+  } = useGetNewsItemQuery(newsSlug || "");
 
   const { data: newsData, isLoading: newsLoading } = useGetNewsQuery({});
 
@@ -59,7 +59,7 @@ export default function NewsItemPage() {
     newsItem?.details?.find((d) => d.text)?.text ||
     "Read the latest news and updates from bunyenifc.";
   const image = newsItem?.headline?.image || teamBnfc.logo;
-  const url = `${teamBnfc.url}/news/${newsId}`;
+  const url = `${teamBnfc.url}/news/${newsSlug}`;
   const ogImage = image.replace(
     "/upload/",
     "/upload/c_fill,w_1200,h_630,f_auto,q_auto/",
@@ -67,26 +67,13 @@ export default function NewsItemPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{title}</title>
-        <meta name="description" content={description} />
-
-        {/* Open Graph */}
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <meta property="og:url" content={url} />
-        <meta property="og:site_name" content={teamBnfc.name} />
-        <meta property="og:image" content={ogImage} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:type" content="article" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content={image} />
-      </Helmet>
+      <PageSEO
+        page="news"
+        description={description}
+        title={title}
+        image={ogImage}
+        url={url}
+      />
 
       <div className="flex max-lg:flex-wrap items-start gap-6 relative pt-6 p-4 md:pl-10">
         <section className="grow min-w-3/4">
@@ -101,3 +88,23 @@ export default function NewsItemPage() {
     </>
   );
 }
+`<Helmet>
+  <title>{title}</title>
+  <meta name="description" content={description} />
+
+  {/* Open Graph */}
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={url} />
+  <meta property="og:site_name" content={teamBnfc.name} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:type" content="article" />
+
+  {/* Twitter */}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={image} />
+</Helmet>;`;

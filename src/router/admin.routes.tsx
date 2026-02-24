@@ -36,6 +36,7 @@ import NewStaffPage from "@/pages/admin/staff/new/Page";
 import StaffDetailPage from "@/pages/admin/staff/member/page";
 import EditStaffPage from "@/pages/admin/staff/edit/EditStaff";
 import AllStaffPage from "@/pages/admin/staff/AllStaffPage";
+ 
 
 export const adminRoutes: RouteObject[] = [
   { path: "", element: <AdminDashboardPage /> },
@@ -60,6 +61,7 @@ export const adminRoutes: RouteObject[] = [
       { path: ":newsSlug", element: <NewsItemPage /> },
     ],
   },
+
   {
     path: "matches",
     element: <LAYOUT />,
