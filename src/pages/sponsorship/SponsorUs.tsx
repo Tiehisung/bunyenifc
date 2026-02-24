@@ -4,7 +4,7 @@ import { TEAM } from "@/data/teamBnfc";
 
 export default function SponsorUs() {
   return (
-    <section className="w-full py-16 px-6 bg-card rounded-2xl shadow-lg">
+    <section className="w-full py-16 px-6 bg-card rounded-2xl ">
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-4xl font-semibold mb-4">
           Partner & Sponsor {TEAM.name}

@@ -1,6 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
 import { BiTable } from "react-icons/bi";
-import { GiSoccerBall } from "react-icons/gi";
 import { TbPlayFootball, TbTableRow } from "react-icons/tb";
 import { RiNewsLine } from "react-icons/ri";
 import { SiGithubsponsors } from "react-icons/si";
@@ -9,6 +8,7 @@ import { ThemeModeToggle } from "./ThemeToggle";
 import { NavigationPopover } from "./NavigationPopover";
 import { GalleryThumbnails } from "lucide-react";
 import { fireEscape } from "@/hooks/Esc";
+import { TEAM } from "@/data/teamBnfc";
 
 export default function HeaderCp() {
   const location = useLocation();
@@ -22,10 +22,8 @@ export default function HeaderCp() {
     >
       <Link to="/">
         <div className="flex items-center gap-2 w-fit">
-          <div className="animate-pulse">
-            <GiSoccerBall size={42} />
-          </div>
-          <span className="text-Orange">KonFC</span>
+         
+          <span className="text-Orange first-letter:capitalize font-bold">{TEAM.alias}</span>
         </div>
       </Link>
       <div className="container ml-auto flex justify-end items-center">

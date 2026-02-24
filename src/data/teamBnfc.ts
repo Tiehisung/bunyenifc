@@ -22,7 +22,7 @@ export const teamBnfc: ITeam & { url: string, officialSignature: string } = {
 export const TEAM = {
     // Basic Info
     id: "bnfc",
-    name: "bunyenifc",
+    name: "bunyenifc", alias: 'yenFC',
     displayName: "Wa Bunyeni FC",
     shortName: "BNFC",
     tagline: "The Pride of Wa",

@@ -28,7 +28,7 @@ export default function HEADER({
       )}
     >
       <div className={`mx-auto ${isPage ? "_page" : ""}`}>
-        <div className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+        <div className="text-3xl md:text-4xl lg:text-5xl font-bold my-4">
           {title}
         </div>
         {subtitle && <div className={`font-light`}>{subtitle}</div>}

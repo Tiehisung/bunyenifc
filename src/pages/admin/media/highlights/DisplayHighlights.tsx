@@ -9,11 +9,14 @@ import { IQueryResponse } from "@/types";
 import { IMatchHighlight } from "@/types/match.interface";
 import { Download, Play } from "lucide-react";
 import { useState } from "react";
- 
 
 // Dummy user
 import { dummyUser } from "@/data/user";
-import { useGetHighlightsQuery, useDeleteHighlightMutation } from "@/services/highlights.endpoints";
+import {
+  useGetHighlightsQuery,
+  useDeleteHighlightMutation,
+} from "@/services/highlights.endpoints";
+import { smartToast } from "@/utils/toast";
 
 interface Props {
   highlights?: IQueryResponse<IMatchHighlight[]>;
@@ -58,7 +61,7 @@ export const MatchHighlights = ({
           <div
             key={video?._id}
             onClick={() => setActiveVideo(video)}
-            className="group relative cursor-pointer rounded-xl overflow-hidden bg-modalOverlay shadow-lg hover:scale-[1.01] transition"
+            className="group relative cursor-pointer rounded-xl overflow-hidden bg-modalOverlay shadow-lg transition"
           >
             <img
               src={
@@ -66,7 +69,7 @@ export const MatchHighlights = ({
                 (video?.thumbnail_url as string)
               }
               alt={video?.title}
-              className="w-full h-48 object-cover opacity-80 group-hover:opacity-60 transition"
+              className="w-full h-60 object-cover opacity-80 group-hover:scale-[1.01] group-hover:opacity-60 transition"
             />
 
             {/* Play button */}
@@ -127,9 +130,10 @@ export const HighlightMediaActions = ({
   const handleDelete = async () => {
     if (!highlight?._id) return;
     try {
-      await deleteHighlight(highlight._id).unwrap();
+      const result = await deleteHighlight(highlight._id).unwrap();
+      smartToast(result);
     } catch (error) {
-      console.error("Failed to delete highlight:", error);
+      smartToast({ error });
     }
   };
 

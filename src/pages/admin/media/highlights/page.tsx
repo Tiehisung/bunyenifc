@@ -8,6 +8,7 @@ import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useGetMatchesQuery } from "@/services/match.endpoints";
+import PageLoader from "@/components/loaders/Page";
 
 export default function MatchHighlightsPage() {
   const [searchParams] = useSearchParams();
@@ -32,7 +33,7 @@ export default function MatchHighlightsPage() {
   if (isLoading) {
     return (
       <div className="_page min-h-96 flex justify-center items-center">
-        <Loader message="Loading highlights..." />
+        <PageLoader />
       </div>
     );
   }

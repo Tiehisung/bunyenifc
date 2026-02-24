@@ -8,7 +8,7 @@ const galleriesApi = api.injectEndpoints({
 
         // Get all galleries with optional pagination/filtering
         getGalleries: builder.query<IQueryResponse<IGallery[]>, string | void>({
-            query: (queryString = "") => `/galleries${queryString}`,
+            query: (queryString = "") => `/galleries?${queryString}`,
             providesTags: (result) =>
                 result?.data
                     ? [

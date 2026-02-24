@@ -63,7 +63,7 @@ const MultiSelectionInput = ({
     } else {
       onChange(selectedOptions);
     }
-  }, [selectedOptions, name, onChange, setParam]);
+  }, [selectedOptions, name, onChange,]);
 
   if (!options) return null;
 

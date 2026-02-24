@@ -16,6 +16,7 @@ import HomeLayout from "@/pages/Layout";
 
 // Admin
 import AdminLayout from "@/pages/admin/layout";
+import Home from "@/pages/Home";
 
 // Wrapper component for AdminLayout with ScrollToTop
 const AdminLayoutWithScrollToTop = () => (
@@ -34,6 +35,7 @@ const applicationRouter = createBrowserRouter([
       </>
     ),
     children: [
+      {index:true,element:<Home/>},
       {
         path: "news",
         element: <NewsPage />,

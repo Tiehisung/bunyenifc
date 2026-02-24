@@ -201,7 +201,7 @@ export default function CloudinaryUploader({
       <Button
         id={triggerId}
         onClick={openUploadWidget}
-        className={` ${!loaded ? "opacity-50 pointer-events-none" : ""}`}
+        className={`text-foreground ${!loaded ? "opacity-50 pointer-events-none" : ""}`}
         variant={variant}
         size={triggerSize}
       >
