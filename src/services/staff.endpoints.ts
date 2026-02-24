@@ -8,7 +8,7 @@ import { IStaff } from "@/types/staff.interface";
 const staffMemberApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
-        // GET all managers
+        // GET all staff
         getStaffMembers: builder.query<IQueryResponse<IStaff[]>, {
             page?: number;
             limit?: number;
@@ -16,7 +16,7 @@ const staffMemberApi = api.injectEndpoints({
             sortBy?: string;
         } & IRecord>({
             query: (params) => ({
-                url: "/managers",
+                url: "/staff",
                 params: {
                     page: params?.page || 1,
                     limit: params?.limit || 20,
@@ -24,67 +24,67 @@ const staffMemberApi = api.injectEndpoints({
                     sortBy: params?.sortBy || 'name',
                 },
             }),
-            providesTags: ["Managers"],
+            providesTags: ["Staff"],
         }),
 
-        // GET active managers
+        // GET active staff
         getActiveStaffMembers: builder.query<IQueryResponse<IStaff[]>, {
             page?: number;
             limit?: number;
         }>({
             query: (params) => ({
-                url: "/managers/active",
+                url: "/staff/active",
                 params: {
                     page: params?.page || 1,
                     limit: params?.limit || 20,
                 },
             }),
-            providesTags: ["Managers"],
+            providesTags: ["Staff"],
         }),
 
-        // GET managers by role
+        // GET staff by role
         getStaffMemberByRole: builder.query<IQueryResponse<IStaff[]>, {
             role: string;
             page?: number;
             limit?: number;
         }>({
             query: ({ role, page, limit }) => ({
-                url: `/managers/role/${role}`,
+                url: `/staff/role/${role}`,
                 params: { page, limit },
             }),
-            providesTags: ["Managers"],
+            providesTags: ["Staff"],
         }),
         getStaffMember: builder.query<IQueryResponse<IStaff>, string>({
 
             // GET manager by ID
-            query: (id) => `/managers/${id}`,
-            providesTags: ["Managers"],
+            query: (id) => `/staff/${id}`,
+            providesTags: ["Staff"],
         }),
 
         // GET manager statistics
         getStaffMemberStats: builder.query<IQueryResponse<any>, void>({
-            query: () => "/managers/stats",
-            providesTags: ["Managers"],
+            query: () => "/staff/stats",
+            providesTags: ["Staff"],
         }),
 
         // CREATE manager
         createStaff: builder.mutation<IQueryResponse<IStaff>, Partial<IStaff>>({
             query: (body) => ({
-                url: "/managers",
+                url: "/staff",
                 method: "POST",
                 body,
             }),
-            invalidatesTags: ["Managers"],
+            invalidatesTags: ["Staff"],
         }),
 
         // UPDATE manager
         updateStaff: builder.mutation<IQueryResponse<IStaff>, Partial<IStaff>>({
             query: ({ _id, ...body }) => ({
-                url: `/managers/${_id}`,
+                url: `/staff/${_id}`,
                 method: "PUT",
                 body,
             }),
-            invalidatesTags: ["Managers"],
+            invalidatesTags: ["Staff"],
         }),
 
         // DEACTIVATE manager
@@ -93,11 +93,11 @@ const staffMemberApi = api.injectEndpoints({
             reason?: string;
         }>({
             query: ({ id, reason }) => ({
-                url: `/managers/${id}/deactivate`,
+                url: `/staff/${id}/deactivate`,
                 method: "PATCH",
                 body: { reason },
             }),
-            invalidatesTags: ["Managers"],
+            invalidatesTags: ["Staff"],
         }),
 
         // ACTIVATE manager
@@ -105,19 +105,19 @@ const staffMemberApi = api.injectEndpoints({
             id: string;
         }>({
             query: ({ id }) => ({
-                url: `/managers/${id}/activate`,
+                url: `/staff/${id}/activate`,
                 method: "PATCH",
             }),
-            invalidatesTags: ["Managers"],
+            invalidatesTags: ["Staff"],
         }),
 
         // DELETE manager
         deleteStaff: builder.mutation<IQueryResponse<IStaff>, string>({
             query: (id) => ({
-                url: `/managers/${id}`,
+                url: `/staff/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: ["Managers"],
+            invalidatesTags: ["Staff"],
         }),
 
     }),

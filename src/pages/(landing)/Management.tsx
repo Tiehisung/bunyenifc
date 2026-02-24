@@ -9,22 +9,21 @@ import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useGetCaptainsQuery } from "@/services/captain.endpoints";
-import { useGetManagersQuery } from "@/services/staff.endpoints";
 import { IStaff } from "@/types/staff.interface";
+import { useGetStaffMembersQuery } from "@/services/staff.endpoints";
 
 export const TechnicalManagement = () => {
   const {
-    data: managersData,
-    isLoading: managersLoading,
+    data: staffData,
+    isLoading: staffLoading,
     error: managersError,
-  } = useGetManagersQuery({ isActive: "true" });
+  } = useGetStaffMembersQuery({ isActive: "true" });
 
   const { data: captainsData, isLoading: captainsLoading } =
     useGetCaptainsQuery("isActive=true");
 
-  const isLoading = managersLoading || captainsLoading;
-  const managers = managersData?.data as IStaff[];
-  const captains = captainsData?.data as ICaptainProps[];
+  const isLoading = staffLoading || captainsLoading;
+  
 
   if (isLoading) {
     return (
@@ -64,7 +63,7 @@ export const TechnicalManagement = () => {
       <div className="flex max-sm:flex-col flex-wrap items-center justify-center gap-8">
         <CardCarousel
           cards={
-            captains?.map((captain) => (
+            captainsData?.data?.map((captain) => (
               <div
                 key={captain._id}
                 className="flex flex-col justify-center items-center gap-2 pb-6"
@@ -85,7 +84,7 @@ export const TechnicalManagement = () => {
 
         <CardCarousel
           cards={
-            managers?.map((manager: IStaff) => (
+            staffData?.data?.map((manager: IStaff) => (
               <div
                 key={manager._id}
                 className="flex flex-col w-fit justify-center items-center gap-2 pb-6"
