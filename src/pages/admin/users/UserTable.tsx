@@ -13,7 +13,7 @@ import { PrimarySelect } from "@/components/select/Select";
 import { enumToOptions } from "@/lib/select";
 import { ClearFiltersBtn } from "@/components/buttons/ClearFilters";
 import { Separator } from "@/components/ui/separator";
-import { MetricCard } from "@/components/MetricsCards";
+import { MetricCard } from "@/components/Metrics/Cards";
 import { useGetUsersQuery } from "@/services/user.endpoints";
 import Loader from "@/components/loaders/Loader";
 import { buildQueryString } from "@/lib/searchParams";

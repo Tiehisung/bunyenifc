@@ -1,6 +1,4 @@
- 
-
-import { CountupMetricCard } from "@/components/MetricsCards";
+import { CountupMetricCard } from "@/components/Metrics/Cards";
 import { IQueryResponse } from "@/types";
 import { ECardType, ICard } from "@/types/card.interface";
 import { AlertCircle, AlertTriangle, AlertOctagon } from "lucide-react";

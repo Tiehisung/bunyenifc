@@ -1,11 +1,8 @@
- 
-
-import { CountupMetricCard } from "@/components/MetricsCards";
+import { CountupMetricCard } from "@/components/Metrics/Cards";
 import { motion } from "framer-motion";
 import { ChevronRight, Trophy, Users, Target, Shield } from "lucide-react";
 import { IQueryResponse } from "@/types";
 import { IPlayerMetrics } from "@/types/metrics.interface";
- 
 
 interface IProps {
   metrics?: IQueryResponse<IPlayerMetrics>;

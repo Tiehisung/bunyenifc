@@ -1,6 +1,6 @@
 "use client";
 
-import { CountupMetricCard } from "@/components/MetricsCards";
+import { CountupMetricCard } from "@/components/Metrics/Cards";
 import { AVATAR } from "@/components/ui/avatar";
 import { IQueryResponse } from "@/types";
 import { IMVP } from "@/types/mvp.interface";

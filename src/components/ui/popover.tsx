@@ -1,4 +1,4 @@
-"use client";
+ 
 
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
@@ -68,8 +68,8 @@ export function POPOVER({
   triggerClassNames,
   className,
   align,
-  variant,
-  size,
+  variant='ghost',
+  size='icon',
   id,
 }: IProps) {
   return (
@@ -78,7 +78,7 @@ export function POPOVER({
         <Button
           variant={variant}
           size={size}
-          className={`${triggerClassNames} cursor-pointer transition-all select-none `}
+          className={`${triggerClassNames} cursor-pointer transition-all select-none rounded-full `}
         >
           {trigger}
         </Button>

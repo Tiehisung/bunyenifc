@@ -7,11 +7,12 @@ import { useGetViewportWidth } from "@/hooks/windowXY";
 import { POPOVER } from "../ui/popover";
 import { useOverflow } from "../../hooks/overflow";
 import { toggleClick } from "@/lib/dom";
+import { cn } from "@/lib/utils";
  
 
 export const ResizableContent = ({
   children,
-  className = "grow",
+  className = "grow  max-w-[85vw]",
 }: {
   children: ReactNode[];
   className?: string;
@@ -24,10 +25,10 @@ export const ResizableContent = ({
     screenWidth <= 640
       ? 3
       : screenWidth <= 768
-      ? 4
-      : screenWidth <= 1024
-      ? 6
-      : 8
+        ? 4
+        : screenWidth <= 1024
+          ? 6
+          : 8,
   );
 
   const isOverflowing = useOverflow(outerRef, "horizontal");
@@ -58,7 +59,7 @@ export const ResizableContent = ({
   }, [isOverflowing, screenWidth]);
 
   return (
-    <div ref={outerRef} className={`flex w-full max-w-[85vw] ${className}`}>
+    <div ref={outerRef} className={cn(`flex w-full  `, className)}>
       <div ref={innerRef} className="flex items-center gap-2 w-fit">
         {children.slice(0, count)}
 
