@@ -15,6 +15,7 @@ interface IPageSEOProps {
   title?: string;
   description?: string;
   image?: string;
+  url?: string;
 }
 
 const pageConfig = {
@@ -60,6 +61,7 @@ export const PageSEO = ({
   title: customTitle,
   description: customDescription,
   image,
+  url = TEAM.website.url,
 }: IPageSEOProps) => {
   const config = pageConfig[page as keyof typeof pageConfig];
   const title = customTitle || config.title;
@@ -76,6 +78,7 @@ export const PageSEO = ({
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image || TEAM.logo} />
       <meta property="og:site_name" content={TEAM.name} />
+      <meta property="og:url" content={url} />
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />

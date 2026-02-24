@@ -13,7 +13,7 @@ import { AVATAR } from "@/components/ui/avatar";
 const NewsItemClient: FC<{ newsItem: INewsProps }> = ({ newsItem }) => {
   const [open, setOpen] = useState(false);
   const [gallery, setGallery] = useState<IFileProps[]>([]);
-  console.log(newsItem);
+ 
   return (
     <div className=" mb-10">
       <header className="flex flex-wrap items-center gap-2.5">
