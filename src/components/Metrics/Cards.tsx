@@ -1,12 +1,10 @@
- 
-
 import { ReactNode } from "react";
-import Loader from "./loaders/Loader";
+import Loader from "../loaders/Loader";
 import CountUp from "react-countup";
 import { TColor } from "@/types/color";
 import { cn } from "@/lib/utils";
 import { MoreVertical } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 interface IProps {
   title?: string;
@@ -82,7 +80,7 @@ export function CountupMetricCard({
     <div
       className={cn(
         "relative text-center p-4 rounded-2xl bg-card backdrop-blur-sm border border-white/10 hover:border-white/20 transition-colors",
-        className
+        className,
       )}
     >
       <div

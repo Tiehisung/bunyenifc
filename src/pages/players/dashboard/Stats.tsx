@@ -1,5 +1,4 @@
- 
-import { MetricCard } from "@/components/MetricsCards";
+import { MetricCard } from "@/components/Metrics/Cards";
 import { TColor } from "@/types/color";
 import { IPlayer } from "@/types/player.interface";
 

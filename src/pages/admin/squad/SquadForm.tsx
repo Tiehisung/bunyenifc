@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -23,16 +23,14 @@ import { Button } from "@/components/buttons/Button";
 import { IStaff } from "@/types/staff.interface";
 import { MdCheckBox, MdCheckBoxOutlineBlank } from "react-icons/md";
 import { TextArea } from "@/components/input/Inputs";
-import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";
- 
+
 import { formatDate, getTimeLeftOrAgo } from "@/lib/timeAndDate";
 import { enumToOptions } from "@/lib/select";
 import { IMatch } from "@/types/match.interface";
 import { useCreateSquadMutation } from "@/services/squad.endpoints";
-import { getErrorMessage } from "@/lib/error";
 import { ISquad } from "@/types/squad.interface";
+import { smartToast } from "@/utils/toast";
 
 interface IProps {
   players?: IPlayer[];
@@ -63,9 +61,7 @@ const SquadForm = ({
   staff = [],
   matches = [],
 }: IProps) => {
-  const [waiting, setWaiting] = useState(false);
-  const navigate = useNavigate();
-  const [createSquad] = useCreateSquadMutation();
+  const [createSquad, { isLoading: isCreating }] = useCreateSquadMutation();
 
   const { handleSubmit, control, setValue, watch, reset } = useForm<IPostSquad>(
     {
@@ -85,14 +81,51 @@ const SquadForm = ({
   const positions = watch("positions");
   const selectedMatch = watch("match");
 
+  // Auto-set positions from player data on mount
+  useEffect(() => {
+    if (players.length > 0) {
+      // Create positions object from player data
+      const initialPositions = players.reduce(
+        (acc, player) => {
+          if (player.position) {
+            acc[player._id] = player.position;
+          }
+          return acc;
+        },
+        {} as Record<string, EPlayerPosition>,
+      );
+
+      // Set all positions at once
+      setValue("positions", initialPositions);
+    }
+  }, [players, setValue]);
+
+  // Optional: Auto-select players based on some criteria (e.g., available players)
+  useEffect(() => {
+    if (players.length > 0) {
+      // Example: Auto-select first 11 players (or based on your logic)
+      const initialSelection = players.slice(0, 11).reduce(
+        (acc, player) => {
+          acc[player._id] = true;
+          return acc;
+        },
+        {} as Record<string, boolean>,
+      );
+
+      setValue("selectedPlayers", initialSelection);
+    }
+  }, [players, setValue]);
+
   const onSubmit = async (data: IPostSquad) => {
     try {
-      const selected = Object.values(data.selectedPlayers || {}).filter(
+      const selectedCount = Object.values(data.selectedPlayers || {}).filter(
         Boolean,
-      );
-      if (selected.length < 5) {
-        toast.error("Please select at least 11 players for the squad.", {
-          position: "bottom-center",
+      ).length;
+
+      if (selectedCount < 11) {
+        smartToast({
+          success: false,
+          message: `Please select at least 11 players for the squad. Currently selected: ${selectedCount}`,
         });
         return;
       }
@@ -127,11 +160,9 @@ const SquadForm = ({
         match: data.match as IMatch,
       };
 
-      setWaiting(true);
       const result = await createSquad(payload).unwrap();
 
       if (result.success) {
-        toast.success("Squad created successfully!");
         reset({
           selectedPlayers: {},
           positions: {},
@@ -140,14 +171,10 @@ const SquadForm = ({
           coach: "",
           assistant: "",
         });
-        navigate(0);
-      } else {
-        toast.error(result.message);
       }
+      smartToast(result);
     } catch (error) {
-      toast.error(getErrorMessage(error));
-    } finally {
-      setWaiting(false);
+      smartToast({ error });
     }
   };
 
@@ -241,6 +268,7 @@ const SquadForm = ({
                     >
                       <td className="py-3 px-4 font-semibold uppercase">
                         <Button
+                          type="button"
                           onClick={() =>
                             setValue(
                               `selectedPlayers.${player._id}`,
@@ -295,6 +323,7 @@ const SquadForm = ({
               </tbody>
             </table>
           </div>
+
           {/* Coach Selection */}
           <div className="mt-10">
             <h1 className="font-semibold mb-2">Technical Leadership</h1>
@@ -352,11 +381,12 @@ const SquadForm = ({
               </TableBody>
             </Table>
           </div>
+
           <div className="mt-6 text-right">
             <Button
               type="submit"
               primaryText="Save Squad"
-              waiting={waiting}
+              waiting={isCreating}
               className="_primaryBtn p-3"
             />
           </div>

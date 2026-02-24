@@ -30,7 +30,7 @@ export default function AdminFixtures() {
   const { data: players, isLoading: playersLoading } = useGetPlayersQuery("");
 
   const { data: staff, isLoading: staffLoading } = useGetStaffMembersQuery(
-    {},
+   ''
   );
 
   const isLoading =

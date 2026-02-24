@@ -1,11 +1,8 @@
- 
-
-import { CountupMetricCard } from "@/components/MetricsCards";
+import { CountupMetricCard } from "@/components/Metrics/Cards";
 import { motion } from "framer-motion";
 import { ChevronRight, Trophy, Users, Target, Shield } from "lucide-react";
 import { IQueryResponse } from "@/types";
 import { IPlayerMetrics } from "@/types/metrics.interface";
- 
 
 interface IProps {
   metrics?: IQueryResponse<IPlayerMetrics>;
@@ -16,25 +13,25 @@ export default function HERO({ metrics }: IProps) {
 
   const stats = [
     {
-      value: metrics?.data?.matchStats?.winRate,
+      value: metrics?.data?.matchStats?.winRate??'80%',
       label: "Win Rate",
       icon: <Trophy className="w-5 h-5" />,
       suffix: "%",
-      isCountup: true,
+      isCountup: false,
     },
     {
       value: metrics?.data?.activePlayers ?? 0,
       label: "Active Players",
       icon: <Users className="w-5 h-5" />,
       suffix: "+",
-      isCountup: true,
+      isCountup: false,
     },
     {
       value: "100",
       label: "Fan Dedication",
       icon: <Target className="w-5 h-5" />,
       suffix: "%",
-      isCountup: true,
+      isCountup: false,
     },
     {
       value: "Est. 2024",
@@ -178,7 +175,7 @@ export default function HERO({ metrics }: IProps) {
                   countupSuffix={stat.suffix}
                   isCountUp={stat.isCountup}
                   description={stat.label}
-                  isLoading={!metrics?.data}
+                  isLoading={false}
                   key={index}
                 />
               ))}

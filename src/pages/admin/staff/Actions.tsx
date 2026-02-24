@@ -1,5 +1,5 @@
 import { IStaff } from "@/types/staff.interface";
-import TechnicalManagerForm from "./StaffForm";
+import StaffForm from "./StaffForm";
 import { POPOVER } from "@/components/ui/popover";
 import { Edit3, TrashIcon } from "lucide-react";
 import { HiOutlineUserRemove } from "react-icons/hi";
@@ -13,7 +13,13 @@ import {
   useUpdateStaffMutation,
 } from "@/services/staff.endpoints";
 
-const StaffActionsPopper = ({ staff }: { staff: IStaff }) => {
+const StaffActionsPopper = ({
+  staff,
+  onEdit,
+}: {
+  staff: IStaff;
+  onEdit?: () => void;
+}) => {
   const { setParam } = useUpdateSearchParams();
 
   return (
@@ -21,24 +27,29 @@ const StaffActionsPopper = ({ staff }: { staff: IStaff }) => {
       <POPOVER>
         <div className="grid gap-1">
           <Button
-            className="w-full _hover bg-transparent _shrink _secondaryBtn"
+            className="w-full _hover bg-transparent _shrink justify-start gap-3"
             onClick={() => {
-              setParam("stackModal", staff._id);
-              fireEscape();
+              if (onEdit) {
+                onEdit();
+              } else {
+                setParam("stackModal", staff._id);
+                fireEscape();
+              }
             }}
+            variant={"ghost"}
           >
             <Edit3 /> Edit
           </Button>
 
           <RtkActionButton
             mutation={useUpdateStaffMutation}
-            data={{ id: staff._id, isActive: false }}
-            primaryText="Disengage Manager"
-            loadingText="Disengaging..."
-            variant="secondary"
+            data={{ _id: staff._id, isActive: !staff.isActive }}
+            primaryText={staff.isActive ? "Disengage Staff" : "Re-engage Staff"}
             onSuccess={(res) => {
               console.log("manager disengaged", res);
             }}
+            variant="ghost"
+            className="justify-start"
           >
             <HiOutlineUserRemove size={20} />
           </RtkActionButton>
@@ -48,7 +59,8 @@ const StaffActionsPopper = ({ staff }: { staff: IStaff }) => {
             data={staff._id}
             primaryText="Delete Manager"
             loadingText="Deleting..."
-            variant="destructive"
+            variant="ghost"
+            className="justify-start"
             onSuccess={(res) => {
               console.log("manager deleted", res);
             }}
@@ -61,10 +73,11 @@ const StaffActionsPopper = ({ staff }: { staff: IStaff }) => {
       <StackModal
         id={staff._id}
         className="bg-accent rounded-2xl _hideScrollbar"
+        trigger={undefined}
       >
-        <TechnicalManagerForm
+        <StaffForm
           existingStaff={staff}
-          className="lg:flex flex-col min-w-[70vw]"
+          className="lg:flex flex-col min-w-[70vw] cursor-auto"
         />
       </StackModal>
     </>

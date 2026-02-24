@@ -7,11 +7,10 @@ import { useGetSponsorsQuery } from "@/services/sponsor.endpoints";
 import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Helmet } from "react-helmet";
-import { teamBnfc } from "@/data/teamBnfc";
+import { PageSEO } from "@/utils/PageSEO";
 
 export default function SponsorsPage() {
-  const { data: sponsorsData, isLoading, error } = useGetSponsorsQuery('');
+  const { data: sponsorsData, isLoading, error } = useGetSponsorsQuery("");
   const sponsors = sponsorsData;
 
   if (isLoading) {
@@ -44,47 +43,13 @@ export default function SponsorsPage() {
 
   return (
     <>
-      <Helmet>
-        <title>Sponsors | {teamBnfc.name}</title>
-        <meta
-          name="description"
-          content={`${teamBnfc.name} official sponsors and partnership opportunities.`}
-        />
-        <meta
-          name="keywords"
-          content={`${teamBnfc.name} sponsors, football sponsors, partnership, donations`}
-        />
-
-        {/* Open Graph */}
-        <meta property="og:title" content={`${teamBnfc.name} Support & Sponsors`} />
-        <meta
-          property="og:description"
-          content={`Meet the official sponsors and supporters of ${teamBnfc.name}.`}
-        />
-        <meta property="og:image" content={teamBnfc.logo} />
-        <meta property="og:site_name" content={teamBnfc.name} />
-      </Helmet>
+      <PageSEO page="sponsors" />
 
       <div className="">
         <HEADER title="SUPPORT & SPONSORS" />
         <main className="_page p-5">
-          <ul className="flex flex-wrap items-center gap-5">
-            {sponsors?.data?.map((sponsor) => (
-              <li
-                className="border-t-4 border-Blue rounded-t h-32 w-32 bg-card flex items-center gap-1 flex-wrap justify-center shadow-xl"
-                key={sponsor?._id}
-              >
-                <div className="flex items-center gap-1 flex-wrap justify-center">
-                  <img
-                    src={sponsor?.logo ?? staticImages.ball}
-                    alt={sponsor?.name}
-                    className="w-14 h-14 object-contain"
-                  />
-                  <span className="text-xs text-center">{sponsor?.name}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <SponsorUs />
+          <br />
 
           <MarqueeCarousel>
             {sponsors?.data?.map((sponsor) => (
@@ -103,10 +68,6 @@ export default function SponsorsPage() {
               </div>
             ))}
           </MarqueeCarousel>
-
-          <br />
-
-          <SponsorUs />
         </main>
       </div>
     </>

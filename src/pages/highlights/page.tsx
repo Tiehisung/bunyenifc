@@ -4,9 +4,10 @@ import { MatchHighlights } from "../admin/media/highlights/DisplayHighlights";
 import { useSearchParams } from "react-router-dom";
 import { useGetHighlightsQuery } from "@/services/highlights.endpoints";
 import { useGetMatchesQuery } from "@/services/match.endpoints";
-import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import TableLoader from "@/components/loaders/Table";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function MatchHighlightsPage() {
   const [searchParams] = useSearchParams();
@@ -21,11 +22,15 @@ export default function MatchHighlightsPage() {
   const { data: matches, isLoading: matchesLoading } = useGetMatchesQuery({});
 
   const isLoading = highlightsLoading || matchesLoading;
-
+  const ismobile = useIsMobile();
   if (isLoading) {
     return (
       <div className="_page min-h-96 pt-24 flex justify-center items-center">
-        <Loader message="Loading highlights..." />
+        <TableLoader
+          className="h-24 rounded-2xl"
+          cols={ismobile ? 1 : 3}
+          rows={ismobile ? 2 : 3}
+        />
       </div>
     );
   }
@@ -47,7 +52,7 @@ export default function MatchHighlightsPage() {
 
   return (
     <div className="_page min-h-96 pt-24">
-      <h1 className="_label text-right">Match Highlights</h1>
+      <h1 className="_title ">Match Highlights</h1>
       <SearchHighlights matches={matches?.data} />
       <MatchHighlights highlights={highlights} />
       <InfiniteLimitScroller

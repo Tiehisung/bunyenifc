@@ -1,5 +1,5 @@
 // manager.endpoint.ts
-import type { IQueryResponse, IRecord } from "@/types";
+import type { IQueryResponse } from "@/types";
 import { api } from "./api";
 import { IStaff } from "@/types/staff.interface";
 
@@ -9,21 +9,8 @@ const staffMemberApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
         // GET all staff
-        getStaffMembers: builder.query<IQueryResponse<IStaff[]>, {
-            page?: number;
-            limit?: number;
-            search?: string;
-            sortBy?: string;
-        } & IRecord>({
-            query: (params) => ({
-                url: "/staff",
-                params: {
-                    page: params?.page || 1,
-                    limit: params?.limit || 20,
-                    search: params?.search,
-                    sortBy: params?.sortBy || 'name',
-                },
-            }),
+        getStaffMembers: builder.query<IQueryResponse<IStaff[]>, string>({
+            query: (paramsString) => (`/staff?${paramsString}`),
             providesTags: ["Staff"],
         }),
 

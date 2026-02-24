@@ -23,8 +23,6 @@ import DocsPage from "@/pages/admin/docs/page";
 import AllDocsPage from "@/pages/admin/docs/files/page";
 import FolderPage from "@/pages/admin/docs/[folder]/page";
 import CardsPage from "@/pages/admin/cards/page";
-import StaffMembersPage from "@/pages/admin/managing-staff/page";
-import StaffMemberPage from "@/pages/admin/managing-staff/member/page";
 import TeamsFeature from "@/pages/admin/teams/page";
 import TrainingSettingsAdm from "@/pages/admin/training/page";
 import AttendancePage from "@/pages/admin/training/attendance/page";
@@ -34,6 +32,10 @@ import AdminSponsor from "@/pages/admin/sponsorship/sponsor/page";
 import LogsPage from "@/pages/admin/activity-logs/page";
 import UsersPage from "@/pages/admin/users/page";
 import NewsItemPage from "@/pages/admin/news/newsItem/page";
+import NewStaffPage from "@/pages/admin/staff/new/Page";
+import StaffDetailPage from "@/pages/admin/staff/member/page";
+import EditStaffPage from "@/pages/admin/staff/edit/EditStaff";
+import AllStaffPage from "@/pages/admin/staff/AllStaffPage";
 
 export const adminRoutes: RouteObject[] = [
   { path: "", element: <AdminDashboardPage /> },
@@ -87,8 +89,10 @@ export const adminRoutes: RouteObject[] = [
     path: "staff",
     element: <LAYOUT />,
     children: [
-      { index: true, element: <StaffMembersPage /> },
-      { path: "staffSlug", element: <StaffMemberPage /> },
+      { index: true, element: <AllStaffPage /> },
+      { path: ":staffSlug", element: <StaffDetailPage /> },
+      { path: "new", element: <NewStaffPage /> },
+      { path: "edit", element: <EditStaffPage /> },
     ],
   },
   {

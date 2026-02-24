@@ -1,5 +1,4 @@
-
-import  { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import LightboxViewer from "@/components/viewer/LightBox";
 import { IQueryResponse } from "@/types";
 import { IGallery } from "@/types/file.interface";
@@ -7,7 +6,7 @@ import { shortText } from "@/lib";
 import { PrimarySearch } from "@/components/Search";
 import { ClearFiltersBtn } from "@/components/buttons/ClearFilters";
 import { getVideoThumbnail } from "@/lib/file";
-import IMAGE from "@/components/Image";
+import { cn } from "@/lib/utils";
 
 type Props = {
   galleries?: IQueryResponse<IGallery[]>;
@@ -30,7 +29,11 @@ export default function GalleryClient({ galleries, className = "" }: Props) {
       {/* Grid */}
       <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {galleries?.data?.map((gallery, i) => (
-          <GalleryThumbnail key={"gallery" + i} gallery={gallery} />
+          <GalleryThumbnail
+            key={`gallery${i}`}
+            gallery={gallery}
+            className="max-h-72 rounded-none bg-modalOverlay"
+          />
         ))}
       </div>
     </div>
@@ -58,7 +61,7 @@ export function GalleryThumbnail({ gallery, className = "" }: GalleryProps) {
     () =>
       gallery?.files
         ?.filter(
-          (f) => f.resource_type == "image" || f.resource_type == "video"
+          (f) => f.resource_type == "image" || f.resource_type == "video",
         )
         ?.map((file) => ({
           src: file.secure_url,
@@ -66,12 +69,12 @@ export function GalleryThumbnail({ gallery, className = "" }: GalleryProps) {
           height: file.height ?? 900,
           title: shortText(
             file?.original_filename ?? file?.name ?? "Image",
-            20
+            20,
           ),
           description: file.description,
           type: file.resource_type as "image" | "video",
         })),
-    [gallery]
+    [gallery],
   );
 
   const thumbnailFile =
@@ -89,35 +92,33 @@ export function GalleryThumbnail({ gallery, className = "" }: GalleryProps) {
         onClick={() => {
           setOpen(true);
         }}
-        className={`relative overflow-hidden rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-primary w-full h-auto ${className}`}
+        className={cn(
+          `relative overflow-hidden rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-primary w-full h-auto `,
+          className,
+        )}
         aria-label={thumbnailFile?.original_filename ?? `Open image`}
         type="button"
       >
-        <div className="relative w-full aspect-4/3 bg-gray-100 flex items-start">
-          <IMAGE
+        <div className="relative w-full h-full min-h-80 aspect-4/5 bg-gray-100 flex items-start">
+          <img
             src={thumbnail_url}
             alt={thumbnailFile?.original_filename ?? `Image `}
-            fallbackSrc={thumbnailFile.thumbnail_url as string}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-            className="object-cover transform transition-transform duration-300 hover:scale-105 grow"
-            priority={true} // preload a few for speed
-            
+            className="object-cover transform transition-transform duration-300 hover:scale-105 grow h-full "
           />
         </div>
 
         {/* overlay */}
-        <div className="absolute bottom-0 right-0 left-0 flex items-center justify-between gap-2 p-2 h-fit bg-linear-to-b from-transparent to-modalOverlay/30">
-          <div className=" text-xs text-white rounded px-2 py-1 line-clamp-1">
+        <div className="absolute bottom-0 right-0 left-0 flex items-center justify-between gap-2 p-2 h-fit bg-linear-to-b from-transparent to-modalOverlay/30 text-white">
+          <div className=" text-xs  rounded px-2 py-1 line-clamp-1">
             {shortText(
               (gallery?.title as string) ??
                 gallery?.description ??
                 thumbnailFile?.original_filename,
-              32
+              32,
             )}
           </div>
           {files.length > 1 && (
-            <span className="border border-muted/5 rounded-full text-white text-xs font-thin p-0.5">
+            <span className="border border-muted/5 rounded-full  text-xs font-thin p-0.5">
               +{files?.length - 1}
             </span>
           )}

@@ -8,7 +8,7 @@ const highlightsApi = api.injectEndpoints({
 
         // Get all highlights with optional pagination/filtering
         getHighlights: builder.query<IQueryResponse<IMatchHighlight[]>, string | void>({
-            query: (queryString = "") => `/highlights${queryString}`,
+            query: (queryString = "") => `/highlights?${queryString}`,
             providesTags: ["Highlights"],
         }),
 

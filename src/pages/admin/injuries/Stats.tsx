@@ -1,10 +1,8 @@
- 
-
-import { CountupMetricCard } from "@/components/MetricsCards";
+import { CountupMetricCard } from "@/components/Metrics/Cards";
 import { useFetch } from "@/hooks/fetch";
 import { IQueryResponse } from "@/types";
 import { EInjurySeverity, IInjury } from "@/types/injury.interface";
-import { AlertCircle, AlertTriangle, AlertOctagon ,} from "lucide-react";
+import { AlertCircle, AlertTriangle, AlertOctagon } from "lucide-react";
 import { useMemo } from "react";
 
 interface IProps {
@@ -13,9 +11,7 @@ interface IProps {
 }
 export function InjuryStats({ loading }: IProps) {
   // Fetch all injuries
-  const { results: allInjuries } = useFetch<
-    IInjury[]
-  >({
+  const { results: allInjuries } = useFetch<IInjury[]>({
     uri: "/injuries",
   });
 
@@ -26,14 +22,14 @@ export function InjuryStats({ loading }: IProps) {
       bySeverity: {
         MINOR:
           allInjuries?.data?.filter(
-            (inj) => inj.severity === EInjurySeverity.MINOR
+            (inj) => inj.severity === EInjurySeverity.MINOR,
           )?.length ?? 0,
         MODERATE:
           allInjuries?.data?.filter((inj) => inj.severity === "MODERATE")
             ?.length ?? 0,
         MAJOR:
           allInjuries?.data?.filter(
-            (inj) => inj.severity === EInjurySeverity.MAJOR
+            (inj) => inj.severity === EInjurySeverity.MAJOR,
           )?.length ?? 0,
         SEVERE:
           allInjuries?.data?.filter((inj) => inj.severity === "SEVERE")
