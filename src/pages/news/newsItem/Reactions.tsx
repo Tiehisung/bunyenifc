@@ -11,7 +11,6 @@ import { LiaCommentSolid } from "react-icons/lia";
 import { IoShareSocial } from "react-icons/io5";
 import { AVATAR } from "@/components/ui/avatar";
 import { getTimeLeftOrAgo } from "@/lib/timeAndDate";
-import { toast } from "sonner";
 import { shortText } from "@/lib";
 import { BsDot } from "react-icons/bs";
 import { RiDeleteBin6Line } from "react-icons/ri";
