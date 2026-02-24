@@ -24,6 +24,7 @@ import { useUpdateNewsMutation } from "@/services/news.endpoints";
 import { toggleClick, markupToPlainText } from "@/lib/dom";
 import { dummyUser } from "@/data/user";
 import { smartToast } from "@/utils/toast";
+import { RtkActionButton } from "@/components/buttons/ActionButtonRTK";
 
 export function NewsReactions({ newsItem }: { newsItem: INewsProps }) {
   const [comment, setComment] = useState("");
@@ -116,12 +117,9 @@ export function NewsReactions({ newsItem }: { newsItem: INewsProps }) {
     <div>
       <ul className="flex items-center flex-wrap gap-4">
         <li>
-          <ActionButton
-            method="PUT"
-            body={{
-              likes,
-            }}
-            uri={`${apiConfig.news}/${newsItem?._id}`}
+          <RtkActionButton
+            mutation={useUpdateNewsMutation}
+            data={{ _id: newsItem?._id, likes }}
             className={`p-1.5 _shrink rounded-full ${
               isLiked ? "bg-Blue text-white" : ""
             }`}
@@ -132,7 +130,7 @@ export function NewsReactions({ newsItem }: { newsItem: INewsProps }) {
             id="likes-trigger"
           >
             {isLiked ? <ThumbsDown size={32} /> : <ThumbsUp size={32} />}
-          </ActionButton>
+          </RtkActionButton>
           <span
             className="font-light text-xs"
             onClick={() => toggleClick("likes-trigger")}
