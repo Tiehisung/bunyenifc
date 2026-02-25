@@ -1,10 +1,6 @@
- 
-
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { apiConfig } from "@/lib/configs";
 import { IQueryResponse } from "@/types";
-import { IPlayer, IPlayerMini } from "@/types/player.interface";
+import { ICaptain, IPlayer, IPlayerMini } from "@/types/player.interface";
 import RadioButtons from "@/components/input/Radio";
 import useGetParam from "@/hooks/params";
 import { Verified } from "lucide-react";
@@ -14,7 +10,11 @@ import { OverlayLoader } from "@/components/loaders/OverlayLoader";
 import { fireEscape } from "@/hooks/Esc";
 import { formatDate } from "@/lib/timeAndDate";
 import { Badge } from "@/components/ui/badge";
-import { getErrorMessage } from "@/lib/error";
+import {
+  useAssignCaptainMutation,
+  useGetCaptainsQuery,
+} from "@/services/captain.endpoints";
+import { smartToast } from "@/utils/toast";
 
 export type ICaptainProps = {
   isActive?: boolean;
@@ -27,15 +27,11 @@ export type ICaptainProps = {
   updatedAt: string;
 };
 
-export default function CaptaincyAdm({
-  players,
-  captains,
-}: {
-  captains?: IQueryResponse<ICaptainProps[]> ;
-  players: IPlayer[];
-}) {
+export default function CaptaincyAdm({ players }: { players: IPlayer[] }) {
+  const { data: captainsData } = useGetCaptainsQuery("isActive=true");
+
   const [filtered, setFiltered] = useState<ICaptainProps[]>(
-    captains?.data as ICaptainProps[]
+    captainsData?.data as ICaptainProps[],
   );
 
   const captainType = useGetParam("captains") as
@@ -48,23 +44,27 @@ export default function CaptaincyAdm({
   function searcher(caps: ICaptainProps[]) {
     if (searchKey)
       return caps?.filter((c) =>
-        c.player?.name?.toLowerCase()?.includes(searchKey.toLowerCase())
+        c.player?.name?.toLowerCase()?.includes(searchKey.toLowerCase()),
       );
     return caps;
   }
   useEffect(() => {
     if (captainType == "current") {
-      setFiltered(searcher((captains?.data ?? []).filter((c) => c.isActive)));
+      setFiltered(
+        searcher((captainsData?.data ?? []).filter((c) => c.isActive)),
+      );
     } else if (captainType == "passed") {
-      setFiltered(searcher((captains?.data ?? []).filter((c) => !c.isActive)));
+      setFiltered(
+        searcher((captainsData?.data ?? []).filter((c) => !c.isActive)),
+      );
     } else {
       const sorted = [
-        ...(captains?.data ?? []).filter((c) => c.isActive),
-        ...(captains?.data ?? []).filter((c) => !c.isActive),
+        ...(captainsData?.data ?? []).filter((c) => c.isActive),
+        ...(captainsData?.data ?? []).filter((c) => !c.isActive),
       ];
       setFiltered(searcher(sorted));
     }
-  }, [captains?.data, captainType]);
+  }, [captainsData, captainType]);
 
   return (
     <div className="flex flex-col justify-center items-center bg-card pb-10">
@@ -128,7 +128,7 @@ export default function CaptaincyAdm({
       {/* Update Captaincy */}
 
       <section>
-        <UpdateCaptaincy captains={captains?.data} players={players} />
+        <UpdateCaptaincy captains={captainsData?.data} players={players} />
       </section>
     </div>
   );
@@ -166,7 +166,7 @@ export const UpdateCaptaincy = ({
               setIsBusy={setIsBusy}
               defaultRole={
                 captains?.find(
-                  (cap) => cap?.player?._id == player?._id && cap?.isActive
+                  (cap) => cap?.player?._id == player?._id && cap?.isActive,
                 )?.role
               }
             />
@@ -186,36 +186,30 @@ const PlayerForCaptainRow = ({
   defaultRole?: ICaptainProps["role"];
   setIsBusy: (arg: boolean) => void;
 }) => {
- 
+  const [assignCaptain, { isLoading }] = useAssignCaptainMutation();
+
   const [newRole, setNewRole] = useState<string>("");
-  const [waiting, setWaiting] = useState(false);
 
   const handleChangeCaptain = async () => {
     try {
       if (defaultRole == newRole || !newRole) return; //Prevent duplication
-      setWaiting(true);
+
       setIsBusy(true);
-      const response = await fetch(apiConfig.captains, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        cache: "no-cache",
-        body: JSON.stringify({
-          player: {
-            _id: player?._id,
-            name: `${player?.firstName} ${player?.lastName}`,
-            number: player?.number,
-            avatar: player?.avatar,
-          },
-          role: newRole,
-        }),
-      });
-      const result: IQueryResponse = await response.json();
-      toast.success(result.message);
+
+      const result: IQueryResponse = await assignCaptain({
+        player: {
+          _id: player?._id,
+          name: `${player?.firstName} ${player?.lastName}`,
+          number: player?.number,
+          avatar: player?.avatar,
+        },
+        role: newRole,
+      } as ICaptain).unwrap();
+      smartToast(result);
       if (result.success) fireEscape();
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      smartToast({ error });
     } finally {
-      setWaiting(false);
       setIsBusy(false);
     }
   };
@@ -224,7 +218,7 @@ const PlayerForCaptainRow = ({
     handleChangeCaptain();
   }, [newRole, defaultRole]);
   return (
-    <tr className={`border ${waiting && "pointer-events-none"}`}>
+    <tr className={`border ${isLoading && "pointer-events-none"}`}>
       <td className="p-2 font-black">{player.number}</td>
       <td className="p-2 uppercase">{`${player.firstName} ${player.lastName}`}</td>
       <td className="p-2">

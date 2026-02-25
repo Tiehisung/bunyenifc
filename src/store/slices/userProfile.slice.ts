@@ -12,7 +12,7 @@ const initialState: UserState = {
 };
 
 const userSlice = createSlice({
-  name: 'userSlice',
+  name: 'userProfile',
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<Partial<IUser>>) => {
@@ -22,6 +22,7 @@ const userSlice = createSlice({
     clearUser: (state) => {
       state.currentUser = null;
     },
+    
   },
 });
 

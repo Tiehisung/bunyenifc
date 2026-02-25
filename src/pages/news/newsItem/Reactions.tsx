@@ -19,7 +19,7 @@ import QuillEditor from "@/components/editor/Quill";
 import { fireEscape } from "@/hooks/Esc";
 import { getDeviceId } from "@/lib/device";
 import { icons } from "@/assets/icons/icons";
-import LoginController from "@/components/auth/Login";
+import LoginController from "@/components/auth/LoginModal";
 import { useUpdateNewsMutation } from "@/services/news.endpoints";
 import { toggleClick, markupToPlainText } from "@/lib/dom";
 import { dummyUser } from "@/data/user";

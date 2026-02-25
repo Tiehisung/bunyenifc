@@ -62,8 +62,8 @@ export default function UserTable({ users: propUsers }: UserTableProps) {
           bValue = b.role as string;
           break;
         case "dateJoined":
-          aValue = new Date((a.dateEngaged ?? a.createdAt) as string).getTime();
-          bValue = new Date((b.dateEngaged ?? b.createdAt) as string).getTime();
+          aValue = new Date(a.createdAt as string).getTime();
+          bValue = new Date(b.createdAt as string).getTime();
           break;
         default:
           return 0;
@@ -288,10 +288,8 @@ export default function UserTable({ users: propUsers }: UserTableProps) {
                     </td>
 
                     <td className="py-4 px-6 text-muted-foreground">
-                      <p>{formatDate(user?.dateEngaged ?? user?.createdAt)}</p>
-                      <p>
-                        ({getTimeAgo(user?.dateEngaged ?? user?.createdAt)})
-                      </p>
+                      <p>{formatDate(user?.createdAt)}</p>
+                      <p>({getTimeAgo(user?.createdAt)})</p>
                     </td>
 
                     <td>

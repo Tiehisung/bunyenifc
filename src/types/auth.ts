@@ -1,14 +1,31 @@
-import type { EUserRole } from "./user";
+import type { IUser } from "./user";
 
-export interface ILogin {
-    email: string,
-    password: string
+export interface IAuthResponse {
+    success: boolean;
+    message: string;
+    data: {
+        user: IUser;
+        accessToken: string;
+        refreshToken: string;
+    };
 }
 
-export interface ISignup {
-    image?: string
+export interface ILoginCredentials {
+    email: string;
+    password: string;
+}
+
+export interface IRegisterCredentials {
     name: string;
     email: string;
-    role?: EUserRole;
-    password?: string;
+    password: string;
+}
+
+export interface ITokenRefreshResponse {
+    success: boolean;
+    message: string;
+    data: {
+        accessToken: string;
+        refreshToken: string;
+    };
 }

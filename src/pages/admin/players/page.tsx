@@ -8,7 +8,6 @@ import { useSearchParams } from "react-router-dom";
 import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useGetCaptainsQuery } from "@/services/captain.endpoints";
 import { useGetPlayersQuery } from "@/services/player.endpoints";
 
 export default function AdminPlayers() {
@@ -20,13 +19,11 @@ export default function AdminPlayers() {
     isLoading: playersLoading,
     error: playersError,
   } = useGetPlayersQuery(paramsString);
+ 
 
-  const { data: captainsData, isLoading: captainsLoading } =
-    useGetCaptainsQuery('');
-
-  const isLoading = playersLoading || captainsLoading;
+  const isLoading = playersLoading 
   const players = playersData;
-  const captains = captainsData;
+ 
 
   if (isLoading) {
     return (
@@ -81,7 +78,7 @@ export default function AdminPlayers() {
       <section className="mt-12">
         <CaptaincyAdm
           players={players?.data as IPlayer[]}
-          captains={captains}
+        
         />
       </section>
     </div>
