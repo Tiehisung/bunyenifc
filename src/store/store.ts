@@ -11,7 +11,32 @@ import {
     PURGE,
     REGISTER,
 } from "redux-persist";
+import { logout } from "./slices/auth.slice";
 
+// Custom middleware to handle auth errors globally
+const authErrorMiddleware = (store: any) => (next: any) => (action: any) => {
+    // Check if this is a rejected RTK Query action with 401
+    if (action?.type?.endsWith('/rejected')) {
+        const errorPayload = action?.payload;
+
+        // Check for 401 status and auth error codes
+        if (errorPayload?.status === 401) {
+            const errorCode = errorPayload?.data?.code;
+
+            if (errorCode === 'INVALID_TOKEN' ||
+                errorCode === 'TOKEN_EXPIRED' ||
+                errorCode === 'NO_TOKEN') {
+
+                console.log('🔐 Auth error detected, logging out...');
+                store.dispatch(logout());
+                // Navigate to login
+                // window.location.href = '/login'; // Simple but causes page reload
+            }
+        }
+    }
+
+    return next(action);
+};
 export const store = configureStore({
     reducer: persistedReducer,
     devTools: import.meta.env.DEV,
@@ -28,7 +53,7 @@ export const store = configureStore({
                     REGISTER,
                 ],
             },
-        }).concat(api.middleware),
+        }).concat(api.middleware).concat(authErrorMiddleware),
 });
 
 export const persistor = persistStore(store);

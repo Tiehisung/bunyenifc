@@ -37,6 +37,18 @@ const usersApi = api.injectEndpoints({
             providesTags: (_result, _error, id) => [{ type: 'Users', id }],
         }),
 
+        /**
+         * Create/Add new user
+         * Only admin is authorized to create a user unlike signup which is done by the user themselve
+         *  */
+        createUser: builder.mutation<IQueryResponse<IUser>, IUser>({
+            query: (body) => ({
+                url: `/users`,
+                method: "POST",
+                body,
+            }),
+            invalidatesTags: (_result, _error,) => ['Users'],
+        }),
         // Update user
         updateUser: builder.mutation<IQueryResponse<IUser>, Partial<IUser>>({
             query: ({ _id, ...body }) => ({
@@ -78,6 +90,8 @@ export const {
     useGetMeQuery,
     useGetUserQuery,
 
+    useCreateUserMutation,
+    
     // Mutation hooks
     useUpdateUserMutation,
     useChangeUserPasswordMutation,

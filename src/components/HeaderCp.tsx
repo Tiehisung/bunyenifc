@@ -3,7 +3,7 @@ import { BiTable } from "react-icons/bi";
 import { TbPlayFootball, TbTableRow } from "react-icons/tb";
 import { RiNewsLine } from "react-icons/ri";
 import { SiGithubsponsors } from "react-icons/si";
-// import UserLogButtons from "./UserLogger";
+import UserLogButtons from "./UserLogger";
 import { ThemeModeToggle } from "./ThemeToggle";
 import { NavigationPopover } from "./NavigationPopover";
 import { GalleryThumbnails } from "lucide-react";
@@ -22,7 +22,6 @@ export default function HeaderCp() {
     >
       <Link to="/">
         <div className="flex items-center gap-2 w-fit">
-         
           <span className="text-Orange first-letter:capitalize font-bold">{TEAM.alias}</span>
         </div>
       </Link>
@@ -60,7 +59,7 @@ export const DesktopNav = () => {
       ))}
 
       <li className="ml-3">
-        {/* <UserLogButtons /> */}
+        <UserLogButtons />
       </li>
       <li className="ml-3">
         <ThemeModeToggle />

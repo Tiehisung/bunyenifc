@@ -20,15 +20,29 @@ import Home from "@/pages/Home";
 import PlayerProfilePage from "@/pages/players/details/page";
 import NewsLayout from "@/pages/news/layout";
 import NewsItemPage from "@/pages/news/newsItem/page";
+import RegisterPage from "@/pages/auth/RegisterPage";
+import LoginPage from "@/pages/auth/LoginPage";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { EUserRole } from "@/types/user";
+import NotAuthorizedPage from "@/pages/auth/NotAuthorized";
 
 // Wrapper component for AdminLayout with ScrollToTop
 const AdminLayoutWithScrollToTop = () => (
   <>
     <ScrollToTop />
+
     <AdminLayout />
   </>
 );
 const applicationRouter = createBrowserRouter([
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
+  },
   {
     path: "/",
     element: (
@@ -37,6 +51,7 @@ const applicationRouter = createBrowserRouter([
         <HomeLayout />
       </>
     ),
+
     children: [
       { index: true, element: <Home /> },
       {
@@ -88,7 +103,11 @@ const applicationRouter = createBrowserRouter([
         path: "/test",
         element: <TestPage />,
       },
-
+      {
+        path: "/unauthorized",
+        element: <NotAuthorizedPage />,
+      },
+     
       {
         path: "*", // Catch-all route for 404 pages
         element: <NotFoundPage />,
@@ -96,9 +115,14 @@ const applicationRouter = createBrowserRouter([
     ],
   },
   // --ADMIN-------------------------
+
   {
-    path: "/admin/*",
-    element: <AdminLayoutWithScrollToTop />,
+    path: "/admin",
+    element: (
+      <ProtectedRoute allowedRoles={[EUserRole.ADMIN, EUserRole.SUPER_ADMIN]}>
+        <AdminLayoutWithScrollToTop />
+      </ProtectedRoute>
+    ),
     children: adminRoutes,
   },
 ]);

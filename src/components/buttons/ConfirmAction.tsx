@@ -3,6 +3,7 @@ import { DIALOG } from "@/components/Dialog";
 
 import { ReactNode } from "react";
 import { TButtonVariant } from "../ui/button";
+import { fireEscape } from "@/hooks/Esc";
 
 interface IProps {
   className?: string;
@@ -33,7 +34,7 @@ export const ConfirmActionButton = ({
   className,
   children,
   loadingText,
-  primaryText='',
+  primaryText = "",
   confirmText,
   title,
   hidden,
@@ -43,6 +44,7 @@ export const ConfirmActionButton = ({
   disabled,
   onConfirm,
   isLoading,
+  escapeOnEnd,
 }: IProps) => {
   // const handleAction = async (e: React.MouseEvent<HTMLButtonElement>) => {
   //   e.preventDefault();
@@ -82,6 +84,8 @@ export const ConfirmActionButton = ({
   const handleConfirm = async () => {
     if (onConfirm) {
       await onConfirm();
+      
+      if (escapeOnEnd) fireEscape();
     } else {
       // Existing fetch logic with uri and body
     }

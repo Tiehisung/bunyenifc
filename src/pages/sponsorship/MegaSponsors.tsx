@@ -1,29 +1,8 @@
-import { useEffect, useState } from "react";
-import { ISponsorProps } from "./page";
 import { staticImages } from "@/assets/images";
-import { apiConfig } from "@/lib/configs";
-import { IQueryResponse } from "@/types";
+import { useGetSponsorsQuery } from "@/services/sponsor.endpoints";
 
 export function MegaSponsors() {
-  const [sponsors, setSponsors] = useState<ISponsorProps[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function getSponsorsData() {
-      try {
-        const response = await fetch(`${apiConfig.sponsors}`, {
-          cache: "no-store",
-        });
-        const result: IQueryResponse<ISponsorProps[]> = await response.json();
-        setSponsors(result?.data ?? []);
-      } catch (error) {
-        console.error("Failed to load sponsors:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    getSponsorsData();
-  }, []);
+  const { data: sponsors, isLoading } = useGetSponsorsQuery("");
 
   if (isLoading) {
     return (
@@ -46,7 +25,7 @@ export function MegaSponsors() {
     );
   }
 
-  if (!sponsors?.length) {
+  if (!sponsors?.data?.length) {
     return null;
   }
 
@@ -59,7 +38,7 @@ export function MegaSponsors() {
       <div className="h-1 w-full bg-linear-to-r from-Red via-Orange to-Red/75" />
       <br />
       <div className="flex items-center _marquee">
-        {sponsors?.slice(0, 10)?.map((sponsor, index) => (
+        {sponsors?.data?.slice(0, 10)?.map((sponsor, index) => (
           <div
             key={sponsor._id || index}
             className="p-4 w-fit h-fit rounded-2xl hover:bg-slate-400/30 transition-colors"

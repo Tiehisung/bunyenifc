@@ -1,4 +1,4 @@
-import { LogoutBtn } from "@/components/auth/Auth";
+import { LogoutBtn } from "@/components/auth/LogoutButton";
 import { NavigationPopover } from "@/components/NavigationPopover";
 import { ThemeModeToggle } from "@/components/ThemeToggle";
 import { Link } from "react-router-dom";

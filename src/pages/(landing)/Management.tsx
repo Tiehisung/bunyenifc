@@ -8,15 +8,15 @@ import { GrUserManager } from "react-icons/gr";
 import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useGetCaptainsQuery } from "@/services/captain.endpoints";
 import { IStaff } from "@/types/staff.interface";
 import { useGetStaffMembersQuery } from "@/services/staff.endpoints";
+import { useGetCaptainsQuery } from "@/services/captain.endpoints";
 
 export const TechnicalManagement = () => {
   const {
     data: staffData,
     isLoading: staffLoading,
-    error: managersError,
+    error: staffError,
   } = useGetStaffMembersQuery("isActive=true");
 
   const { data: captainsData, isLoading: captainsLoading } =
@@ -26,10 +26,7 @@ export const TechnicalManagement = () => {
 
   if (isLoading) {
     return (
-      <div
-        id="technical-management"
-        className="_page max-w-full overflow-hidden"
-      >
+      <div id="staff-mgt" className="_page max-w-full overflow-hidden">
         <TITLE icon={<GrUserManager />} text="Technical Management" />
         <div className="flex justify-center items-center min-h-100">
           <Loader message="Loading technical team..." />
@@ -38,12 +35,9 @@ export const TechnicalManagement = () => {
     );
   }
 
-  if (managersError) {
+  if (staffError) {
     return (
-      <div
-        id="technical-management"
-        className="_page max-w-full overflow-hidden"
-      >
+      <div id="staff-mgt" className="_page max-w-full overflow-hidden">
         <TITLE icon={<GrUserManager />} text="Technical Management" />
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -57,14 +51,14 @@ export const TechnicalManagement = () => {
   }
 
   return (
-    <div id="technical-management" className="_page max-w-full overflow-hidden">
+    <div id="staff-mgt" className="_page max-w-full overflow-hidden">
       <TITLE icon={<GrUserManager />} text="Technical Management" />
       <div className="flex max-sm:flex-col flex-wrap items-center justify-center gap-8">
         <CardCarousel
           cards={
             captainsData?.data?.map((captain) => (
               <div
-                key={captain._id}
+                key={captain?._id}
                 className="flex flex-col justify-center items-center gap-2 pb-6"
               >
                 <img
@@ -83,18 +77,18 @@ export const TechnicalManagement = () => {
 
         <CardCarousel
           cards={
-            staffData?.data?.map((manager: IStaff) => (
+            staffData?.data?.map((staff: IStaff) => (
               <div
-                key={manager._id}
+                key={staff._id}
                 className="flex flex-col w-fit justify-center items-center gap-2 pb-6"
               >
                 <img
-                  src={manager?.avatar}
+                  src={staff?.avatar}
                   alt="desc image"
                   className="h-52 w-52 rounded-full object-cover"
                 />
-                <p className="font-bold text-lg capitalize">{manager?.role}</p>
-                <h2 className="uppercase">{manager?.fullname}</h2>
+                <p className="font-bold text-lg capitalize">{staff?.role}</p>
+                <h2 className="uppercase">{staff?.fullname}</h2>
               </div>
             )) ?? []
           }
@@ -146,7 +140,7 @@ export const CaptaincySlides = () => {
       >
         {captains?.map((captain) => (
           <div
-            key={captain._id}
+            key={captain?._id}
             className="flex flex-col justify-center items-center gap-2 mb-6"
           >
             <img

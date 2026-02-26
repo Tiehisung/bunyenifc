@@ -5,27 +5,24 @@ import { Edit } from "lucide-react";
 import { MdOutlineDelete } from "react-icons/md";
 import UserForm from "./UserForm";
 import { DIALOG } from "@/components/Dialog";
-import { toast } from "sonner";
 import { useDeleteUserMutation } from "@/services/user.endpoints";
+import { smartToast } from "@/utils/toast";
 
 interface IProps {
   user?: IUser;
 }
 
 export function UserActions({ user }: IProps) {
-  const [deleteUser] = useDeleteUserMutation();
-
+  const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
 
   const handleDelete = async () => {
     if (!user?._id) return;
 
     try {
       const result = await deleteUser(user._id).unwrap();
-      if (result.success) {
-        toast.success(result.message);
-      }
+      smartToast(result);
     } catch (error) {
-      toast.error("Failed to delete user");
+      smartToast({ error });
     }
   };
 
@@ -61,6 +58,8 @@ export function UserActions({ user }: IProps) {
             variant="destructive"
             title="Delete User"
             confirmText={`Are you sure you want to delete ${user?.name}?`}
+            isLoading={isDeleting}
+            escapeOnEnd
           />
         </li>
       </ul>

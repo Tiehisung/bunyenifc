@@ -1,16 +1,14 @@
 import type { IQueryResponse } from "@/types";
 import type { EUserRole, IUser } from "@/types/user";
 import { api } from "./api";
-import type { ILogin, ISignup } from "@/types/auth";
-import { clearUser, setUser } from "@/features/user.slice";
+import { ILoginCredentials, type IAuthResponse, type IRegisterCredentials, type ITokenRefreshResponse, } from "@/types/auth";
+import { clearUser, setUser } from "@/store/slices/userProfile.slice";
 import { formatError } from "@/lib/error";
-
-
 
 const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // Sign in an existing user
-    signIn: builder.mutation<IQueryResponse<IUser>, Partial<ILogin>>({
+    login: builder.mutation<IAuthResponse, ILoginCredentials>({
       query: (credentials) => ({
         url: '/auth/login',
         method: 'POST',
@@ -21,7 +19,7 @@ const authApi = api.injectEndpoints({
         const { data } = await queryFulfilled;
         // dispatch the setUser action with the user data if login is successful
         if (data.success && data.data) {
-          dispatch(setUser(data.data));
+          dispatch(setUser(data.data.user));
         }
       },
 
@@ -29,20 +27,20 @@ const authApi = api.injectEndpoints({
     }),
 
     // Sign up a new user
-    signUp: builder.mutation<IQueryResponse<IUser>, Partial<ISignup>>({
+    register: builder.mutation<IAuthResponse, Partial<IRegisterCredentials>>({
       query: (newUser) => ({
-        url: '/auth/signup',
+        url: '/auth/register',
         method: 'POST',
         body: newUser,
       }),
       onQueryStarted: async (_args, { dispatch, queryFulfilled }) => {
-        const { data } = await queryFulfilled;
+        const { data: response, } = await queryFulfilled;
         // dispatch the setUser action with the user data if login is successful
-        if (data.success && data.data) {
-          dispatch(setUser(data.data));
+        if (response.success && response.data) {
+          dispatch(setUser(response.data.user));
         }
       },
-      invalidatesTags: ['Users','Auth'],
+      invalidatesTags: ['Users', 'Auth'],
     }),
 
     // Verify email
@@ -145,7 +143,7 @@ const authApi = api.injectEndpoints({
     }),
 
     // Sign out an existing user
-    signOut: builder.mutation<IQueryResponse, void>({
+    logout: builder.mutation<IQueryResponse, void>({
       query: () => ({
         url: '/auth/logout',
         method: 'POST',
@@ -159,7 +157,12 @@ const authApi = api.injectEndpoints({
         }
       },
     }),
-
+    refreshToken: builder.mutation<ITokenRefreshResponse, void>({
+      query: () => ({
+        url: '/auth/refresh-token',
+        method: 'POST',
+      }),
+    }),
     // Update user details
     // updateUserDetails: builder.mutation<
     //   IQueryResponse<IUpdateUserDetails>,
@@ -175,15 +178,18 @@ const authApi = api.injectEndpoints({
 });
 
 export const {
-  useSignUpMutation,
-  useSignInMutation,
+  useGetAuthUserBasicDetailsQuery,
+  useLazyGetAuthUserBasicDetailsQuery,
+
+  useRegisterMutation,
+
+  useLoginMutation,
   useVerifyOtpMutation,
   useResendOtpMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useLazyGoogleAuthQuery,
   useUpdateUserRoleMutation,
-  useGetAuthUserBasicDetailsQuery,
-  useLazyGetAuthUserBasicDetailsQuery,
-  useSignOutMutation,
+  useLogoutMutation,
+  useRefreshTokenMutation
 } = authApi;

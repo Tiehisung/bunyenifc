@@ -1,19 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { showToast } from "@/utils/toast";
-import {
-  useSignInMutation,
-  useSignUpMutation,
-} from "@/services/auth.endpoints";
+ 
 import {
   useGetUsersQuery,
   useDeleteUserMutation,
+  useCreateUserMutation,
 } from "@/services/user.endpoints";
 
 import { EUserRole, type IUser } from "@/types/user";
 import { useState } from "react";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/error";
+import { useLoginMutation } from "@/services/auth.endpoints";
 
 export default function UsersPage() {
   const { data, isLoading } = useGetUsersQuery();
@@ -77,12 +76,13 @@ const User = ({ user }: { user: IUser }) => {
 };
 
 export const NewUser = () => {
-  const [createUser, { isLoading }] = useSignUpMutation();
+  const [createUser, { isLoading }] = useCreateUserMutation();
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     role: "",
+    image: "",
   });
 
   const handleChange = (
@@ -99,7 +99,7 @@ export const NewUser = () => {
       }).unwrap();
 
       if (response.success) {
-        setForm({ name: "", email: "", password: "", role: "" });
+        setForm({ name: "", email: "", password: "", role: "", image: "" });
       }
       showToast({
         message: response.message as string,
@@ -163,6 +163,16 @@ export const NewUser = () => {
           ))}
         </select>
       </div>
+      <div>
+        <label htmlFor="image">Image:</label>
+        <Input
+          type="text"
+          id="image"
+          name="image"
+          value={form.image}
+          onChange={handleChange}
+        />
+      </div>
 
       <Button onClick={onSubmit} disabled={isLoading}>
         {isLoading ? "Submitting..." : "Create User"}
@@ -171,7 +181,7 @@ export const NewUser = () => {
   );
 };
 export const Login = () => {
-  const [login, { isLoading }] = useSignInMutation();
+  const [login, { isLoading }] = useLoginMutation();
   const [form, setForm] = useState({
     email: "",
     password: "",

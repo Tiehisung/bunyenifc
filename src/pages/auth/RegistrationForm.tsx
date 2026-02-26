@@ -2,20 +2,17 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { IconInputWithLabel } from "@/components/input/Inputs";
-import { EUserRole, IUser } from "../../../types/user";
-import { fireEscape } from "@/hooks/Esc";
-import {
-  useCreateUserMutation,
-  useUpdateUserMutation,
-} from "@/services/user.endpoints";
 import { PrimarySelect } from "@/components/select/Select";
 import { enumToOptions } from "@/lib/select";
 import { Button } from "@/components/buttons/Button";
 import { smartToast } from "@/utils/toast";
+import { useRegisterMutation } from "@/services/auth.endpoints";
+import { IRegisterCredentials } from "@/types/auth";
+import { EUserRole } from "@/types/user";
+import { Link } from "react-router-dom";
 
-export default function UserForm({ user }: { user?: IUser }) {
-  const [createUser] = useCreateUserMutation();
-  const [updateUser] = useUpdateUserMutation();
+export default function RegistrationForm() {
+  const [register] = useRegisterMutation();
 
   const {
     control,
@@ -24,25 +21,15 @@ export default function UserForm({ user }: { user?: IUser }) {
     formState: { isSubmitting },
   } = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema),
-    defaultValues: { ...user },
   });
 
   const onSubmit = async (data: CreateUserInput) => {
     try {
-      let result;
-      if (user) {
-        result = await updateUser({
-          _id: user._id,
-          ...data,
-        }).unwrap();
-      } else {
-        result = await createUser(data as IUser).unwrap();
-      }
+      const result = await register(data as IRegisterCredentials).unwrap();
 
       smartToast(result);
       if (result.success) {
-        reset({ name: "", email: "", password: "", role: EUserRole.ADMIN });
-        fireEscape();
+        reset({ name: "", email: "", password: "", role: EUserRole.GUEST });
       }
     } catch (e) {
       smartToast({ error: e });
@@ -50,7 +37,12 @@ export default function UserForm({ user }: { user?: IUser }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-md space-y-8 pt-5">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="max-w-md space-y-8 py-5 mx-auto"
+    >
+      
+      <h2 className="text-2xl font-bold mb-6 text-center">Registration</h2>
       <Controller
         control={control}
         name="name"
@@ -74,7 +66,6 @@ export default function UserForm({ user }: { user?: IUser }) {
           />
         )}
       />
-
       <Controller
         control={control}
         name="password"
@@ -87,7 +78,6 @@ export default function UserForm({ user }: { user?: IUser }) {
           />
         )}
       />
-
       <Controller
         control={control}
         name="role"
@@ -97,20 +87,25 @@ export default function UserForm({ user }: { user?: IUser }) {
             value={field.value}
             onChange={field.onChange}
             className="border p-2 w-full"
-            triggerStyles="grow w-full py-2"
-            label={<p className="text-muted-foreground">Role</p>}
-            error={fieldState.error?.message}
+            triggerStyles="grow w-full min-h-11"
+            label={<p className="text-muted-foreground -mt-5">Role</p>}
+            error={fieldState.error?.message} 
           />
         )}
       />
-
       <Button
-        primaryText={user ? "Update User" : "Create User"}
+        primaryText={"Register"}
         waiting={isSubmitting}
-        waitingText={user ? "Updating..." : "Creating..."}
+        waitingText={"Registering..."}
         type="submit"
-        className="p-2 grow w-full justify-center"
+        className="p-2 grow w-full justify-center "
       />
+      <p className="mt-4 text-center text-sm">
+        Already have an account?{" "}
+        <Link to="/login" className="text-Orange hover:underline">
+          Login
+        </Link>
+      </p>
     </form>
   );
 }

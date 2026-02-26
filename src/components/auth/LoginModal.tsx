@@ -1,13 +1,8 @@
-"use client";
-
 import { DIALOG } from "../Dialog";
-import { LoginBtn } from "./Auth";
-import { FcGoogle } from "react-icons/fc";
 import TextDivider from "../Divider";
 import { ReactNode } from "react";
 import { TButtonVariant } from "../ui/button";
-import { getUrlToShare } from "@/lib";
-import { CredentialsLoginForm } from "./signin/Credentials";
+import { CredentialsLoginForm } from "./LoginCredentials";
 
 /**
  * id - login-controller
@@ -15,7 +10,7 @@ import { CredentialsLoginForm } from "./signin/Credentials";
  * @returns A button to trigger google account selector.
  */
 const LoginController = ({
-  text = "Sign In with Google",
+  // text = "Sign In with Google",
   description,
   trigger,
   variant = "ghost",
@@ -33,7 +28,7 @@ const LoginController = ({
       id="login-controller"
       variant={variant}
     >
-      <LoginBtn
+      {/* <LoginBtn
         text={text}
         variant={"outline"}
         className=" w-full "
@@ -41,7 +36,7 @@ const LoginController = ({
         size={"lg"}
       >
         <FcGoogle size={24} />
-      </LoginBtn>
+      </LoginBtn> */}
 
       <TextDivider />
       <CredentialsLoginForm />
@@ -58,4 +53,3 @@ const LoginController = ({
 };
 
 export default LoginController;
- 

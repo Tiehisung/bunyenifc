@@ -3,14 +3,15 @@ export interface IUser {
   image: string
   name: string;
   email: string;
+  password?: string;
   role?: EUserRole;
 
-  emailVerified?: boolean;
+  emailVerified?:boolean
 
-  about?: string;
-  dateEngaged?: string;
-  password?: string;
-  isActive?: boolean
+  isActive?: boolean;
+  lastLogin?: Date;
+  resetPasswordExpires?: Date;
+
   createdAt?: string;
   updatedAt?: string;
 }

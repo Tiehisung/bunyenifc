@@ -9,13 +9,13 @@ import {
   useDeleteNewsMutation,
   useUpdateNewsMutation,
 } from "@/services/news.endpoints";
-import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { smartToast } from "@/utils/toast";
 
 const NewsItemClient: FC<{ newsItem: INewsProps }> = ({ newsItem }) => {
   const navigate = useNavigate();
   const [deleteNews] = useDeleteNewsMutation();
-  const [updateNews] = useUpdateNewsMutation();
+  const [updateNews, { isLoading: isUpdating }] = useUpdateNewsMutation();
 
   const handlePublishToggle = async (publishState: boolean) => {
     try {
@@ -24,24 +24,20 @@ const NewsItemClient: FC<{ newsItem: INewsProps }> = ({ newsItem }) => {
         isPublished: publishState,
       }).unwrap();
 
-      if (result.success) {
-        toast.success(result.message);
-        navigate(0);
-      }
+      smartToast(result);
     } catch (error) {
-      toast.error("Failed to update publish status");
+      smartToast({ error });
     }
   };
 
   const handleDelete = async () => {
     try {
       const result = await deleteNews(newsItem._id).unwrap();
-      if (result.success) {
-        toast.success(result.message);
-        navigate("/admin/news");
-      }
+      if (result.success) navigate("/admin/news");
+
+      smartToast(result);
     } catch (error) {
-      toast.error("Failed to delete news");
+      smartToast({ error });
     }
   };
 
@@ -109,6 +105,7 @@ const NewsItemClient: FC<{ newsItem: INewsProps }> = ({ newsItem }) => {
                     newsItem?.headline.text,
                     40,
                   )}</b>"?`}
+                  isLoading={isUpdating}
                 />
               ) : (
                 <ConfirmActionButton
@@ -121,6 +118,8 @@ const NewsItemClient: FC<{ newsItem: INewsProps }> = ({ newsItem }) => {
                     newsItem?.headline.text,
                     40,
                   )}</b>"`}
+                  isLoading={isUpdating}
+                  escapeOnEnd
                 />
               )}
 
@@ -134,6 +133,7 @@ const NewsItemClient: FC<{ newsItem: INewsProps }> = ({ newsItem }) => {
                   newsItem?.headline.text,
                   40,
                 )}</b>"?`}
+                escapeOnEnd
               />
             </div>
           </section>

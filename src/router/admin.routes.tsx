@@ -36,7 +36,8 @@ import NewStaffPage from "@/pages/admin/staff/new/Page";
 import StaffDetailPage from "@/pages/admin/staff/member/page";
 import EditStaffPage from "@/pages/admin/staff/edit/EditStaff";
 import AllStaffPage from "@/pages/admin/staff/AllStaffPage";
- 
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { EUserRole } from "@/types/user";
 
 export const adminRoutes: RouteObject[] = [
   { path: "", element: <AdminDashboardPage /> },
@@ -123,6 +124,13 @@ export const adminRoutes: RouteObject[] = [
   // Operations
   { path: "sponsorship", element: <SquadPage /> },
   { path: "finance", element: <FinancePage /> },
-  { path: "users", element: <UsersPage /> },
+  {
+    path: "users",
+    element: (
+      <ProtectedRoute allowedRoles={[EUserRole.SUPER_ADMIN]}>
+        <UsersPage />
+      </ProtectedRoute>
+    ),
+  },
   { path: "logs", element: <LogsPage /> },
 ];
