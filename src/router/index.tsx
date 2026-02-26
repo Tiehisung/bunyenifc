@@ -20,7 +20,6 @@ import Home from "@/pages/Home";
 import PlayerProfilePage from "@/pages/players/details/page";
 import NewsLayout from "@/pages/news/layout";
 import NewsItemPage from "@/pages/news/newsItem/page";
-import { PersistenceDemo } from "@/pages/PersistenceDemo";
 import RegisterPage from "@/pages/auth/RegisterPage";
 import LoginPage from "@/pages/auth/LoginPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -108,10 +107,7 @@ const applicationRouter = createBrowserRouter([
         path: "/unauthorized",
         element: <NotAuthorizedPage />,
       },
-      {
-        path: "persist-demo",
-        element: <PersistenceDemo />,
-      },
+     
       {
         path: "*", // Catch-all route for 404 pages
         element: <NotFoundPage />,
