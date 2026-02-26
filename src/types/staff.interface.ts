@@ -10,6 +10,6 @@ export interface IStaff {
     startDate: string;
     endDate: string;
     isActive: boolean
-    createdAt: string;
+    createdAt: string; 
     updatedAt: string;
 }
