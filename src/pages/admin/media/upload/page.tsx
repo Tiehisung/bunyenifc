@@ -1,9 +1,13 @@
 import { useState } from "react";
-import Header from "../../../components/Element";
+import Header from "../../../../components/Element";
 import CloudinaryUploader from "@/components/cloudinary/FileUploadWidget";
 import { CopyButton } from "@/components/buttons/CopyBtn";
 import { Button } from "@/components/buttons/Button";
 import { ICldFileUploadResult } from "@/types/file.interface";
+import HEADER from "../../../../components/Element";
+import { ImageUploader } from "@/components/files/image-uploader";
+import { GalleryUploader } from "@/components/files/gallery-uploader";
+import { VideoUploader } from "@/components/files/video-uploader";
 
 const UploadPage = () => {
   const [files, setFiles] = useState<ICldFileUploadResult[]>([]);
@@ -63,6 +67,24 @@ const UploadPage = () => {
             );
           })}
         </ul>
+      </main>
+
+      <HEADER title="FILE UPLOAD" />
+
+      <main className="block p-5 space-y-12">
+        <div className="border-b pb-4">
+          <p>Image Upload</p>
+          <ImageUploader />
+        </div>
+
+        <div className="border-b pb-4">
+          <p>Gallery Uploader</p>
+          <GalleryUploader />
+        </div>
+        <div className="border-b pb-4">
+          <p>Video Uploader</p>
+          <VideoUploader />
+        </div>
       </main>
     </div>
   );

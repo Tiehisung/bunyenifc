@@ -38,6 +38,7 @@ import EditStaffPage from "@/pages/admin/staff/edit/EditStaff";
 import AllStaffPage from "@/pages/admin/staff/AllStaffPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { EUserRole } from "@/types/user";
+import UploadPage from "@/pages/admin/media/upload/page";
 
 export const adminRoutes: RouteObject[] = [
   { path: "", element: <AdminDashboardPage /> },
@@ -133,4 +134,5 @@ export const adminRoutes: RouteObject[] = [
     ),
   },
   { path: "logs", element: <LogsPage /> },
+  { path: "upload", element: <UploadPage /> },
 ];
