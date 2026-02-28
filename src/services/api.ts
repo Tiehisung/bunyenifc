@@ -7,7 +7,7 @@ export const api = createApi({
     reducerPath: "api",
     baseQuery: fetchBaseQuery({
         baseUrl: import.meta.env.VITE_API_URL,
-        credentials: "include", 
+        credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             const token = (getState() as RootState).auth.accessToken;
             if (token) {
@@ -42,6 +42,7 @@ export const api = createApi({
         'Sponsors',
         'Squads',
         "Users",
+        'Uploads',
 
         // Dashboards
         'Metrics',

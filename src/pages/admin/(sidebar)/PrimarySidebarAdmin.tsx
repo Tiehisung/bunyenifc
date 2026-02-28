@@ -153,6 +153,11 @@ export const sidebarLinks: ILinkItem[] = [
         path: "/admin/highlights",
         icon: <ActivityIcon className="w-4 h-4" />,
       },
+      {
+        title: "Uploader",
+        path: "/admin/upload",
+        icon: <Image className="w-4 h-4" />,
+      },
     ],
   },
   {

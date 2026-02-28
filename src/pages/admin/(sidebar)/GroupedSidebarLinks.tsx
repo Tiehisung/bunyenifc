@@ -1,5 +1,3 @@
- 
-
 import { ReactNode } from "react";
 import {
   LayoutDashboard,
@@ -20,7 +18,42 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
  
+export default function GroupedAdminSidebar() {
+  const pathname = useLocation().pathname;
 
+  return (
+    <aside className="w-64 border-r h-screen overflow-y-auto bg-card">
+      {sidebarLinkGroups.map((group) => (
+        <div key={group.label} className="mb-6">
+          <h3 className="px-4 mb-2 text-xs font-semibold uppercase text-muted-foreground">
+            {group.label}
+          </h3>
+
+          <div className="space-y-1">
+            {group.links.map((item) => {
+              const active = pathname === item.path;
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center gap-3 px-4 py-2 rounded-md text-sm transition ${
+                    active
+                      ? "bg-primary "
+                      : "text-muted-foreground hover:bg-accent"
+                  }`}
+                >
+                  <span className="text-lg">{item.icon}</span>
+                  <span>{item.title}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </aside>
+  );
+}
 export interface ILinkItem {
   title: string;
   path: string;
@@ -93,43 +126,9 @@ export const sidebarLinkGroups: {
       { title: "Finance", path: "/admin/resources/finance", icon: <Wallet /> },
       { title: "Users", path: "/admin/users", icon: <Users /> },
       { title: "Logs", path: "/admin/logs", icon: <Shield /> },
+      { title: "upload", path: "/admin/upload", icon: <Shield /> },
     ],
   },
 ];
 
-export default function GroupedAdminSidebar() {
-  const pathname = useLocation().pathname;
 
-  return (
-    <aside className="w-64 border-r h-screen overflow-y-auto bg-card">
-      {sidebarLinkGroups.map((group) => (
-        <div key={group.label} className="mb-6">
-          <h3 className="px-4 mb-2 text-xs font-semibold uppercase text-muted-foreground">
-            {group.label}
-          </h3>
-
-          <div className="space-y-1">
-            {group.links.map((item) => {
-              const active = pathname === item.path;
-
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center gap-3 px-4 py-2 rounded-md text-sm transition ${
-                    active
-                      ? "bg-primary "
-                      : "text-muted-foreground hover:bg-accent"
-                  }`}
-                >
-                  <span className="text-lg">{item.icon}</span>
-                  <span>{item.title}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      ))}
-    </aside>
-  );
-}
