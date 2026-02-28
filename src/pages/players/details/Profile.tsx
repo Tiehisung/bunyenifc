@@ -7,8 +7,8 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from "recharts";
-import {  IPlayer } from "@/types/player.interface";
- 
+import { IPlayer } from "@/types/player.interface";
+
 import { PrimarySelect } from "@/components/select/Select";
 import CardCarousel from "@/components/carousel/cards";
 import { usePlayerGalleryUtils } from "@/hooks/usePlayerGallery";
@@ -160,7 +160,7 @@ export default function PlayerProfile({
 
         {/* Right Section */}
         <div className="flex-1 relative">
-          <CardCarousel cards={slides} />
+          <CardCarousel cards={slides} effect="flip" />
 
           {/* Trophies */}
           <div className="w-fit my-3">
@@ -189,15 +189,21 @@ export default function PlayerProfile({
                 <p className="text-xs text-muted-foreground">Avg Rating</p>
               </li>
               <li className="_card">
-                <p className="text-xl font-semibold">{stats?.assists || 0}</p>
+                <p className="text-xl font-semibold">
+                  {stats?.assists?.length || 0}
+                </p>
                 <p className="text-xs text-muted-foreground">Assists</p>
               </li>
               <li className="_card">
-                <p className="text-xl font-semibold">{stats?.goals || 0}</p>
+                <p className="text-xl font-semibold">
+                  {stats?.goals?.length || 0}
+                </p>
                 <p className="text-xs text-muted-foreground">Goals</p>
               </li>
               <li className="_card">
-                <p className="text-xl font-semibold">{stats?.matches || 0}</p>
+                <p className="text-xl font-semibold">
+                  {stats?.matches?.length || 0}
+                </p>
                 <p className="text-xs text-muted-foreground">Matches</p>
               </li>
               <li className="_card">
@@ -205,6 +211,12 @@ export default function PlayerProfile({
                   {player?.mvp?.length ?? 0}
                 </p>
                 <p className="text-xs text-muted-foreground">MVPs</p>
+              </li>
+              <li className="_card">
+                <p className="text-xl font-semibold">
+                  {player?.injuries?.length ?? 0}
+                </p>
+                <p className="text-xs text-muted-foreground">Injuries</p>
               </li>
               <li className="_card">
                 <p className="text-xl font-semibold">
