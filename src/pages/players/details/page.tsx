@@ -38,6 +38,7 @@ export default function PlayerProfilePage() {
     );
   }
 
+
   if (!player) {
     return (
       <main className="_page p-4">
@@ -78,4 +79,6 @@ export default function PlayerProfilePage() {
       </main>
     </>
   );
+
+ 
 }

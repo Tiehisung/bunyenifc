@@ -1,17 +1,21 @@
+import { ICard } from "./card.interface";
+import { IInjury } from "./injury.interface";
+import { IGoal, IMatch } from "./match.interface";
+
 export interface IPlayerStats {
     _id: string;
     name: string;
     avatar: string;
     number: string;
-    goals: number;
-    assists: number;
-    matches: number;
+    goals: IGoal[];
+    assists: IGoal[];
+    matches: IMatch[];
     ratingAvg: number;
     performanceScore: number;
     position?: string;
 
-    injuries: number;
-    cards: number;
+    injuries: IInjury[];
+    cards: ICard[];
     ratings: {
         match: string;
         rating: number;

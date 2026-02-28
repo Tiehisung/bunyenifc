@@ -38,7 +38,7 @@ const LoginController = ({
         <FcGoogle size={24} />
       </LoginBtn> */}
 
-      <TextDivider />
+      <TextDivider text="🔐" />
       <CredentialsLoginForm />
 
       {description && (
