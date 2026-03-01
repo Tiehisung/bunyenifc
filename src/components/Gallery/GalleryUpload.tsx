@@ -6,7 +6,7 @@ import { Input } from "@/components/input/Inputs";
 import { IGallery } from "@/types/file.interface";
 import { IPlayer } from "@/types/player.interface";
 import MultiSelectionInput from "../select/MultiSelect";
-import { ICldFileUploadResult } from "@/types/file.interface";
+import { ICloudinaryFile } from "@/types/file.interface";
 import { smartToast } from "@/utils/toast";
 import { useCreateGalleryMutation } from "@/services/gallery.endpoints";
 
@@ -23,7 +23,7 @@ export function GalleryUpload({
 }: GalleryUploadProps) {
   const [createGallery, { isLoading }] = useCreateGalleryMutation();
 
-  const [files, setFiles] = useState<ICldFileUploadResult[]>([]);
+  const [files, setFiles] = useState<ICloudinaryFile[]>([]);
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
   const [taggedPlayers, setTaggedPlayers] = useState<string[]>([]);

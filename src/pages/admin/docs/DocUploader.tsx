@@ -18,7 +18,7 @@ import { fireDoubleEscape } from "@/hooks/Esc";
 import { useFetch } from "@/hooks/fetch";
 import { Separator } from "@/components/ui/separator";
 import { IFolderMetrics } from "@/types/doc";
-import { ICldFileUploadResult } from "@/types/file.interface";
+import { ICloudinaryFile } from "@/types/file.interface";
 import { getErrorMessage } from "@/lib/error";
 import { useNavigate } from "react-router-dom";
 
@@ -39,7 +39,7 @@ export function DocumentUploader({
 }: IProps) {
   const navigate = useNavigate(); // Changed from useRouter
   const [waiting, setWaiting] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<ICldFileUploadResult | null>(
+  const [uploadedFile, setUploadedFile] = useState<ICloudinaryFile | null>(
     null,
   );
 
@@ -118,7 +118,7 @@ export function DocumentUploader({
             <div className="flex flex-col justify-center items-center">
               <FaFilePdf className="text-Red" size={40} />
               <p className="line-clamp-2 wrap-break-word">
-                {uploadedFile?.name ?? uploadedFile?.original_filename}
+                {uploadedFile?.original_filename}
               </p>
             </div>
           )}

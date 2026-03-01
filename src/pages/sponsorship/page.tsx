@@ -2,7 +2,7 @@ import { staticImages } from "@/assets/images";
 import HEADER from "@/components/Element";
 import SponsorUs from "./SponsorUs";
 import MarqueeCarousel from "@/components/carousel/marquee";
-import { ICldFileUploadResult } from "@/types/file.interface";
+import { ICloudinaryFile } from "@/types/file.interface";
 import { useGetSponsorsQuery } from "@/services/sponsor.endpoints";
 import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
@@ -91,7 +91,7 @@ export interface IDonation {
   _id: string;
   item: string;
   description: string;
-  files: ICldFileUploadResult[];
+  files: ICloudinaryFile[];
   sponsor: ISponsorProps;
   createdAt?: string;
   updatedAt?: string;

@@ -15,7 +15,7 @@ import { formatDate } from "@/lib/timeAndDate";
 import { symbols } from "@/data";
 
 import { IMatch, IMatchHighlight } from "@/types/match.interface";
-import { ICldFileUploadResult } from "@/types/file.interface";
+import { ICloudinaryFile } from "@/types/file.interface";
 import { toggleClick } from "@/lib/dom";
 import { useGetPlayersQuery } from "@/services/player.endpoints";
 import { useCreateHighlightMutation } from "@/services/highlights.endpoints";
@@ -48,7 +48,7 @@ export function HighlightUpload({
   trigger = "Upload Highlight",
   matches,
 }: GalleryUploadProps) {
-  const [file, setFile] = useState<ICldFileUploadResult | null>(null);
+  const [file, setFile] = useState<ICloudinaryFile | null>(null);
   const [clearTrigger, setClearTrigger] = useState(0);
 
   const { data: fixtures, isLoading: fixturesLoading } = useGetMatchesQuery({});

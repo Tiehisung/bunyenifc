@@ -2,7 +2,7 @@ import MasonryGallery from "@/components/Gallery/Masonry";
 import { IPlayer } from "@/types/player.interface";
 import CloudinaryUploader from "@/components/cloudinary/FileUploadWidget";
 import { useState } from "react";
-import { ICldFileUploadResult } from "@/types/file.interface";
+import { ICloudinaryFile } from "@/types/file.interface";
 import { useUpdatePlayerMutation } from "@/services/player.endpoints";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import { Button } from "@/components/buttons/Button";
 
 export function PlayerFeatureMedia({ player }: { player?: IPlayer }) {
   const navigate = useNavigate();
-  const [uploadedFile, setUploadedFile] = useState<ICldFileUploadResult | null>(
+  const [uploadedFile, setUploadedFile] = useState<ICloudinaryFile | null>(
     null,
   );
   const [updatePlayer, { isLoading }] = useUpdatePlayerMutation();
@@ -36,7 +36,7 @@ export function PlayerFeatureMedia({ player }: { player?: IPlayer }) {
     }
   };
 
-  const handleSetWallpaper = async (file: ICldFileUploadResult) => {
+  const handleSetWallpaper = async (file: ICloudinaryFile) => {
     if (!player?._id) return;
 
     try {
@@ -59,7 +59,7 @@ export function PlayerFeatureMedia({ player }: { player?: IPlayer }) {
     }
   };
 
-  const handleDeleteMedia = async (file: ICldFileUploadResult) => {
+  const handleDeleteMedia = async (file: ICloudinaryFile) => {
     if (!player?._id) return;
 
     try {

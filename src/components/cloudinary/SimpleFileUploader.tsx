@@ -1,21 +1,16 @@
-
 import { staticImages } from "@/assets/images";
- 
-import { apiConfig } from "@/lib/configs";
-import { EPreset, EPresetType, IQueryResponse } from "@/types";
- 
+
 import React, { ReactNode, useState } from "react";
 import { FcCamera } from "react-icons/fc";
-import { toast } from "sonner";
 import { OverlayLoader } from "../loaders/OverlayLoader";
-import { ICldFileUploadResult } from "@/types/file.interface";
+import { ICloudinaryFile } from "@/types/file.interface";
 import { bytesToMB, shortText } from "@/lib";
-import { getErrorMessage } from "@/lib/error";
-import { getFilePath } from "@/lib/file";
+import { useUploadImageMutation } from "@/services/upload.endpoints";
+import { smartToast } from "@/utils/toast";
 
 interface FileUploaderProps {
   initialFileUrl?: string;
-  exportFileData: (data: ICldFileUploadResult) => void;
+  exportFileData: (data: ICloudinaryFile) => void;
   className?: string;
   name: string;
   titleStyles?: string;
@@ -34,72 +29,74 @@ const FileUploader = ({
   className,
   name,
   maxSize = 3524000,
-  folder,
+  folder = "media-files",
   trigger = <FcCamera size={30} />,
   showName,
   fileStyles,
   accept = "image",
   hidePreview = false,
 }: FileUploaderProps) => {
-  const [waiting, setWaiting] = useState(false);
+  const [upload, { isLoading }] = useUploadImageMutation();
 
-  const [uploadedFile, setUploadedFile] = useState<ICldFileUploadResult | null>(
-    null
+ 
+
+  const [uploadedFile, setUploadedFile] = useState<ICloudinaryFile | null>(
+    null,
   );
-  console.log({ uploadedFile });
+
   const currentSrc =
     uploadedFile?.thumbnail_url || initialFileUrl || staticImages.avatar;
 
   async function handleFileSelection(
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) {
     try {
-      setWaiting(true);
-      const selectedFile = event.target.files ? event.target.files[0] : null;
-      if (!selectedFile) return;
-      if (selectedFile.size > maxSize) {
-        toast.error(` File should not exceed ${bytesToMB(maxSize)}`);
+  
+      const file = event.target.files ? event.target.files[0] : null;
+      if (!file) {
+        smartToast({
+          message: ` File not selected `,
+          success: false,
+        });
+        return;
+      }
+      if (file.size > maxSize) {
+        smartToast({
+          message: ` File should not exceed ${bytesToMB(maxSize)}`,
+          success: false,
+        });
         return;
       }
 
-      const fileString = await getFilePath(selectedFile);
+      // const fileString = await getFilePath(file);
+
+      const fileString = URL.createObjectURL(file);
 
       //Now Upload
       if (fileString) {
-        const upload = await fetch(apiConfig.fileUpload, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: selectedFile.name,
-            path: fileString,
-            type: "image",
-            preset: EPreset.KFC_SIGNED,
-            folder: folder ?? "files",
-            presetType: EPresetType.AUTHENTICATED,
-          }),
-        });
-        const uploadRsp: IQueryResponse<ICldFileUploadResult> =
-          await upload.json();
+        const formdata = new FormData();
+        formdata.append("image", file);
+        formdata.append("folder", folder);
+        const result = await upload(formdata).unwrap();
 
-        if (!uploadRsp.success) {
-          toast.error(uploadRsp.message, { position: "bottom-center" });
+        smartToast(result);
+
+        if (!result.success) {
           setUploadedFile(null);
           return;
         }
-        setUploadedFile(uploadRsp.data as ICldFileUploadResult);
-        exportFileData(uploadRsp.data as ICldFileUploadResult);
+        setUploadedFile(result.data as ICloudinaryFile);
+        exportFileData(result.data as ICloudinaryFile);
       }
     } catch (error) {
-      toast.error(getErrorMessage(error));
-    } finally {
-      setWaiting(false);
+      smartToast({ error });
     }
   }
   return (
     <div
       className={`relative grid gap-1 justify-center items-center text-sm ${className}`}
     >
-      <OverlayLoader isLoading={waiting} />
+      <OverlayLoader isLoading={isLoading} />
       {!hidePreview && (
         <img
           src={currentSrc}
@@ -119,7 +116,7 @@ const FileUploader = ({
         htmlFor={`id${name}`}
         className="flex items-center rounded mt-3 cursor-pointer min-w-full grow "
         title="Choose file"
-        aria-disabled={waiting}
+        aria-disabled={isLoading}
       >
         {trigger}
         <input
@@ -133,12 +130,12 @@ const FileUploader = ({
             accept === "image"
               ? "image/*"
               : accept === "pdf"
-              ? "application/pdf"
-              : accept === "video"
-              ? "video/*"
-              : "*/*"
+                ? "application/pdf"
+                : accept === "video"
+                  ? "video/*"
+                  : "*/*"
           }
-          disabled={waiting}
+          disabled={isLoading}
         />
       </label>
     </div>

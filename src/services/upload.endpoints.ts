@@ -1,52 +1,20 @@
-import { IFileProps } from '@/types/file.interface';
+import { ICloudinaryFile, } from '@/types/file.interface';
 import { api } from './api';
-
-// ==================== TYPES ====================
-
-export interface UploadedFile {
-    url: string;
-    secure_url: string;
-    public_id: string;
-    format: string;
-    width?: number;
-    height?: number;
-    bytes: number;
-    duration?: number; // for videos
-    original_name?: string; // for documents
-}
-
-export interface UploadResponse {
-    success: boolean;
-    message: string;
-    data: IFileProps;
-}
-
-export interface UploadMultipleResponse {
-    success: boolean;
-    message: string;
-    data: UploadedFile[];
-}
+import { IQueryResponse } from '@/types';
 
 export interface UploadMixedResponse {
     success: boolean;
     data: {
-        avatar?: UploadedFile[];
-        gallery?: UploadedFile[];
-        video?: UploadedFile[];
-        documents?: UploadedFile[];
+        avatar?: ICloudinaryFile[];
+        gallery?: ICloudinaryFile[];
+        video?: ICloudinaryFile[];
+        documents?: ICloudinaryFile[];
     };
 }
 
-export interface DeleteFileResponse {
-    success: boolean;
-    message: string;
-}
-
-// ==================== UPLOAD ENDPOINTS ====================
-
 export const uploadApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        // ========== SINGLE UPLOADS ==========
+        // SINGLE UPLOADS
 
         /**
          * Upload a single image (avatar, profile pic, etc)
@@ -55,7 +23,7 @@ export const uploadApi = api.injectEndpoints({
          * const formData = new FormData();
          * formData.append('image', file);
          */
-        uploadImage: builder.mutation<UploadResponse, FormData>({
+        uploadImage: builder.mutation<IQueryResponse<ICloudinaryFile>, FormData>({
             query: (formData) => ({
                 url: '/upload/image',
                 method: 'POST',
@@ -68,7 +36,7 @@ export const uploadApi = api.injectEndpoints({
          * Upload a single video (match highlights, etc)
          * @param formData - FormData with field name 'video'
          */
-        uploadVideo: builder.mutation<UploadResponse, FormData>({
+        uploadVideo: builder.mutation<IQueryResponse<ICloudinaryFile>, FormData>({
             query: (formData) => ({
                 url: '/upload/video',
                 method: 'POST',
@@ -81,7 +49,7 @@ export const uploadApi = api.injectEndpoints({
          * Upload a document (PDF, etc)
          * @param formData - FormData with field name 'document'
          */
-        uploadDocument: builder.mutation<UploadResponse, FormData>({
+        uploadDocument: builder.mutation<IQueryResponse<ICloudinaryFile>, FormData>({
             query: (formData) => ({
                 url: '/upload/document',
                 method: 'POST',
@@ -90,7 +58,7 @@ export const uploadApi = api.injectEndpoints({
             invalidatesTags: ['Uploads'],
         }),
 
-        // ========== MULTIPLE UPLOADS ==========
+        // MULTIPLE UPLOADS
 
         /**
          * Upload multiple images (gallery)
@@ -99,7 +67,7 @@ export const uploadApi = api.injectEndpoints({
          * const formData = new FormData();
          * files.forEach(file => formData.append('images', file));
          */
-        uploadGallery: builder.mutation<UploadMultipleResponse, FormData>({
+        uploadGallery: builder.mutation<IQueryResponse<ICloudinaryFile[]>, FormData>({
             query: (formData) => ({
                 url: '/upload/gallery',
                 method: 'POST',
@@ -108,7 +76,7 @@ export const uploadApi = api.injectEndpoints({
             invalidatesTags: ['Uploads'],
         }),
 
-        // ========== MIXED UPLOADS ==========
+        // MIXED UPLOADS
 
         /**
          * Upload different file types in one request
@@ -126,14 +94,14 @@ export const uploadApi = api.injectEndpoints({
             invalidatesTags: ['Uploads'],
         }),
 
-        // ========== DELETE ==========
+        // DELETE
 
         /**
          * Delete a file from Cloudinary
          * @param public_id - The Cloudinary public_id
          * @param resource_type - 'image' | 'video' | 'raw' (default: 'image')
          */
-        deleteFile: builder.mutation<DeleteFileResponse, {
+        deleteFile: builder.mutation<IQueryResponse, {
             public_id: string;
             resource_type?: 'image' | 'video' | 'raw'
         }>({
@@ -145,8 +113,6 @@ export const uploadApi = api.injectEndpoints({
         }),
     }),
 });
-
-// ==================== HOOKS EXPORTS ====================
 
 export const {
     // Single upload hooks

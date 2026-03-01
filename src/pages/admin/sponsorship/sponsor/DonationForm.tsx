@@ -9,7 +9,7 @@ import {
 } from "@/components/input/Inputs";
 import CloudinaryUploader from "@/components/cloudinary/FileUploadWidget";
 import { CgAttachment } from "react-icons/cg";
-import { ICldFileUploadResult } from "@/types/file.interface";
+import { ICloudinaryFile } from "@/types/file.interface";
 import { getErrorMessage } from "@/lib/error";
 import { ISponsorProps } from "@/pages/sponsorship/page";
 import { useCreateDonationMutation } from "@/services/donation.endpoints";
@@ -32,7 +32,7 @@ export default function DonationForm({ sponsor }: { sponsor?: ISponsorProps }) {
     date: string;
     value: string;
     description: string;
-    files: ICldFileUploadResult[];
+    files: ICloudinaryFile[];
   }>(initialForm);
 
   const [createDonation] = useCreateDonationMutation();

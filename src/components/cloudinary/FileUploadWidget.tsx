@@ -1,5 +1,5 @@
 import { fireEscape } from "@/hooks/Esc";
-import { ICldFileUploadResult } from "@/types/file.interface";
+import { ICloudinaryFile } from "@/types/file.interface";
 import { X } from "lucide-react";
 import { ReactNode, useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
@@ -25,7 +25,7 @@ interface ICloudinaryUploaderProps {
   successMessage?: string;
   clearTrigger?: number;
   wrapperStyles?: string;
-  setUploadedFiles: (files: ICldFileUploadResult[]) => void;
+  setUploadedFiles: (files: ICloudinaryFile[]) => void;
   mediaDisplayStyles?: string;
   maxFileSize?:
     | "2_000_000"
@@ -61,7 +61,7 @@ export default function CloudinaryUploader({
   mediaDisplayStyles,
   maxFileSize = "20_000_000",
 }: ICloudinaryUploaderProps) {
-  const [files, setFiles] = useState<ICldFileUploadResult[]>([]);
+  const [files, setFiles] = useState<ICloudinaryFile[]>([]);
   const [loaded, setLoaded] = useState(false);
   const widgetRef = useRef<any>(null);
 
@@ -178,7 +178,7 @@ export default function CloudinaryUploader({
         }
 
         if (result?.event === "success") {
-          const file = result.info as ICldFileUploadResult;
+          const file = result.info as ICloudinaryFile;
           setFiles((prev) => {
             const updated = [...prev, file];
             setUploadedFiles(updated);

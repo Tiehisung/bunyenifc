@@ -1,7 +1,8 @@
 import type { IQueryResponse } from "@/types";
 import { api } from "./api";
-import type { IPlayer } from "@/types/player.interface";
+import type { IPlayer,   } from "@/types/player.interface";
 import { IPlayerStats } from "@/types/stats";
+import { IPostPlayer } from "@/pages/admin/players/new/NewSigningForms";
 
 const playerApi = api.injectEndpoints({
     endpoints: (builder) => ({
@@ -15,7 +16,7 @@ const playerApi = api.injectEndpoints({
             providesTags: ["Players"],
         }),
 
-        createPlayer: builder.mutation<IQueryResponse<IPlayer>, Partial<IPlayer>>({
+        createPlayer: builder.mutation<IQueryResponse<IPlayer>, IPostPlayer>({
             query: (body) => ({
                 url: "players",
                 method: "POST",

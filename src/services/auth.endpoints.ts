@@ -2,7 +2,6 @@ import type { IQueryResponse } from "@/types";
 import type { EUserRole, IUser } from "@/types/user";
 import { api } from "./api";
 import { ILoginCredentials, type IAuthResponse, type IRegisterCredentials, type ITokenRefreshResponse, } from "@/types/auth";
-import { clearUser, setUser } from "@/store/slices/userProfile.slice";
 import { formatError } from "@/lib/error";
 
 const authApi = api.injectEndpoints({
@@ -15,13 +14,7 @@ const authApi = api.injectEndpoints({
         body: credentials,
       }),
 
-      onQueryStarted: async (_args, { dispatch, queryFulfilled }) => {
-        const { data } = await queryFulfilled;
-        // dispatch the setUser action with the user data if login is successful
-        if (data.success && data.data) {
-          dispatch(setUser(data.data.user));
-        }
-      },
+       
 
       transformErrorResponse: (response) => formatError(response),
     }),
@@ -33,13 +26,7 @@ const authApi = api.injectEndpoints({
         method: 'POST',
         body: newUser,
       }),
-      onQueryStarted: async (_args, { dispatch, queryFulfilled }) => {
-        const { data: response, } = await queryFulfilled;
-        // dispatch the setUser action with the user data if login is successful
-        if (response.success && response.data) {
-          dispatch(setUser(response.data.user));
-        }
-      },
+       
       invalidatesTags: ['Users', 'Auth'],
     }),
 
@@ -50,13 +37,13 @@ const authApi = api.injectEndpoints({
         method: 'POST',
         body: { otp },
       }),
-      onQueryStarted: async (_args, { dispatch, queryFulfilled }) => {
-        const { data } = await queryFulfilled;
-        //flag email verified
-        if (data.success) {
-          dispatch(setUser({ emailVerified: true }));
-        }
-      },
+      // onQueryStarted: async (_args, { dispatch, queryFulfilled }) => {
+      //   const { data } = await queryFulfilled;
+      //   //flag email verified
+      //   if (data.success) {
+      //     dispatch(setUser({ emailVerified: true }));
+      //   }
+      // },
     }),
 
     // Resend OTP
@@ -87,14 +74,14 @@ const authApi = api.injectEndpoints({
         body,
       }),
 
-      onQueryStarted: async (_args, { dispatch, queryFulfilled }) => {
-        const { data } = await queryFulfilled;
+      // onQueryStarted: async (_args, { dispatch, queryFulfilled }) => {
+      //   const { data } = await queryFulfilled;
 
-        // dispatch the setUser action with the user data if login is successful
-        if (data.success && data.data) {
-          dispatch(setUser(data.data));
-        }
-      },
+      //   // dispatch the setUser action with the user data if login is successful
+      //   if (data.success && data.data) {
+      //     dispatch(setUser(data.data));
+      //   }
+      // },
 
       transformErrorResponse: (response) => formatError(response),
     }),
@@ -130,14 +117,14 @@ const authApi = api.injectEndpoints({
         url: '/auth/profile',
         method: 'GET',
       }),
-      onQueryStarted: async (_args, { dispatch, queryFulfilled }) => {
-        const { data } = await queryFulfilled;
+      // onQueryStarted: async (_args, { dispatch, queryFulfilled }) => {
+      //   const { data } = await queryFulfilled;
 
-        // dispatch the setUser action with the user data if login is successful
-        if (data.success && data.data) {
-          dispatch(setUser(data.data));
-        }
-      },
+      //   // dispatch the setUser action with the user data if login is successful
+      //   if (data.success && data.data) {
+      //     dispatch(setUser(data.data));
+      //   }
+      // },
 
       transformErrorResponse: (response) => formatError(response),
     }),
@@ -148,14 +135,14 @@ const authApi = api.injectEndpoints({
         url: '/auth/logout',
         method: 'POST',
       }),
-      onQueryStarted: async (_args, { dispatch, queryFulfilled }) => {
-        const { data } = await queryFulfilled;
-        // console.log({ data });
-        // dispatch the setUser action with the user data if login is successful
-        if (data.success) {
-          dispatch(clearUser());
-        }
-      },
+      // onQueryStarted: async (_args, { dispatch, queryFulfilled }) => {
+      //   const { data } = await queryFulfilled;
+      //   // console.log({ data });
+      //   // dispatch the setUser action with the user data if login is successful
+      //   if (data.success) {
+      //     dispatch(clearUser());
+      //   }
+      // },
     }),
     refreshToken: builder.mutation<ITokenRefreshResponse, void>({
       query: () => ({
