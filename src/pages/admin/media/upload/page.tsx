@@ -53,7 +53,7 @@ const UploadPage = () => {
           </li>
           {files?.map((f) => {
             return (
-              <li key={f.asset_id} className="flex items-center gap-4">
+              <li key={f.public_id} className="flex items-center gap-4">
                 <p className="grow line-clamp-2">{f.original_filename}</p>
 
                 <span className="w-24">

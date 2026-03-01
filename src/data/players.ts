@@ -8,7 +8,7 @@ const _players: Partial<IPlayer>[] = [
     avatar:
       "https://res.cloudinary.com/dgp4vzn3m/image/authenticated/s--DtGqD-oD--/v1710688335/players/2024/Alhassan%20_Ibrahim51415.png",
 
-    number: "1",
+    number: 1,
   },
   {
     firstName: "Wakilu ",
@@ -17,7 +17,7 @@ const _players: Partial<IPlayer>[] = [
     avatar:
       "https://res.cloudinary.com/dgp4vzn3m/image/authenticated/s--teU3of16--/v1712947599/players/2024/Wakilu%20_Antiku%2048339.jpg",
 
-    number: "9",
+    number: 9,
   },
   {
     firstName: "Jamil",
@@ -26,7 +26,7 @@ const _players: Partial<IPlayer>[] = [
     avatar:
       "https://res.cloudinary.com/dgp4vzn3m/image/authenticated/s--DQVwfqvj--/v1712949072/players/2024/Jamil_Antiku81611.jpg",
 
-    number: "10",
+    number: 11 ,
   },
   {
     firstName: "Muidu",
@@ -35,7 +35,7 @@ const _players: Partial<IPlayer>[] = [
     avatar:
       "https://res.cloudinary.com/dgp4vzn3m/image/authenticated/s--aQDZN4dd--/v1713109881/players/2024/Muidu_Alhassan44321.jpg",
 
-    number: "4",
+    number: 4,
   },
 
 ];

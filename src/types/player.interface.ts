@@ -1,6 +1,6 @@
 import type { ICard } from "./card.interface";
 import { EColor } from "./color";
-import type { IGallery, ICloudinaryFile, IFileProps } from "./file.interface";
+import type { IGallery, ICloudinaryFile, } from "./file.interface";
 import type { IInjury } from "./injury.interface";
 import type { IGoal, IMatch } from "./match.interface";
 
@@ -9,7 +9,7 @@ export interface IPlayerMini {
     _id: string;
     name: string;
     avatar?: string;
-    number: string;
+    number: number;
 }
 
 export interface IPlayer {
@@ -53,9 +53,9 @@ export interface IPlayer {
 
     // Status
     issues: {
-        title: string, 
+        title: string,
         description: string
-        date: string; 
+        date: string;
     }[];
 
     status: 'current' | 'former'
@@ -172,7 +172,7 @@ export const PLAYER_POSITION_UI_MAP: Record<EPlayerPosition, PlayerPositionUI> =
         color: EColor.AMBER,
     },
 };
- 
+
 export type ICaptain = {
     isActive?: boolean;
     _id: string;

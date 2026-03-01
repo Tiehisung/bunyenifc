@@ -81,7 +81,7 @@ export function CardForm({ match, card, player: defaultPlayer }: IProps) {
       const player = playersData?.data?.find((p) => p._id === data.player);
       if (!player) return;
 
-      const payload = {
+      const payload: Omit<ICard, '_id'> = {
         player: {
           _id: player._id,
           name: `${player.firstName} ${player.lastName}`,
@@ -93,10 +93,10 @@ export function CardForm({ match, card, player: defaultPlayer }: IProps) {
 
         match: match ?? matchesData?.data?.find((m) => m._id == data?.match),
         minute: data.minute,
-      } as ICard;
+      };
 
       const result = card
-        ? await updateCard({ ...payload, _id: card?._id }).unwrap()
+        ? await updateCard({ ...payload, _id: card?._id } as ICard).unwrap()
         : await createCard(payload).unwrap();
 
       smartToast(result);

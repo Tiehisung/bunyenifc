@@ -81,6 +81,7 @@ export interface IGoal {
 export interface IMatchHighlight extends IFileProps {
   title: string
   match: IMatch
+  tags?:string[]
 }
 
 export enum EGoalType {

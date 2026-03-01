@@ -38,7 +38,7 @@ export function PlayerDisplayPanel({
 
       return (
         fullName.includes(searchLower) ||
-        player.number?.includes(searchQuery) ||
+        String(player.number)?.includes(searchQuery) ||
         player.email?.includes(searchQuery) ||
         player.position?.toLowerCase().includes(searchLower)
       );
