@@ -1,4 +1,3 @@
- 
 import { Button } from "@/components/buttons/Button";
 import { DateTimeInput, IconInputWithLabel } from "@/components/input/Inputs";
 import { useForm, Controller, type Resolver } from "react-hook-form";
@@ -16,8 +15,8 @@ import {
   useCreatePlayerMutation,
   useUpdatePlayerMutation,
 } from "@/services/player.endpoints";
-import { ImageUploadWidget } from "@/components/cloudinary/AvatarUploadWidget";
 import { smartToast } from "@/utils/toast";
+import { AvatarUploader } from "@/components/cloudinary/Avatar";
 
 // Zod Schemas
 const playerManagerSchema = z.object({
@@ -25,7 +24,6 @@ const playerManagerSchema = z.object({
   phone: z
     .string()
     .regex(/^[0-9]{7,15}$/, "Phone must contain only digits (7–15 chars)"),
-  email: z.string().email("Invalid email format").optional().or(z.literal("")),
 });
 
 const playerSchema = z.object({
@@ -54,7 +52,7 @@ const playerSchema = z.object({
   manager: playerManagerSchema,
 });
 
-type IFormData = z.infer<typeof playerSchema>;
+export type IPostPlayer = z.infer<typeof playerSchema>;
 
 export default function PlayerProfileForm({
   player = null,
@@ -64,8 +62,8 @@ export default function PlayerProfileForm({
   const [createPlayer, { isLoading: creating }] = useCreatePlayerMutation();
   const [updatePlayer, { isLoading: updating }] = useUpdatePlayerMutation();
 
-  const { control, handleSubmit, reset } = useForm<IFormData>({
-    resolver: zodResolver(playerSchema) as Resolver<IFormData>,
+  const { control, handleSubmit, reset } = useForm<IPostPlayer>({
+    resolver: zodResolver(playerSchema) as Resolver<IPostPlayer>,
     defaultValues: {
       firstName: player?.firstName || "",
       lastName: player?.lastName || "",
@@ -86,23 +84,20 @@ export default function PlayerProfileForm({
         : {
             fullname: "",
             phone: "0211111111",
-            email: "",
           },
     },
   });
 
-  const onSubmit = async (data: IFormData) => {
+  const onSubmit = async (data: IPostPlayer) => {
     try {
-      const payload: Partial<IPlayer> = {
-        ...data,
-        number: String(data.number),
-      };
-
       let result;
       if (player) {
-        result = await updatePlayer({ _id: player._id, ...payload }).unwrap();
+        result = await updatePlayer({
+          _id: player._id,
+          ...data,
+        } as Partial<IPlayer>).unwrap();
       } else {
-        result = await createPlayer(payload).unwrap();
+        result = await createPlayer(data).unwrap();
       }
 
       if (result.success) reset();
@@ -127,6 +122,8 @@ export default function PlayerProfileForm({
             onSubmit={handleSubmit(onSubmit)}
             className="py-6 sm:px-6 flex items-center justify-center gap-y-6 w-full"
           >
+           
+
             <div className="flex flex-col gap-10 mx-auto grow w-full">
               {/* Avatar Section */}
               <DiveUpwards layoutId="lid1" y={6}>
@@ -137,12 +134,12 @@ export default function PlayerProfileForm({
                     name="avatar"
                     render={({ field: { value, onChange }, fieldState }) => (
                       <div className="flex flex-col items-center gap-2">
-                        <ImageUploadWidget
+                        <AvatarUploader
                           onUpload={(file) => onChange(file?.secure_url ?? "")}
-                          cropping
                           folder="/players/"
                           initialImage={value || staticImages.avatar}
                           shape="rounded"
+                          name="avatar"
                         />
 
                         {fieldState.error && (
@@ -320,19 +317,7 @@ export default function PlayerProfileForm({
                     )}
                   />
 
-                  <Controller
-                    control={control}
-                    name="manager.email"
-                    render={({ field, fieldState }) => (
-                      <IconInputWithLabel
-                        label="Email (Optional)"
-                        type="email"
-                        {...field}
-                        value={field.value || ""}
-                        error={fieldState.error?.message}
-                      />
-                    )}
-                  />
+                  
 
                   <Button
                     type="submit"
@@ -340,7 +325,7 @@ export default function PlayerProfileForm({
                     waitingText="Please wait..."
                     primaryText={player ? "Update Player" : "Create Player"}
                     className="justify-center px-12 h-10 py-1 w-full flex-wrap-reverse"
-                    variant={"outline"}
+                    variant={"default"}
                   />
                 </div>
               </DiveUpwards>

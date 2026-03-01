@@ -1,6 +1,6 @@
 import type { ICard } from "./card.interface";
 import { EColor } from "./color";
-import type { IGallery, ICldFileUploadResult, IFileProps } from "./file.interface";
+import type { IGallery, ICloudinaryFile, } from "./file.interface";
 import type { IInjury } from "./injury.interface";
 import type { IGoal, IMatch } from "./match.interface";
 
@@ -9,13 +9,13 @@ export interface IPlayerMini {
     _id: string;
     name: string;
     avatar?: string;
-    number: string;
+    number: number;
 }
 
 export interface IPlayer {
     _id: string;
     slug: string
-    number: string;
+    number: number;
     about?: string;
     code: string
     description?: string;
@@ -33,7 +33,7 @@ export interface IPlayer {
 
     height: number;
     avatar: string;
-    featureMedia?: ICldFileUploadResult[];
+    featureMedia?: ICloudinaryFile[];
     position: EPlayerPosition;
     favColor?: EColor
     //Stats
@@ -53,9 +53,9 @@ export interface IPlayer {
 
     // Status
     issues: {
-        title: string, 
+        title: string,
         description: string
-        date: string; 
+        date: string;
     }[];
 
     status: 'current' | 'former'
@@ -172,35 +172,7 @@ export const PLAYER_POSITION_UI_MAP: Record<EPlayerPosition, PlayerPositionUI> =
         color: EColor.AMBER,
     },
 };
-export interface IPostPlayer {
-    number: number | string;
-    about?: string;
-    description?: string;
-    training: { team: string };
-    medicals: { fitness: string }[];
-    galleries: string[];
-    captaincy: string;
-    firstName: string;
-    lastName: string;
-    dateSigned: string;
-    phone: string;
-    email: string;
-    dob: string;
-    height: string;
-    avatar: IFileProps;
-    jersey: string | number;
-    manager: string;
-    position: EPlayerPosition;
-    favColor?: EColor
-    goals: string[];
-    matches: string[];
-    assists: string[];
-    mvp: string[];
-    passAcc: string;
-    trophies: number;
-    cards: string[];
-    slug: string
-}
+
 export type ICaptain = {
     isActive?: boolean;
     _id: string;

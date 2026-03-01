@@ -3,14 +3,14 @@ import Header from "../../../../components/Element";
 import CloudinaryUploader from "@/components/cloudinary/FileUploadWidget";
 import { CopyButton } from "@/components/buttons/CopyBtn";
 import { Button } from "@/components/buttons/Button";
-import { ICldFileUploadResult } from "@/types/file.interface";
+import { ICloudinaryFile } from "@/types/file.interface";
 import HEADER from "../../../../components/Element";
 import { ImageUploader } from "@/components/files/image-uploader";
 import { GalleryUploader } from "@/components/files/gallery-uploader";
 import { VideoUploader } from "@/components/files/video-uploader";
 
 const UploadPage = () => {
-  const [files, setFiles] = useState<ICldFileUploadResult[]>([]);
+  const [files, setFiles] = useState<ICloudinaryFile[]>([]);
   const [clear, setClear] = useState(0);
   return (
     <div>
@@ -53,7 +53,7 @@ const UploadPage = () => {
           </li>
           {files?.map((f) => {
             return (
-              <li key={f.asset_id} className="flex items-center gap-4">
+              <li key={f.public_id} className="flex items-center gap-4">
                 <p className="grow line-clamp-2">{f.original_filename}</p>
 
                 <span className="w-24">

@@ -31,7 +31,7 @@ export default function MasonryGallery({
     .filter((f) => f.resource_type === "image" || f.type === "video")
     .map((item) => ({
       src: item?.secure_url,
-      alt: item?.original_filename ?? (item?.asset_id as string),
+      alt: item?.original_filename ?? (item?.public_id as string),
       width: item?.width,
       height: item?.height,
       type: item?.resource_type as "image" | "video",
@@ -65,12 +65,12 @@ export default function MasonryGallery({
               : file.secure_url;
           return (
             <div
-              key={file?.asset_id + i}
+              key={file?.public_id + i}
               className={cn(
                 "mb-6 break-inside-avoid overflow-hidden rounded-lg",
                 className
               )}
-              onMouseEnter={() => setHoveredId(file?.asset_id)}
+              onMouseEnter={() => setHoveredId(file?.public_id)}
               onMouseLeave={() => setHoveredId(undefined)}
               onClick={() => {
                 setPhotoIndex(i);
@@ -95,7 +95,7 @@ export default function MasonryGallery({
 
                 <div
                   className={`absolute inset-0 bg-black transition-opacity duration-300 ${
-                    hoveredId === file?.asset_id ? "opacity-40" : "opacity-20"
+                    hoveredId === file?.public_id ? "opacity-40" : "opacity-20"
                   }`}
                 />
 
@@ -136,7 +136,7 @@ export default function MasonryGallery({
     <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 xl:columns-4">
       {files.map((file, i) => (
         <div
-          key={file?.asset_id + i}
+          key={file?.public_id + i}
           className={cn(
             "mb-6 break-inside-avoid overflow-hidden rounded-lg",
             className
@@ -149,7 +149,7 @@ export default function MasonryGallery({
           <div className="group relative aspect-3/4 w-full overflow-hidden bg-muted">
             <img
               src={file?.secure_url}
-              alt={file?.original_filename ?? (file?.asset_id as string)}
+              alt={file?.original_filename ?? (file?.public_id as string)}
             
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"

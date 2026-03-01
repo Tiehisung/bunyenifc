@@ -1,51 +1,26 @@
-import { EPreset, EPresetType } from ".";
-import { ISession } from "./user";
+import { IUser } from "./user";
 
-export interface ICldFileUploadResult {
+export interface ICloudinaryFile {
+    public_id: string;
+    resource_type: "image" | "video" | "raw" | string;
     secure_url: string;
     url: string;
     thumbnail_url?: string;
-    public_id: string;
-    resource_type: "image" | "video" | "raw" | string;
     format?: string;
     bytes?: number;
     type: string;
-    name?: string;
     original_filename?: string;
-    tags?: string[];
-    width: number;
-    height: number;
-    id: string;
-    batchId: string;
-    asset_id: string;
-    version: number;
-    version_id: string;
-    signature: string;
-    created_at?: string;
-    etag: string;
-    placeholder: boolean;
-    folder?: string;
-    access_mode: string;
-    existing: boolean;
-    path?: string;
+    width?: number;
+    height?: number;
+    duration?: number;
 }
 
-export interface IFileProps extends ICldFileUploadResult {
+export interface IFileProps extends ICloudinaryFile {
     _id?: string; //Trace any saved file data on db
     name?: string;
     description?: string; //Optional field to save with file on db
     createdAt?: string;
     updatedAt?: string;
-}
-
-export interface IFileUpload {
-    name: string;
-    path: string;
-    type?: string;
-    preset?: EPreset;
-    folder?: string; //eg. logos, images, videos, audios/qiraa
-    presetType?: EPresetType;
-    description?: string;
 }
 
 export interface IGallery {
@@ -54,10 +29,9 @@ export interface IGallery {
     description: string;
     files: Array<IFileProps>;
     timestamp?: number;
-
     type?: 'player' | 'donation' | 'general',
     tags?: string[];
-    createdBy?: ISession['user']
+    createdBy?: Partial<IUser>
     createdAt?: string;
     updatedAt?: string;
 }

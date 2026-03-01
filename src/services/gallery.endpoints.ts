@@ -1,7 +1,7 @@
 // services/galleries.endpoints.ts
 import type { IQueryResponse } from "@/types";
 import { api } from "./api";
-import type { ICldFileUploadResult, IGallery } from "@/types/file.interface";
+import type { ICloudinaryFile, IGallery } from "@/types/file.interface";
 
 const galleriesApi = api.injectEndpoints({
     endpoints: (builder) => ({
@@ -78,7 +78,7 @@ const galleriesApi = api.injectEndpoints({
         // Add files to existing gallery
         addFilesToGallery: builder.mutation<
             IQueryResponse<IGallery>,
-            { galleryId: string; files: ICldFileUploadResult[] }
+            { galleryId: string; files: ICloudinaryFile[] }
         >({
             query: ({ galleryId, files }) => ({
                 url: `/galleries/${galleryId}/files`,

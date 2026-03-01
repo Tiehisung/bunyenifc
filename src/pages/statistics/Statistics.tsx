@@ -58,6 +58,7 @@ const PlayerStatistics = () => {
             standings.topScorers[0]
               ? {
                   ...standings.topScorers[0],
+                  number: standings.topScorers[0]?.number || 0,
                   statsValue: standings.topScorers[0]?.goals?.toString() || "0",
                 }
               : null
@@ -74,6 +75,7 @@ const PlayerStatistics = () => {
             standings.topAssists[0]
               ? {
                   ...standings.topAssists[0],
+                  number: standings.topAssists?.[0]?.number || 0,
                   statsValue:
                     standings.topAssists?.[0]?.assists?.toString() || "0",
                 }
@@ -91,6 +93,7 @@ const PlayerStatistics = () => {
             standings.topAppearances[0]
               ? {
                   ...standings.topAppearances[0],
+                  number: standings.topAppearances?.[0]?.number || 0,
                   statsValue:
                     standings.topAppearances?.[0]?.appearances?.toString() ||
                     "0",
@@ -120,7 +123,7 @@ export interface IPlayerStatsProps {
     goals: number;
     assists: number;
     appearances: number;
-    number: string;
+    number: number;
     statsValue: string;
   } | null;
   otherPlayers: {
@@ -131,7 +134,7 @@ export interface IPlayerStatsProps {
     goals: number;
     assists: number;
     appearances: number;
-    number: string;
+    number: number;
     statsValue: string;
   }[];
 }

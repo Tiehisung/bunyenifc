@@ -19,9 +19,8 @@ export function ImageUploader() {
     formData.append("image", file);
 
     try {
-      const response = await uploadImage(formData).unwrap();
-      console.log("Uploaded:", response.data.url);
-      // Save response.data.url to your database
+       await uploadImage(formData).unwrap();
+     // Save response.data.url to your database
     } catch (error) {
       console.error("Upload failed:", error);
     }

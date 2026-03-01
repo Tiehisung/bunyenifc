@@ -194,15 +194,13 @@ export function VideoUploader({
       setUploadProgress(100);
 
       const result: VideoUploadResult = {
-        url: response.data.url,
-        secure_url: response.data.secure_url,
-        public_id: response.data.public_id,
+        url: response?.data?.url as string,
+        secure_url: response?.data?.secure_url as string,
+        public_id: response?.data?.public_id as string,
         duration: duration,
-        // format: response.data.format,
-        // bytes: response.data.bytes,
-        width: response.data.width,
-        height: response.data.height,
-        thumbnail: `${response.data.url}.jpg`,
+        width: response?.data?.width,
+        height: response?.data?.height,
+        thumbnail: `${response?.data?.url}.jpg`,
         format: "",
         bytes: 0,
       };

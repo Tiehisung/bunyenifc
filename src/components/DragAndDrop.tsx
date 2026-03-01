@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { IQueryResponse } from "@/types";
 import { fireDoubleEscape } from "@/hooks/Esc";
 import { getFilePath, validateFile } from "@/lib/file";
-import { ICldFileUploadResult } from "@/types/file.interface";
+import { ICloudinaryFile } from "@/types/file.interface";
 import { getErrorMessage } from "@/lib/error";
 
 export const DragAndDropUpload = ({
@@ -19,7 +19,7 @@ export const DragAndDropUpload = ({
   exportRaw,
   maxFileSize = 100000000,
 }: {
-  onChange: (file: ICldFileUploadResult) => void;
+  onChange: (file: ICloudinaryFile) => void;
   className?: string;
   error?: string;
   fileType: "image" | "pdf" | "video" | "all";
@@ -61,7 +61,7 @@ export const DragAndDropUpload = ({
         }),
       });
 
-      const result: IQueryResponse<ICldFileUploadResult> =
+      const result: IQueryResponse<ICloudinaryFile> =
         await response.json();
 
       if (result.success) {
@@ -69,7 +69,7 @@ export const DragAndDropUpload = ({
         toast.success(result.message);
         // Use navigate(0) as a soft refresh instead of router.refresh()
         navigate(0);
-        onChange(result?.data as ICldFileUploadResult);
+        onChange(result?.data as ICloudinaryFile);
         if (escapeOnEnd) fireDoubleEscape(500);
       } else {
         toast.error(result.message);

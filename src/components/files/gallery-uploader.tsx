@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../buttons/Button";
+import { smartToast } from "@/utils/toast";
 
  
 
@@ -54,11 +55,12 @@ export function GalleryUploader({
 
     try {
       const response = await uploadGallery(formData).unwrap();
+      smartToast(response)
 
-      toast.success(`${response.data.length} images uploaded!`);
+   
 
       if (onUploadSuccess) {
-        onUploadSuccess(response.data.map((f) => f.url));
+        onUploadSuccess(response?.data?.map((f) => f.url) as string[]);
       }
 
       // Clear previews
