@@ -5,8 +5,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import BackBtn from "@/components/buttons/BackBtn";
 import Loader from "@/components/loaders/Loader";
 import { Outlet } from "react-router-dom";
-import { dummyUser } from "@/data/user";
-import { useGetMeQuery } from "@/services/user.endpoints";
+import { useAppSelector } from "@/store/hooks/store";
 
 export default function AdminLayout() {
   return (
@@ -24,10 +23,7 @@ export default function AdminLayout() {
 }
 
 const Header = () => {
-  const { data: userData, isLoading } = useGetMeQuery();
-
-  // Use RTK Query data if available, fallback to context user
-  const user = userData?.data || dummyUser;
+  const { user ,isLoading} = useAppSelector((s) => s.auth);
 
   const alias = user?.name?.split(" ")?.[0] ?? user?.email?.split("@")?.[0];
 

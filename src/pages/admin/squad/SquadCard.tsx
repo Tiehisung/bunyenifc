@@ -17,8 +17,8 @@ import { IMatch } from "@/types/match.interface";
 import { useDeleteSquadMutation } from "@/services/squad.endpoints";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { dummyUser } from "@/data/user";
 import { ISquad } from "@/types/squad.interface";
+import { useAppSelector } from "@/store/hooks/store";
 
 interface SquadDisplayProps {
   squad?: ISquad;
@@ -26,7 +26,7 @@ interface SquadDisplayProps {
 }
 
 const SquadCard = ({ squad, match }: SquadDisplayProps) => {
-  const user = dummyUser;
+const { user } = useAppSelector((s) => s.auth);
   const navigate = useNavigate();
   const [deleteSquad] = useDeleteSquadMutation();
 

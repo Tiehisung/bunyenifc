@@ -1,7 +1,8 @@
 import { GalleryUploader } from "@/components/files/gallery-uploader";
-import { VideoUploader } from "@/components/files/video-uploader";
+import { VideoUploader } from "@/components/files/video/uploader";
 import { ImageUploader } from "@/components/files/image-uploader";
 import GroupedAdminSidebar from "../admin/(sidebar)/GroupedSidebarLinks";
+import { CloudinaryWidget } from "@/components/cloudinary/Script";
 
 export default function TestPage() {
   return (
@@ -17,6 +18,7 @@ export default function TestPage() {
         <br />
 
         <VideoUploader />
+        <CloudinaryWidget />
       </main>
     </div>
   );

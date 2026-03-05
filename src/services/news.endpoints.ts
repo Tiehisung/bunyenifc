@@ -90,7 +90,7 @@ const newsApi = api.injectEndpoints({
         }),
 
         // CREATE news article
-        createNews: builder.mutation<IQueryResponse<INewsProps>, IPostNews>({
+        createNews: builder.mutation<IQueryResponse<INewsProps>,Partial<IPostNews> >({
             query: (body) => ({
                 url: "/news",
                 method: "POST",

@@ -5,20 +5,20 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Video,
-  Play,
-  Pause,
   Trash2,
   CheckCircle,
   AlertCircle,
   UploadCloud,
   Film,
   Loader2,
+  Upload,
 } from "lucide-react";
 import { bytesToMB } from "@/lib";
+import { ICloudinaryFile } from "@/types/file.interface";
 
 interface VideoUploaderProps {
   /** Called when upload is successful */
-  onUploadSuccess?: (videoData: VideoUploadResult) => void;
+  onUploadSuccess?: (videoData?: ICloudinaryFile) => void;
   /** Called when upload fails */
   onUploadError?: (error: string) => void;
   /** Called when video is removed */
@@ -39,18 +39,12 @@ interface VideoUploaderProps {
   buttonText?: string;
   /** Disable upload */
   disabled?: boolean;
-}
-
-export interface VideoUploadResult {
-  url: string;
-  secure_url: string;
-  public_id: string;
-  format?: string;
-  duration?: number;
-  bytes: number;
-  width?: number;
-  height?: number;
-  thumbnail?: string;
+  /** Upload variant: 'canvas' (drag & drop area) or 'button' (simple button) */
+  variant?: "canvas" | "button";
+  /** Button variant for simple mode */
+  buttonVariant?: "default" | "outline" | "ghost";
+  /** Custom trigger element (only works in 'button' mode) */
+  customTrigger?: React.ReactNode;
 }
 
 export function VideoUploader({
@@ -65,20 +59,19 @@ export function VideoUploader({
   className = "",
   buttonText = "Upload Video",
   disabled = false,
+  variant = "canvas", // Default to canvas for backward compatibility
+  buttonVariant = "default",
+  customTrigger,
 }: VideoUploaderProps) {
   const [uploadVideo, { isLoading }] = useUploadVideoMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   // State
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(initialVideo || null);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [uploadedData, setUploadedData] = useState<VideoUploadResult | null>(
+  const [uploadedData, setUploadedData] = useState<ICloudinaryFile | null>(
     null,
   );
   const [isDragging, setIsDragging] = useState(false);
@@ -131,7 +124,6 @@ export function VideoUploader({
     const video = document.createElement("video");
     video.preload = "metadata";
     video.onloadedmetadata = () => {
-      setDuration(video.duration);
       URL.revokeObjectURL(video.src);
     };
     video.src = url;
@@ -145,18 +137,21 @@ export function VideoUploader({
     }
   };
 
-  // Handle drag and drop
+  // Handle drag and drop (only used in canvas mode)
   const handleDragOver = (e: React.DragEvent) => {
+    if (variant !== "canvas") return;
     e.preventDefault();
     setIsDragging(true);
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
+    if (variant !== "canvas") return;
     e.preventDefault();
     setIsDragging(false);
   };
 
   const handleDrop = (e: React.DragEvent) => {
+    if (variant !== "canvas") return;
     e.preventDefault();
     setIsDragging(false);
 
@@ -172,13 +167,12 @@ export function VideoUploader({
 
     try {
       setError(null);
-      setUploadProgress(10); // Start progress
+      setUploadProgress(10);
 
       const formData = new FormData();
       formData.append("video", videoFile);
       formData.append("folder", folder);
 
-      // Simulate progress (since RTK Query doesn't have built-in progress)
       const progressInterval = setInterval(() => {
         setUploadProgress((prev) => {
           if (prev >= 90) {
@@ -189,26 +183,13 @@ export function VideoUploader({
         });
       }, 500);
 
-      const response = await uploadVideo(formData).unwrap();
+      const result = await uploadVideo(formData).unwrap();
       clearInterval(progressInterval);
       setUploadProgress(100);
 
-      const result: VideoUploadResult = {
-        url: response?.data?.url as string,
-        secure_url: response?.data?.secure_url as string,
-        public_id: response?.data?.public_id as string,
-        duration: duration,
-        width: response?.data?.width,
-        height: response?.data?.height,
-        thumbnail: `${response?.data?.url}.jpg`,
-        format: "",
-        bytes: 0,
-      };
+      setUploadedData(result?.data as ICloudinaryFile);
+      onUploadSuccess?.(result?.data);
 
-      setUploadedData(result);
-      onUploadSuccess?.(result);
-
-      // Clean up preview URL
       if (videoUrl && !initialVideo) {
         URL.revokeObjectURL(videoUrl);
       }
@@ -229,47 +210,12 @@ export function VideoUploader({
     setUploadProgress(0);
     setError(null);
     setUploadedData(null);
-    setDuration(0);
-    setCurrentTime(0);
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
 
     onRemove?.();
-  };
-
-  // Video controls
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      setCurrentTime(videoRef.current.currentTime);
-    }
-  };
-
-  const handleVideoEnded = () => {
-    setIsPlaying(false);
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-    }
-  };
-
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const time = parseFloat(e.target.value);
-    setCurrentTime(time);
-    if (videoRef.current) {
-      videoRef.current.currentTime = time;
-    }
   };
 
   // Cleanup on unmount
@@ -281,6 +227,173 @@ export function VideoUploader({
     };
   }, [videoUrl, initialVideo]);
 
+  // ============ RENDER SIMPLE BUTTON MODE ============
+  if (variant === "button") {
+    return (
+      <div className={`space-y-4 ${className}`}>
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={allowedTypes.join(",")}
+          onChange={handleFileChange}
+          className="hidden"
+          disabled={disabled || isLoading}
+        />
+
+        {/* Error message */}
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Simple Button Trigger */}
+        {!videoFile && !uploadedData && !initialVideo ? (
+          <>
+            {customTrigger ? (
+              <div onClick={() => fileInputRef.current?.click()}>
+                {customTrigger}
+              </div>
+            ) : (
+              <Button
+                type="button"
+                variant={buttonVariant}
+                onClick={() => fileInputRef.current?.click()}
+                disabled={disabled}
+                className="w-full sm:w-auto"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                {buttonText}
+              </Button>
+            )}
+          </>
+        ) : (
+          /* Show upload/preview area (same as canvas mode) */
+          <div className="border rounded-lg p-4 space-y-4">
+            {/* Video preview */}
+            {videoUrl && showPreview && (
+              <div className="relative bg-black rounded-lg overflow-hidden">
+                <video
+                  src={videoUrl}
+                  className="w-full max-h-96"
+                  controls={true}
+                />
+              </div>
+            )}
+
+            {/* File info */}
+            {videoFile && (
+              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <Video className="h-5 w-5 text-gray-500" />
+                  <div>
+                    <p className="font-medium truncate max-w-xs">
+                      {videoFile.name}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {bytesToMB(videoFile.size)} •{" "}
+                      {videoFile.type.split("/")[1].toUpperCase()}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  onClick={handleRemove}
+                  disabled={isLoading}
+                >
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                </Button>
+              </div>
+            )}
+
+            {/* Upload progress */}
+            {isLoading && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Uploading...</span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <Progress value={uploadProgress} className="h-2" />
+              </div>
+            )}
+
+            {/* Uploaded data info */}
+            {uploadedData && (
+              <Alert className="bg-green-50 dark:bg-green-900/20 border-green-200">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-700 dark:text-green-300">
+                  Video uploaded successfully!
+                  <br />
+                  <span className="text-sm">
+                    Duration: {formatDuration(uploadedData?.duration as number)}{" "}
+                    • Size: {bytesToMB(uploadedData?.bytes as number)}
+                  </span>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Action buttons */}
+            {videoFile && !uploadedData && (
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={handleUpload}
+                  disabled={isLoading}
+                  className="flex-1"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <UploadCloud className="h-4 w-4 mr-2" />
+                      Upload Video
+                    </>
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleRemove}
+                  disabled={isLoading}
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
+
+            {/* Edit mode */}
+            {initialVideo && !videoFile && !uploadedData && (
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Replace Video
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={handleRemove}
+                >
+                  Remove
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ============ RENDER CANVAS MODE (DEFAULT) ============
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Hidden file input */}
@@ -301,7 +414,7 @@ export function VideoUploader({
         </Alert>
       )}
 
-      {/* Upload area */}
+      {/* Upload area - Canvas/Drag & Drop */}
       {!videoFile && !uploadedData && !initialVideo ? (
         <div
           onClick={() => fileInputRef.current?.click()}
@@ -309,16 +422,16 @@ export function VideoUploader({
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={`
-                        border-2 border-dashed rounded-lg p-8
-                        flex flex-col items-center justify-center
-                        transition-colors cursor-pointer
-                        ${
-                          isDragging
-                            ? "border-primary bg-primary/5"
-                            : "border-gray-300 hover:border-primary hover:bg-gray-50 dark:hover:bg-gray-800"
-                        }
-                        ${disabled ? "opacity-50 cursor-not-allowed" : ""}
-                    `}
+            border-2 border-dashed rounded-lg p-8
+            flex flex-col items-center justify-center
+            transition-colors cursor-pointer
+            ${
+              isDragging
+                ? "border-primary bg-primary/5"
+                : "border-gray-300 hover:border-primary hover:bg-gray-50 dark:hover:bg-gray-800"
+            }
+            ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+          `}
         >
           <Film className="h-12 w-12 text-gray-400 mb-4" />
           <p className="text-lg font-medium mb-2">
@@ -338,45 +451,10 @@ export function VideoUploader({
           {videoUrl && showPreview && (
             <div className="relative bg-black rounded-lg overflow-hidden">
               <video
-                ref={videoRef}
                 src={videoUrl}
                 className="w-full max-h-96"
-                onTimeUpdate={handleTimeUpdate}
-                onEnded={handleVideoEnded}
-                controls={false}
+                controls={true}
               />
-
-              {/* Custom video controls */}
-              <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/70 to-transparent p-4">
-                <div className="flex items-center gap-2 text-white">
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    onClick={togglePlay}
-                    className="text-white hover:text-white hover:bg-white/20"
-                  >
-                    {isPlaying ? (
-                      <Pause className="h-5 w-5" />
-                    ) : (
-                      <Play className="h-5 w-5" />
-                    )}
-                  </Button>
-
-                  <span className="text-sm">
-                    {formatDuration(currentTime)} / {formatDuration(duration)}
-                  </span>
-
-                  <input
-                    type="range"
-                    min="0"
-                    max={duration}
-                    value={currentTime}
-                    onChange={handleSeek}
-                    className="flex-1 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
-                  />
-                </div>
-              </div>
             </div>
           )}
 
@@ -426,8 +504,8 @@ export function VideoUploader({
                 Video uploaded successfully!
                 <br />
                 <span className="text-sm">
-                  Duration: {formatDuration(uploadedData?.duration as number)} • Size:{" "}
-                  {bytesToMB(uploadedData.bytes)}
+                  Duration: {formatDuration(uploadedData?.duration as number)} •
+                  Size: {bytesToMB(uploadedData?.bytes as number)}
                 </span>
               </AlertDescription>
             </Alert>

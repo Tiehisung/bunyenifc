@@ -5,10 +5,7 @@ import {
   useFieldArray,
   SubmitHandler,
 } from "react-hook-form";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
-
-import {   TextArea } from "@/components/input/Inputs";
+import { TextArea } from "@/components/input/Inputs";
 import { Button } from "@/components/buttons/Button";
 import { IFileProps } from "@/types/file.interface";
 import { Plus, X } from "lucide-react";
@@ -18,15 +15,14 @@ import QuillEditor from "@/components/editor/Quill";
 import { INewsProps } from "@/types/news.interface";
 import FileRenderer from "@/components/files/FileRender";
 import { useUpdateNewsMutation } from "@/services/news.endpoints";
+import { smartToast } from "@/utils/toast";
 
 interface INewsForm {
   newsItem?: INewsProps;
 }
 
 export const EditNewsForm = ({ newsItem }: INewsForm) => {
-  const navigate = useNavigate();
-  const [waiting, setWaiting] = useState(false);
-  const [updateNews] = useUpdateNewsMutation();
+  const [updateNews, { isLoading }] = useUpdateNewsMutation();
 
   /** -------------------------
    *  CLEAN DEFAULT VALUES
@@ -56,21 +52,13 @@ export const EditNewsForm = ({ newsItem }: INewsForm) => {
    ------------------------- **/
   const onSubmit: SubmitHandler<INewsProps> = async (data) => {
     try {
-      setWaiting(true);
       const response = await updateNews({
         ...data,
       } as Partial<INewsProps>).unwrap();
 
-      if (response.success) {
-        toast.success(response.message);
-        navigate(0);
-      } else {
-        toast.error(response.message);
-      }
+      smartToast(response);
     } catch (err) {
-      toast.error("Failed to edit news");
-    } finally {
-      setWaiting(false);
+      smartToast({ error: err });
     }
   };
 
@@ -265,8 +253,8 @@ export const EditNewsForm = ({ newsItem }: INewsForm) => {
       <Button
         type="submit"
         primaryText="Save Changes"
-        waiting={waiting}
-        disabled={waiting}
+        waiting={isLoading}
+        disabled={isLoading}
         waitingText="Updating..."
         className="_primaryBtn p-3 ml-auto w-full justify-center h-12 uppercase"
       />

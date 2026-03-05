@@ -6,12 +6,12 @@ import { useSearchParams } from "react-router-dom";
 import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { dummyUser } from "@/data/user";
 import { useGetGalleriesQuery } from "@/services/gallery.endpoints";
 import { useGetPlayerQuery } from "@/services/player.endpoints";
+import { useAppSelector } from "@/store/hooks/store";
 
 const PlayerGalleries = () => {
-  const   user   = dummyUser
+const { user } = useAppSelector((s) => s.auth);
   const [searchParams] = useSearchParams();
   const playerId = searchParams.get("playerId");
 
