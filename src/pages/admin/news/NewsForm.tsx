@@ -55,12 +55,12 @@ export const NewsForm = ({ newsItem, onSuccess }: INewsForm) => {
   });
 
   // Watch headline image for preview
-  const headlineImage = watch("headline.image");
+  // const headlineImage = watch("headline.image");
 
-  // Handle image upload for headline
-  const handleHeadlineImageUpload = (imageData: any, onChange: any) => {
-    onChange(imageData?.secure_url);
-  };
+  // // Handle image upload for headline
+  // const handleHeadlineImageUpload = (imageData: any, onChange: any) => {
+  //   onChange(imageData?.secure_url);
+  // };
 
   // Handle media upload for details (append to existing array)
   const handleMediaUpload = (
