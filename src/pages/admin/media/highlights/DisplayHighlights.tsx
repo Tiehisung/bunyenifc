@@ -9,14 +9,13 @@ import { IQueryResponse } from "@/types";
 import { IMatchHighlight } from "@/types/match.interface";
 import { Download, Play } from "lucide-react";
 import { useState } from "react";
-
-// Dummy user
-import { dummyUser } from "@/data/user";
+ 
 import {
   useGetHighlightsQuery,
   useDeleteHighlightMutation,
 } from "@/services/highlights.endpoints";
 import { smartToast } from "@/utils/toast";
+import { useAppSelector } from "@/store/hooks/store";
 
 interface Props {
   highlights?: IQueryResponse<IMatchHighlight[]>;
@@ -121,8 +120,7 @@ export const HighlightMediaActions = ({
 }) => {
   const [deleteHighlight, { isLoading }] = useDeleteHighlightMutation();
 
-  // Use dummy user instead of session
-  const user = dummyUser;
+  const { user } = useAppSelector((s) => s.auth);
   const isAdmin = user?.role?.includes("admin");
 
   if (!isAdmin) return null;

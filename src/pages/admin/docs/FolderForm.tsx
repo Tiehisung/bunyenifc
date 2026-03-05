@@ -6,9 +6,7 @@ import { apiConfig } from "@/lib/configs";
 import { IFolderMetrics } from "@/types/doc";
 import { EUserRole } from "@/types/user";
 import { useState } from "react";
-
-// Dummy user for testing
-import { dummyUser } from "@/data/user"; // Assuming this has { id, name, email, role }
+import { useAppSelector } from "@/store/hooks/store";
 
 export function FolderForm({ folder }: { folder?: IFolderMetrics }) {
   const [nameError, setNameError] = useState("");
@@ -22,7 +20,7 @@ export function FolderForm({ folder }: { folder?: IFolderMetrics }) {
   const { handleAction, isLoading, error: respError } = useAction();
 
   // Using dummy user instead of session
-  const user = dummyUser;
+ const { user } = useAppSelector((s) => s.auth);
   const isSuperAdmin = user?.role === EUserRole.SUPER_ADMIN;
 
   return (

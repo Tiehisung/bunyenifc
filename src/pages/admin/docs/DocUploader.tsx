@@ -1,4 +1,4 @@
-import FileUploader from "@/components/cloudinary/SimpleFileUploader";
+import FileUploader from "@/components/cloudinary/ImageFileUploader";
 import { PrimaryCollapsible } from "@/components/Collapsible";
 import { DIALOG } from "@/components/Dialog";
 import { apiConfig } from "@/lib/configs";
@@ -101,17 +101,17 @@ export function DocumentUploader({
         className="flex flex-col gap-4 items-center justify-center _card rounded-xl mx-auto"
       >
         <div className="flex flex-col gap-4 items-center justify-center grow w-full pb-3">
+          {/* Not for doc upload */}
           <FileUploader
             hidePreview
             trigger={
               <div className="_secondaryBtn grow w-full">Choose Document</div>
             }
             name="consentForm"
-            accept="pdf"
-            exportFileData={(file) => {
+            onUploadSuccess={(file) => {
               setUploadedFile(file);
             }}
-            maxSize={10524000}
+            maxSize={"10_000_000"}
           />
 
           {uploadedFile && (

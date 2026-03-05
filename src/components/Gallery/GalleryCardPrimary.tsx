@@ -9,16 +9,17 @@ import { motion } from "framer-motion";
 import { ConfirmActionButton } from "@/components/buttons/ConfirmAction";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useDeleteGalleryMutation } from "@/services/gallery.endpoints";
-import { dummyUser } from "@/data/user";
 import { smartToast } from "@/utils/toast";
 import { isObjectId } from "@/lib/validate";
 import { Badge } from "../ui/badge";
+import { useAppSelector } from "@/store/hooks/store";
 
 interface GalleryCardProps {
   gallery: IGallery;
 }
 
 export function PrimaryGalleryCard({ gallery }: GalleryCardProps) {
+  const { user } = useAppSelector((s) => s.auth);
   const [isOpen, setIsOpen] = useState(false);
   const [deleteGallery, { isLoading: isDeleting }] = useDeleteGalleryMutation();
   const handleDelete = async (galleryId: string) => {
@@ -29,7 +30,8 @@ export function PrimaryGalleryCard({ gallery }: GalleryCardProps) {
       smartToast({ error });
     }
   };
-  const isAdmin = dummyUser.role.includes("admin");
+
+  const isAdmin = user?.role?.includes("admin");
 
   const thumbnail =
     gallery?.files?.find((f) => f?.resource_type === "image")?.secure_url ??

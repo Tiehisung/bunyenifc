@@ -37,7 +37,7 @@ export interface INewsProps {
   reporter?: IUser & { about?: string }
 
 }
- 
+
 export interface IPostNews {
   details: {
     text?: string;
@@ -48,12 +48,7 @@ export interface IPostNews {
     text: string;
     image: string;
     hasVideo?: boolean;
-    sponsor?: Partial<IFileProps>;
-  };
 
-  metaDetails?: unknown;
-  reporter?: {
-    name: string;
-    avatar: string;
   };
+  sponsor?: Partial<IFileProps>;
 }

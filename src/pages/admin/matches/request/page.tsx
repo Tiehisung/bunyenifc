@@ -7,13 +7,13 @@ import { useGetMatchesQuery } from "@/services/match.endpoints";
 import Loader from "@/components/loaders/Loader";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { dummyUser } from "@/data/user";
 import { teamBnfc } from "@/data/teamBnfc";
 import { IStaff } from "@/types/staff.interface";
 import { useGetStaffMembersQuery } from "@/services/staff.endpoints";
+import { useAppSelector } from "@/store/hooks/store";
 
 const MatchRequestPage = () => {
-  const user = dummyUser;
+  const { user } = useAppSelector((s) => s.auth);
   const [searchParams] = useSearchParams();
   const fixtureId = searchParams.get("fixtureId");
 

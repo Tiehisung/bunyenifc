@@ -7,10 +7,11 @@ import { ICloudinaryFile } from "@/types/file.interface";
 import { bytesToMB, shortText } from "@/lib";
 import { useUploadImageMutation } from "@/services/upload.endpoints";
 import { smartToast } from "@/utils/toast";
+import { cn } from "@/lib/utils";
 
 interface FileUploaderProps {
   initialFileUrl?: string;
-  exportFileData: (data: ICloudinaryFile) => void;
+  onUploadSuccess: (data: ICloudinaryFile) => void;
   className?: string;
   name: string;
   titleStyles?: string;
@@ -18,40 +19,43 @@ interface FileUploaderProps {
   trigger?: ReactNode;
   showName?: boolean;
   fileStyles?: string;
-  maxSize?: number;
-  accept?: "image" | "video" | "pdf" | "auto";
+  maxSize?:
+    | "2_000_000"
+    | "5_000_000"
+    | "10_000_000"
+    | "20_000_000"
+    | "40_000_000"
+    | "60_000_000"
+    | "80_000_000"
+    | "100_000_000";
   hidePreview?: boolean;
 }
 
-const FileUploader = ({
+const ImageFileUploader = ({
   initialFileUrl,
-  exportFileData,
+  onUploadSuccess,
   className,
   name,
-  maxSize = 3524000,
+  maxSize = "100_000_000",
   folder = "media-files",
   trigger = <FcCamera size={30} />,
   showName,
   fileStyles,
-  accept = "image",
   hidePreview = false,
 }: FileUploaderProps) => {
   const [upload, { isLoading }] = useUploadImageMutation();
-
- 
 
   const [uploadedFile, setUploadedFile] = useState<ICloudinaryFile | null>(
     null,
   );
 
   const currentSrc =
-    uploadedFile?.thumbnail_url || initialFileUrl || staticImages.avatar;
+    uploadedFile?.thumbnail_url || initialFileUrl || staticImages.ball;
 
   async function handleFileSelection(
     event: React.ChangeEvent<HTMLInputElement>,
   ) {
     try {
-  
       const file = event.target.files ? event.target.files[0] : null;
       if (!file) {
         smartToast({
@@ -60,9 +64,11 @@ const FileUploader = ({
         });
         return;
       }
-      if (file.size > maxSize) {
+
+      const size = Number(maxSize.replace(/_/g, ""));
+      if (file.size > size) {
         smartToast({
-          message: ` File should not exceed ${bytesToMB(maxSize)}`,
+          message: ` File should not exceed ${bytesToMB(size)}`,
           success: false,
         });
         return;
@@ -86,7 +92,7 @@ const FileUploader = ({
           return;
         }
         setUploadedFile(result.data as ICloudinaryFile);
-        exportFileData(result.data as ICloudinaryFile);
+        onUploadSuccess(result.data as ICloudinaryFile);
       }
     } catch (error) {
       smartToast({ error });
@@ -100,10 +106,8 @@ const FileUploader = ({
       {!hidePreview && (
         <img
           src={currentSrc}
-          width={300}
-          height={300}
-          alt="desc image"
-          className={`h-36 w-36 rounded-xl ${fileStyles}`}
+          alt={name}
+          className={cn(`h-36 w-36 `, fileStyles)}
         />
       )}
 
@@ -113,28 +117,20 @@ const FileUploader = ({
         </span>
       )}
       <label
-        htmlFor={`id${name}`}
-        className="flex items-center rounded mt-3 cursor-pointer min-w-full grow "
+        htmlFor={name}
+        className="flex items-center rounded mt-3 cursor-pointer mx-auto border w-fit p-2 "
         title="Choose file"
         aria-disabled={isLoading}
       >
         {trigger}
         <input
-          id={`id${name}`}
+          id={name}
           hidden
           type="file"
           onChange={handleFileSelection}
           name="image"
           className=""
-          accept={
-            accept === "image"
-              ? "image/*"
-              : accept === "pdf"
-                ? "application/pdf"
-                : accept === "video"
-                  ? "video/*"
-                  : "*/*"
-          }
+          accept={"image/*"}
           disabled={isLoading}
         />
       </label>
@@ -142,4 +138,4 @@ const FileUploader = ({
   );
 };
 
-export default FileUploader;
+export default ImageFileUploader;

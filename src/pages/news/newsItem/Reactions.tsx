@@ -22,13 +22,13 @@ import { icons } from "@/assets/icons/icons";
 import LoginController from "@/components/auth/LoginModal";
 import { useUpdateNewsMutation } from "@/services/news.endpoints";
 import { toggleClick, markupToPlainText } from "@/lib/dom";
-import { dummyUser } from "@/data/user";
 import { smartToast } from "@/utils/toast";
 import { RtkActionButton } from "@/components/buttons/ActionButtonRTK";
+import { useAppSelector } from "@/store/hooks/store";
 
 export function NewsReactions({ newsItem }: { newsItem: INewsProps }) {
   const [comment, setComment] = useState("");
-  const user = dummyUser;
+  const { user } = useAppSelector((s) => s.auth);
   const [updateNews, { isLoading: isUpdating }] = useUpdateNewsMutation();
 
   const maxLength = 3500;

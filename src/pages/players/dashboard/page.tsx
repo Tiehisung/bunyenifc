@@ -16,11 +16,11 @@ import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Helmet } from "react-helmet";
 import { TEAM } from "@/data/teamBnfc";
-import { dummyUser } from "@/data/user";
 import { useGetGalleriesQuery } from "@/services/gallery.endpoints";
+import { useAppSelector } from "@/store/hooks/store";
 
 export default function PlayerPage() {
-  const user = dummyUser;
+  const {user} = useAppSelector(s=>s.auth);
 
   const {
     data: playerData,
