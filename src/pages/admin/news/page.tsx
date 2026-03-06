@@ -1,22 +1,17 @@
 import AdminNews from "./News";
-import { NewsForm } from "./NewsForm";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGetNewsQuery } from "@/services/news.endpoints";
 import Loader from "@/components/loaders/Loader";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Plus } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/buttons/Button";
 
 const AdminNewsPage = () => {
   const [searchParams] = useSearchParams();
   const paramsString = searchParams.toString();
- 
-console.log(paramsString)
-  const {
-    data: news,
-    isLoading,
-    error,
-    isFetching,
-  } = useGetNewsQuery({});
+
+  const { data: news, isLoading, error } = useGetNewsQuery(paramsString);
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -52,15 +47,16 @@ console.log(paramsString)
 
   return (
     <div>
-      <h1 className="_title px-6 text-primaryRed uppercase">News Publisher</h1>
-      <NewsForm />
-      <AdminNews news={news } />
+      <header className="flex items-center gap-4 flex-wrap justify-between">
+        <h1 className="_title px-6 text-primaryRed uppercase">
+          News Publisher{" "}
+        </h1>
+        <Button onClick={() => navigate("/admin/news/create-news")}>
+          <Plus /> Create
+        </Button>
+      </header>
 
-      {isFetching && (
-        <div className="fixed bottom-4 right-4">
-          <Loader size="sm" message="Updating..." />
-        </div>
-      )}
+      <AdminNews news={news} />
     </div>
   );
 };

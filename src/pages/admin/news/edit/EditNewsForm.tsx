@@ -8,30 +8,26 @@ import {
 import { TextArea } from "@/components/input/Inputs";
 import { Button } from "@/components/buttons/Button";
 import { IFileProps } from "@/types/file.interface";
-import { Plus, X } from "lucide-react";
-import { CgAttachment, CgRemove } from "react-icons/cg";
+import { Plus, Trash, X } from "lucide-react";
+import { CgAttachment } from "react-icons/cg";
 import QuillEditor from "@/components/editor/Quill";
 import { INewsProps } from "@/types/news.interface";
 import FileRenderer from "@/components/files/FileRender";
 import { useUpdateNewsMutation } from "@/services/news.endpoints";
 import { smartToast } from "@/utils/toast";
 import { CloudinaryWidget } from "@/components/cloudinary/Cloudinary";
-import { useAppSelector } from "@/store/hooks/store";
 
 interface INewsForm {
   newsItem?: INewsProps;
 }
 
-export const EditNewsForm = ({   }: INewsForm) => {
+export const EditNewsForm = ({ newsItem }: INewsForm) => {
   const [updateNews, { isLoading }] = useUpdateNewsMutation();
- const { news: persistedNews } = useAppSelector((state) => state.news);
-  /** -------------------------
-   *  CLEAN DEFAULT VALUES
-   ------------------------- **/
+
   const defaultValues = {
-    headline: persistedNews?.headline || { text: "", image: "" },
+    headline: newsItem?.headline || { text: "", image: "" },
     details:
-      persistedNews?.details?.map((d) => ({
+      newsItem?.details?.map((d) => ({
         text: d.text || "",
         media: d.media || [],
       })) || [],
@@ -48,7 +44,6 @@ export const EditNewsForm = ({   }: INewsForm) => {
 
   const details = watch("details");
 
-
   /** -------------------------
    *  SUBMIT HANDLER
    ------------------------- **/
@@ -56,6 +51,7 @@ export const EditNewsForm = ({   }: INewsForm) => {
     try {
       const response = await updateNews({
         ...data,
+        _id: newsItem?._id,
       } as Partial<INewsProps>).unwrap();
 
       smartToast(response);
@@ -72,7 +68,7 @@ export const EditNewsForm = ({   }: INewsForm) => {
   };
 
   const [headlineImages, setHeadlineImages] = useState<string[]>([
-    persistedNews?.headline?.image as string,
+    newsItem?.headline?.image as string,
   ]);
 
   /** -------------------------
@@ -84,7 +80,6 @@ export const EditNewsForm = ({   }: INewsForm) => {
           HEADLINE SECTION
       ------------------------------------------ */}
       <header className="border-b-2 grid gap-4 py-4 mb-6 px-2 border-primary">
-       
         <h1 className="_subtitle">Headline text</h1>
         <Controller
           name="headline.text"
@@ -93,8 +88,10 @@ export const EditNewsForm = ({   }: INewsForm) => {
           render={({ field }) => (
             <TextArea
               {...field}
+              label="Headline text"
               placeholder="Type headline here..."
               labelStyles="mb-3"
+              className="bg-white text-black"
             />
           )}
         />
@@ -116,7 +113,7 @@ export const EditNewsForm = ({   }: INewsForm) => {
                   field.onChange(files?.[0]?.secure_url);
                   setHeadlineImages(
                     [
-                      persistedNews?.headline?.image as string,
+                      newsItem?.headline?.image as string,
                       ...files?.map((f) => f.secure_url),
                     ].filter(Boolean),
                   );
@@ -227,11 +224,12 @@ export const EditNewsForm = ({   }: INewsForm) => {
               />
 
               <Button
-                primaryText="Remove"
+                primaryText=""
                 onClick={() => remove(index)}
-                className="text-red-400 text-xs _deleteBtn"
+                className="text-red-400"
+                variant={"link"}
               >
-                <CgRemove />
+                <Trash />
               </Button>
             </div>
           </div>

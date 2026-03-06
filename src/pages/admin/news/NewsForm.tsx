@@ -12,7 +12,10 @@ import QuillEditor from "@/components/editor/Quill";
 import { INewsProps } from "@/types/news.interface";
 import { useAppDispatch, useAppSelector } from "@/store/hooks/store";
 import { smartToast } from "@/utils/toast";
-import { useCreateNewsMutation } from "@/services/news.endpoints";
+import {
+  useCreateNewsMutation,
+  useUpdateNewsMutation,
+} from "@/services/news.endpoints";
 import { clearNews, setNews } from "@/store/slices/news.slice";
 import { CloudinaryWidget } from "@/components/cloudinary/Cloudinary";
 import { useEffect } from "react";
@@ -36,14 +39,14 @@ interface INewsForm {
 }
 
 export const NewsForm = ({ newsItem = null }: INewsForm) => {
- 
   const { news: persistedNews } = useAppSelector((state) => state.news);
   const navigate = useNavigate();
 
   const { control, handleSubmit, reset, watch } = useForm<IPostNews>({
-    defaultValues: (newsItem || persistedNews) ?? {
+    defaultValues: newsItem ?? {
       headline: { text: "", image: "" },
       details: [{ text: "" }],
+      ...persistedNews,
     },
   });
 
@@ -57,20 +60,27 @@ export const NewsForm = ({ newsItem = null }: INewsForm) => {
   const dispatch = useAppDispatch();
   // Persist form state
   useEffect(() => {
-    console.log(formValues);
+    // console.log(formValues);
   }, [formValues]);
 
-  const [createNews, { isLoading }] = useCreateNewsMutation();
+  const [updateNews, { isLoading: isUpdating }] = useUpdateNewsMutation();
+  const [createNews, { isLoading: isCreating }] = useCreateNewsMutation();
+
+  const isLoading = isCreating || isUpdating;
 
   const onSubmit = async (data: IPostNews) => {
     try {
       dispatch(setNews(data));
-      const result: IQueryResponse = await createNews(data).unwrap();
-      if (result.success) {
+      let result: IQueryResponse;
+      if (newsItem) {
+        result = await updateNews(data).unwrap();
+      } else {
+        result = await createNews(data).unwrap();
+        dispatch(clearNews());
         reset({ headline: { text: "", image: "" }, details: [{ text: "" }] });
         navigate("/admin/news", { replace: true });
-        dispatch(clearNews());
       }
+
       smartToast(result);
     } catch (error) {
       smartToast({ error });
@@ -111,6 +121,11 @@ export const NewsForm = ({ newsItem = null }: INewsForm) => {
               folder={`news/media-${new Date().getFullYear()}`}
               multiple={false}
               cropping
+              initialFiles={[
+                {
+                  secure_url: persistedNews?.headline.image,
+                } as ICloudinaryFile,
+              ]}
             />
           )}
         />
@@ -149,6 +164,7 @@ export const NewsForm = ({ newsItem = null }: INewsForm) => {
                       }
                       folder={`news/media-${new Date().getFullYear()}`}
                       resourceType="auto"
+                      initialFiles={field.value}
                     />
                   )}
                 />
@@ -183,10 +199,10 @@ export const NewsForm = ({ newsItem = null }: INewsForm) => {
 
       <Button
         type="submit"
-        primaryText="Post news"
+        primaryText={newsItem ? "Save Changes" : "Post news"}
         waiting={isLoading}
         disabled={isLoading}
-        waitingText="Posting..."
+        waitingText={newsItem ? "Saving..." : "Posting..."}
         className="_primaryBtn p-3 ml-auto w-full justify-center h-12 uppercase"
       />
     </form>

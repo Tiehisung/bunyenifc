@@ -16,16 +16,21 @@ declare global {
 interface CloudinaryWidgetProps {
   onUploadSuccess?: (files: ICloudinaryFile[]) => void;
   onUploadFailure?: (error: any) => void;
+
+  initialFiles?: ICloudinaryFile[];
+
   trigger?: ReactNode;
   variant?: TButtonVariant;
+  className?: string;
+
   cloudName?: string;
   uploadPreset?: string;
   folder?: string;
   cropping?: boolean;
   multiple?: boolean;
   maxFiles?: number;
+
   resourceType?: "image" | "video" | "auto";
-  className?: string;
   maxFileSize?:
     | "2_000_000"
     | "5_000_000"
@@ -60,16 +65,15 @@ export function CloudinaryWidget({
   hidePreview = false,
   mediaDisplayStyles,
 
+  initialFiles = [],
+
   cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
   uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
 }: CloudinaryWidgetProps) {
   const widgetRef = useRef<any>(null);
 
   // UI state (important for preview)
-  const [files, setFiles] = useState<ICloudinaryFile[]>([]);
-
-  // internal tracker
-  const uploadedFilesRef = useRef<ICloudinaryFile[]>([]);
+  const [files, setFiles] = useState<ICloudinaryFile[]>(initialFiles);
 
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [scriptError, setScriptError] = useState(false);
@@ -126,16 +130,15 @@ export function CloudinaryWidget({
           if (result?.event === "success") {
             const file = result.info as ICloudinaryFile;
 
-            uploadedFilesRef.current.push(file);
-
-            const updated = [...uploadedFilesRef.current];
-
-            setFiles(updated);
-            onUploadSuccess?.(updated);
+            setFiles((prev) => {
+              const updated = [...prev, file];
+              onUploadSuccess?.(updated);
+              return updated;
+            });
           }
 
           if (result?.event === "close") {
-            uploadedFilesRef.current = [];
+            console.log({ files: "closed" });
           }
         },
       );
@@ -155,18 +158,21 @@ export function CloudinaryWidget({
       const updated = files.filter((f) => f.public_id !== file.public_id);
 
       setFiles(updated);
-      uploadedFilesRef.current = updated;
-
-      onUploadSuccess?.(updated);
 
       await deleteFile({
         public_id: file.public_id,
-        resource_type: file.resource_type as ICloudinaryFile['resource_type'],
+        resource_type: file.resource_type as ICloudinaryFile["resource_type"],
       });
     } catch (error) {
       smartToast({ error });
     }
   };
+
+  useEffect(() => {
+    if (files) {
+      onUploadSuccess?.(files);
+    }
+  }, [files]);
 
   // Error UI
   if (scriptError) {
@@ -189,15 +195,6 @@ export function CloudinaryWidget({
 
   return (
     <div className="space-y-5">
-      <Button
-        type="button"
-        onClick={openWidget}
-        className={`flex items-center gap-2 ${className}`}
-        variant={variant}
-      >
-        {trigger}
-      </Button>
-
       {!hidePreview && files.length > 0 && (
         <div
           className={`flex flex-wrap justify-center gap-3 mt-4 ${mediaDisplayStyles}`}
@@ -225,7 +222,7 @@ export function CloudinaryWidget({
                 <button
                   type="button"
                   onClick={() => handleRemove(f)}
-                  className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
+                  className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full transition"
                 >
                   <X size={16} />
                 </button>
@@ -234,6 +231,14 @@ export function CloudinaryWidget({
           ))}
         </div>
       )}
+      <Button
+        type="button"
+        onClick={openWidget}
+        className={`flex items-center gap-2 ${className}`}
+        variant={variant}
+      >
+        {trigger}
+      </Button>
     </div>
   );
 }

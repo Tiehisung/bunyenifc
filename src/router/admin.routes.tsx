@@ -39,6 +39,7 @@ import AllStaffPage from "@/pages/admin/staff/AllStaffPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { EUserRole } from "@/types/user";
 import UploadPage from "@/pages/admin/media/upload/page";
+import CreateNewsPage from "@/pages/admin/news/create-news/page";
 
 export const adminRoutes: RouteObject[] = [
   { path: "", element: <AdminDashboardPage /> },
@@ -59,6 +60,7 @@ export const adminRoutes: RouteObject[] = [
     element: <AdminNewsLayout />,
     children: [
       { index: true, element: <AdminNewsPage /> },
+      { path: "create-news", element: <CreateNewsPage /> },
       { path: "edit", element: <NewsEditingPage /> },
       { path: ":newsSlug", element: <NewsItemPage /> },
     ],
