@@ -1,4 +1,4 @@
-import { FC, useEffect, useLayoutEffect } from "react";
+import { FC, useEffect } from "react";
 import Header from "../../../../components/Element";
 import { useSearchParams } from "react-router-dom";
 import Loader from "@/components/loaders/Loader";
@@ -7,7 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useGetNewsItemQuery } from "@/services/news.endpoints";
 import { useAppDispatch } from "@/store/hooks/store";
 import { setNews } from "@/store/slices/news.slice";
-import { IPostNews, NewsForm } from "../NewsForm";
+import { IPostNews } from "../NewsForm";
 import { EditNewsForm } from "./EditNewsForm";
 
 const NewsEditingPage: FC = () => {
@@ -21,10 +21,6 @@ const NewsEditingPage: FC = () => {
     isLoading,
     error,
   } = useGetNewsItemQuery(newsSlug || "");
-
-  useLayoutEffect(() => {
-    scrollTo({ top: 0, left: 0, behavior: "instant" });
-  }, []);
 
   if (isLoading) {
     return (

@@ -14,7 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 const casters = Object.values(broadcasters);
 
 const LandingNewsHeadlines = () => {
-  const { data: newsData, isLoading, error } = useGetNewsQuery({});
+  const { data: newsData, isLoading, error } = useGetNewsQuery('');
   const news = newsData;
 
   if (isLoading) {

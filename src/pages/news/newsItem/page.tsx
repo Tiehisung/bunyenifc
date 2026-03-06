@@ -24,7 +24,7 @@ export default function NewsItemPage() {
     error: itemError,
   } = useGetNewsItemQuery(newsSlug || "");
 
-  const { data: newsData, isLoading: newsLoading } = useGetNewsQuery({});
+  const { data: newsData, isLoading: newsLoading } = useGetNewsQuery('');
 
   const isLoading = itemLoading || newsLoading;
   const newsItem = newsItemData?.data;
