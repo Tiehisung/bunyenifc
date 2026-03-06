@@ -1,7 +1,6 @@
 import { useState, useCallback, ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/buttons/Button";
-import CloudinaryUploader from "@/components/cloudinary/FileUploadWidget";
 import { Input } from "@/components/input/Inputs";
 import { IGallery } from "@/types/file.interface";
 import { IPlayer } from "@/types/player.interface";
@@ -9,6 +8,7 @@ import MultiSelectionInput from "../select/MultiSelect";
 import { ICloudinaryFile } from "@/types/file.interface";
 import { smartToast } from "@/utils/toast";
 import { useCreateGalleryMutation } from "@/services/gallery.endpoints";
+import { CloudinaryWidget } from "../cloudinary/Cloudinary";
 
 interface GalleryUploadProps {
   tags?: string[];
@@ -27,7 +27,7 @@ export function GalleryUpload({
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
   const [taggedPlayers, setTaggedPlayers] = useState<string[]>([]);
-  const [clearTrigger, setClearTrigger] = useState(0);
+ 
 
   /** Reset form state */
   const resetForm = useCallback(() => {
@@ -35,7 +35,7 @@ export function GalleryUpload({
     setTitle("");
     setFiles([]);
     setTaggedPlayers([]);
-    setClearTrigger((n) => n + 1);
+    // setClearTrigger((n) => n + 1);
   }, []);
 
   /** Handle gallery save */
@@ -76,9 +76,8 @@ export function GalleryUpload({
   return (
     <>
       <div className="w-full border border-border rounded-xl bg-card/30 shadow-sm space-y-8 p-4 mb-4">
-        <CloudinaryUploader
-          setUploadedFiles={setFiles}
-          clearTrigger={clearTrigger}
+        <CloudinaryWidget
+          onUploadSuccess={setFiles}
           maxFiles={16}
           trigger={trigger}
           variant={"outline"}

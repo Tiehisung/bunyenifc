@@ -3,8 +3,6 @@ import { toast } from "sonner";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import CloudinaryUploader from "@/components/cloudinary/FileUploadWidget";
 import { Input } from "@/components/input/Inputs";
 import { Button } from "@/components/buttons/Button";
 import { PrimarySelect } from "@/components/select/Select";
@@ -21,6 +19,7 @@ import { useGetPlayersQuery } from "@/services/player.endpoints";
 import { useCreateHighlightMutation } from "@/services/highlights.endpoints";
 import { smartToast } from "@/utils/toast";
 import { useGetMatchesQuery } from "@/services/match.endpoints";
+import { CloudinaryWidget } from "@/components/cloudinary/Cloudinary";
 
 interface GalleryUploadProps {
   trigger?: ReactNode;
@@ -49,7 +48,6 @@ export function HighlightUpload({
   matches,
 }: GalleryUploadProps) {
   const [file, setFile] = useState<ICloudinaryFile | null>(null);
-  const [clearTrigger, setClearTrigger] = useState(0);
 
   const { data: fixtures, isLoading: fixturesLoading } = useGetMatchesQuery({});
   // RTK Query mutation hook
@@ -113,7 +111,7 @@ export function HighlightUpload({
       if (result.success) {
         reset();
         setFile(null);
-        setClearTrigger((n) => n + 1);
+        // setClearTrigger((n) => n + 1);
       }
       smartToast(result);
     } catch (error) {
@@ -123,9 +121,8 @@ export function HighlightUpload({
 
   return (
     <div className="w-full border border-border rounded-xl bg-card/30 shadow-sm space-y-8 p-4 mb-4">
-      <CloudinaryUploader
-        setUploadedFiles={(f) => setFile(f?.[0])}
-        clearTrigger={clearTrigger}
+      <CloudinaryWidget
+        onUploadSuccess={(f) => setFile(f?.[0])}
         maxFiles={1}
         trigger={trigger}
         resourceType="video"

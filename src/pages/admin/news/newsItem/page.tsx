@@ -14,7 +14,6 @@ export default function NewsItemPage() {
   const slug = useParams().newsSlug;
   const [searchParams] = useSearchParams();
   const paramsString = searchParams.toString();
-  console.log(paramsString);
 
   const {
     data: newsItemData,
@@ -22,7 +21,8 @@ export default function NewsItemPage() {
     error: itemError,
   } = useGetNewsItemQuery(slug || "");
 
-  const { data: newsData, isLoading: newsLoading } = useGetNewsQuery({});
+  const { data: newsData, isLoading: newsLoading } =
+    useGetNewsQuery(paramsString);
 
   const isLoading = itemLoading || newsLoading;
   const newsItem = newsItemData?.data;
@@ -64,3 +64,11 @@ export default function NewsItemPage() {
     </div>
   );
 }
+// {
+//             page?: number;
+//             limit?: number;
+//             category?: string;
+//             search?: string;
+//             sortBy?: string;
+//             status?: 'published' | 'draft' | 'archived';
+//         }

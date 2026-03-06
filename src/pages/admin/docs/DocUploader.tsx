@@ -1,4 +1,3 @@
-import FileUploader from "@/components/cloudinary/ImageFileUploader";
 import { PrimaryCollapsible } from "@/components/Collapsible";
 import { DIALOG } from "@/components/Dialog";
 import { apiConfig } from "@/lib/configs";
@@ -21,6 +20,7 @@ import { IFolderMetrics } from "@/types/doc";
 import { ICloudinaryFile } from "@/types/file.interface";
 import { getErrorMessage } from "@/lib/error";
 import { useNavigate } from "react-router-dom";
+import { CloudinaryWidget } from "@/components/cloudinary/Cloudinary";
 
 interface IProps {
   defaultFolder?: string;
@@ -102,16 +102,16 @@ export function DocumentUploader({
       >
         <div className="flex flex-col gap-4 items-center justify-center grow w-full pb-3">
           {/* Not for doc upload */}
-          <FileUploader
+          <CloudinaryWidget
             hidePreview
             trigger={
               <div className="_secondaryBtn grow w-full">Choose Document</div>
             }
-            name="consentForm"
-            onUploadSuccess={(file) => {
-              setUploadedFile(file);
+            onUploadSuccess={(files) => {
+              setUploadedFile(files?.[0]);
             }}
-            maxSize={"10_000_000"}
+            maxFileSize={"10_000_000"}
+            resourceType="auto"
           />
 
           {uploadedFile && (

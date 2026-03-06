@@ -1,15 +1,14 @@
 import MasonryGallery from "@/components/Gallery/Masonry";
 import { IPlayer } from "@/types/player.interface";
-import CloudinaryUploader from "@/components/cloudinary/FileUploadWidget";
 import { useState } from "react";
 import { ICloudinaryFile } from "@/types/file.interface";
 import { useUpdatePlayerMutation } from "@/services/player.endpoints";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+
 import { Button } from "@/components/buttons/Button";
+import { CloudinaryWidget } from "@/components/cloudinary/Cloudinary";
+import { smartToast } from "@/utils/toast";
 
 export function PlayerFeatureMedia({ player }: { player?: IPlayer }) {
-  const navigate = useNavigate();
   const [uploadedFile, setUploadedFile] = useState<ICloudinaryFile | null>(
     null,
   );
@@ -27,12 +26,11 @@ export function PlayerFeatureMedia({ player }: { player?: IPlayer }) {
       }).unwrap();
 
       if (result.success) {
-        toast.success("Media saved successfully");
         setUploadedFile(null);
-        navigate(0);
       }
+      smartToast(result);
     } catch (error) {
-      toast.error("Failed to save media");
+      smartToast({ error });
     }
   };
 
@@ -50,12 +48,9 @@ export function PlayerFeatureMedia({ player }: { player?: IPlayer }) {
         ],
       }).unwrap();
 
-      if (result.success) {
-        toast.success("Wallpaper updated");
-        navigate(0);
-      }
+      smartToast(result);
     } catch (error) {
-      toast.error("Failed to update wallpaper");
+      smartToast({ error });
     }
   };
 
@@ -70,12 +65,9 @@ export function PlayerFeatureMedia({ player }: { player?: IPlayer }) {
           [],
       }).unwrap();
 
-      if (result.success) {
-        toast.success("Media deleted");
-        navigate(0);
-      }
+      smartToast(result);
     } catch (error) {
-      toast.error("Failed to delete media");
+      smartToast({ error });
     }
   };
 
@@ -83,15 +75,13 @@ export function PlayerFeatureMedia({ player }: { player?: IPlayer }) {
     <div className="p-6 grow min-h-44 my-10 w-full">
       <h3 className="text-lg font-semibold mb-4">Featured Media</h3>
       <div className="flex flex-col items-center justify-center gap-6 my-6 border-t pt-3">
-        <CloudinaryUploader
-          triggerId="feature-image"
-          setUploadedFiles={(fs) => setUploadedFile(fs?.[0])}
+        <CloudinaryWidget
+          onUploadSuccess={(fs) => setUploadedFile(fs?.[0])}
           maxFiles={1}
           multiple={false}
           trigger={
             <span className="_secondaryBtn ring">Add Feature Media</span>
           }
-          clearTrigger={player?.featureMedia?.length as number}
         />
 
         {uploadedFile && (

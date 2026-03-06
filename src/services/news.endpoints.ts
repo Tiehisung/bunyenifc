@@ -7,25 +7,8 @@ const newsApi = api.injectEndpoints({
     endpoints: (builder) => ({
 
         // GET all news (with pagination, filtering)
-        getNews: builder.query<IQueryResponse<INewsProps[]>, {
-            page?: number;
-            limit?: number;
-            category?: string;
-            search?: string;
-            sortBy?: string;
-            status?: 'published' | 'draft' | 'archived';
-        }>({
-            query: (params) => ({
-                url: "/news",
-                params: {
-                    page: params?.page || 1,
-                    limit: params?.limit || 10,
-                    category: params?.category,
-                    search: params?.search,
-                    sortBy: params?.sortBy || '-createdAt',
-                    status: params?.status,
-                },
-            }),
+        getNews: builder.query<IQueryResponse<INewsProps[]>, string>({
+            query: (paramsString = '') => `/news?${paramsString}`,
             providesTags: (result) =>
                 result?.data
                     ? [
@@ -90,7 +73,7 @@ const newsApi = api.injectEndpoints({
         }),
 
         // CREATE news article
-        createNews: builder.mutation<IQueryResponse<INewsProps>,Partial<IPostNews> >({
+        createNews: builder.mutation<IQueryResponse<INewsProps>, Partial<IPostNews>>({
             query: (body) => ({
                 url: "/news",
                 method: "POST",
@@ -111,7 +94,7 @@ const newsApi = api.injectEndpoints({
                 method: "PUT",
                 body,
             }),
-            invalidatesTags: (_result, _error, { _id:id }) => [
+            invalidatesTags: (_result, _error, { _id: id }) => [
                 { type: 'News', id: 'LIST' },
                 { type: 'News', id },
                 { type: 'News', id: 'LATEST' },
