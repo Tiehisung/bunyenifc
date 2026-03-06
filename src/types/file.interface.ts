@@ -2,7 +2,7 @@ import { IUser } from "./user";
 
 export interface ICloudinaryFile {
     public_id: string;
-    resource_type: "image" | "video" | "raw" | string;
+    resource_type?: "image" | "video" | "raw"
     secure_url: string;
     url: string;
     thumbnail_url?: string;

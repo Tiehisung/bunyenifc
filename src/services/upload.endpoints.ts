@@ -106,8 +106,9 @@ export const uploadApi = api.injectEndpoints({
             resource_type?: 'image' | 'video' | 'raw'
         }>({
             query: ({ public_id, resource_type = 'image' }) => ({
-                url: `/upload/${public_id}?resource_type=${resource_type}`,
+                url: `/upload`,
                 method: 'DELETE',
+                body: { public_id, resource_type }
             }),
             invalidatesTags: ['Uploads'],
         }),
