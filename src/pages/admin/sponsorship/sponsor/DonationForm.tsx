@@ -7,12 +7,12 @@ import {
   IconInputWithLabel,
   TextArea,
 } from "@/components/input/Inputs";
-import CloudinaryUploader from "@/components/cloudinary/FileUploadWidget";
 import { CgAttachment } from "react-icons/cg";
 import { ICloudinaryFile } from "@/types/file.interface";
 import { getErrorMessage } from "@/lib/error";
 import { ISponsorProps } from "@/pages/sponsorship/page";
 import { useCreateDonationMutation } from "@/services/donation.endpoints";
+import { CloudinaryWidget } from "@/components/cloudinary/Cloudinary";
 
 const initialForm = {
   item: "",
@@ -26,7 +26,6 @@ export default function DonationForm({ sponsor }: { sponsor?: ISponsorProps }) {
   const navigate = useNavigate();
   const params = useParams();
   const [waiting, setWaiting] = useState(false);
-  const [clearFiles, setClearFiles] = useState(0);
   const [formData, setFormData] = useState<{
     item: string;
     date: string;
@@ -65,7 +64,7 @@ export default function DonationForm({ sponsor }: { sponsor?: ISponsorProps }) {
       if (result.success) {
         toast.success(result.message);
         setFormData(initialForm);
-        setClearFiles((p) => p + 1);
+        // setClearFiles((p) => p + 1);
         navigate(0);
       } else {
         toast.error(result.message);
@@ -118,10 +117,10 @@ export default function DonationForm({ sponsor }: { sponsor?: ISponsorProps }) {
         <div className="relative w-full border p-4">
           <p className="_label mb-2">Attach files of items(Optional)</p>
 
-          <CloudinaryUploader
-            triggerId=""
-            setUploadedFiles={(fs) => setFormData({ ...formData, files: fs })}
-            successMessage="Files uploaded"
+          <CloudinaryWidget
+           
+            onUploadSuccess={(fs) => setFormData({ ...formData, files: fs })}
+         
             maxFiles={10}
             trigger={
               <span className="hover:bg-accent p-1.5 rounded-md flex text-xs items-center font-light ml-auto _secondaryBtn">
@@ -129,8 +128,8 @@ export default function DonationForm({ sponsor }: { sponsor?: ISponsorProps }) {
               </span>
             }
             folder={`donations/${sponsor?.name ?? sponsorId}`}
-            wrapperStyles="justify-start"
-            clearTrigger={clearFiles}
+     
+        
           />
         </div>
 

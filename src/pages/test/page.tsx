@@ -2,7 +2,8 @@ import { GalleryUploader } from "@/components/files/gallery-uploader";
 import { VideoUploader } from "@/components/files/video/uploader";
 import { ImageUploader } from "@/components/files/image-uploader";
 import GroupedAdminSidebar from "../admin/(sidebar)/GroupedSidebarLinks";
-import { CloudinaryWidget } from "@/components/cloudinary/Script";
+import { CloudinaryWidget } from "@/components/cloudinary/Cloudinary";
+ 
 
 export default function TestPage() {
   return (

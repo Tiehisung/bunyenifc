@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks/store";
 import { smartToast } from "@/utils/toast";
 import { useCreateNewsMutation } from "@/services/news.endpoints";
 import { clearNews, setNews } from "@/store/slices/news.slice";
-import { CloudinaryWidget } from "@/components/cloudinary/uploaderWithPreview";
+import { CloudinaryWidget } from "@/components/cloudinary/Cloudinary";
 import { useEffect } from "react";
 
 export interface IPostNews {
@@ -36,7 +36,7 @@ interface INewsForm {
 }
 
 export const NewsForm = ({ newsItem = null }: INewsForm) => {
-  // Replace useSession with Redux auth
+ 
   const { news: persistedNews } = useAppSelector((state) => state.news);
   const navigate = useNavigate();
 

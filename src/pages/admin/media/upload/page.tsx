@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Header from "../../../../components/Element";
-import CloudinaryUploader from "@/components/cloudinary/FileUploadWidget";
 import { CopyButton } from "@/components/buttons/CopyBtn";
 import { Button } from "@/components/buttons/Button";
 import { ICloudinaryFile } from "@/types/file.interface";
@@ -8,6 +7,7 @@ import HEADER from "../../../../components/Element";
 import { ImageUploader } from "@/components/files/image-uploader";
 import { GalleryUploader } from "@/components/files/gallery-uploader";
 import { VideoUploader } from "@/components/files/video/uploader";
+import { CloudinaryWidget } from "@/components/cloudinary/Cloudinary";
 
 const UploadPage = () => {
   const [files, setFiles] = useState<ICloudinaryFile[]>([]);
@@ -20,22 +20,14 @@ const UploadPage = () => {
       />
 
       <div className="flex flex-wrap gap-4 _card">
-        <CloudinaryUploader
-          triggerId={"Upload-Files"}
-          setUploadedFiles={(fs) => setFiles(fs)}
-          clearTrigger={clear}
+        <CloudinaryWidget
+          onUploadSuccess={(fs) => setFiles(fs)}
+        
           folder="/assets-storage"
-          successMessage="Uploaded"
-          dismissOnComplete
+       
+    
           maxFiles={10}
-          //   deletable
-          //   multiple
-          //   cropping
-          //   preview
-          //   resourceType="auto"
-          //   trigger
-          //   uploadPreset=""
-          //   wrapperStyles=""
+        
         />
         <Button
           className="_deleteBtn"

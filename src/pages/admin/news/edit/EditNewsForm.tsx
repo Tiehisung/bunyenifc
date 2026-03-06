@@ -9,28 +9,29 @@ import { TextArea } from "@/components/input/Inputs";
 import { Button } from "@/components/buttons/Button";
 import { IFileProps } from "@/types/file.interface";
 import { Plus, X } from "lucide-react";
-import CloudinaryUploader from "@/components/cloudinary/FileUploadWidget";
 import { CgAttachment, CgRemove } from "react-icons/cg";
 import QuillEditor from "@/components/editor/Quill";
 import { INewsProps } from "@/types/news.interface";
 import FileRenderer from "@/components/files/FileRender";
 import { useUpdateNewsMutation } from "@/services/news.endpoints";
 import { smartToast } from "@/utils/toast";
+import { CloudinaryWidget } from "@/components/cloudinary/Cloudinary";
+import { useAppSelector } from "@/store/hooks/store";
 
 interface INewsForm {
   newsItem?: INewsProps;
 }
 
-export const EditNewsForm = ({ newsItem }: INewsForm) => {
+export const EditNewsForm = ({   }: INewsForm) => {
   const [updateNews, { isLoading }] = useUpdateNewsMutation();
-
+ const { news: persistedNews } = useAppSelector((state) => state.news);
   /** -------------------------
    *  CLEAN DEFAULT VALUES
    ------------------------- **/
   const defaultValues = {
-    headline: newsItem?.headline || { text: "", image: "" },
+    headline: persistedNews?.headline || { text: "", image: "" },
     details:
-      newsItem?.details?.map((d) => ({
+      persistedNews?.details?.map((d) => ({
         text: d.text || "",
         media: d.media || [],
       })) || [],
@@ -46,6 +47,7 @@ export const EditNewsForm = ({ newsItem }: INewsForm) => {
   });
 
   const details = watch("details");
+
 
   /** -------------------------
    *  SUBMIT HANDLER
@@ -70,7 +72,7 @@ export const EditNewsForm = ({ newsItem }: INewsForm) => {
   };
 
   const [headlineImages, setHeadlineImages] = useState<string[]>([
-    newsItem?.headline?.image as string,
+    persistedNews?.headline?.image as string,
   ]);
 
   /** -------------------------
@@ -82,7 +84,7 @@ export const EditNewsForm = ({ newsItem }: INewsForm) => {
           HEADLINE SECTION
       ------------------------------------------ */}
       <header className="border-b-2 grid gap-4 py-4 mb-6 px-2 border-primary">
-        {" "}
+       
         <h1 className="_subtitle">Headline text</h1>
         <Controller
           name="headline.text"
@@ -109,17 +111,16 @@ export const EditNewsForm = ({ newsItem }: INewsForm) => {
                 />
               )}
               <br />
-              <CloudinaryUploader
-                setUploadedFiles={(files) => {
+              <CloudinaryWidget
+                onUploadSuccess={(files) => {
                   field.onChange(files?.[0]?.secure_url);
                   setHeadlineImages(
                     [
-                      newsItem?.headline?.image as string,
+                      persistedNews?.headline?.image as string,
                       ...files?.map((f) => f.secure_url),
                     ].filter(Boolean),
                   );
                 }}
-                successMessage=""
                 maxFiles={1}
                 trigger={
                   <>
@@ -196,8 +197,8 @@ export const EditNewsForm = ({ newsItem }: INewsForm) => {
                 control={control}
                 name={`details.${index}.media`}
                 render={({ field }) => (
-                  <CloudinaryUploader
-                    setUploadedFiles={(newFiles) => {
+                  <CloudinaryWidget
+                    onUploadSuccess={(newFiles) => {
                       const normalized = newFiles
                         .map((f) => ({
                           secure_url: f.secure_url,
@@ -213,7 +214,6 @@ export const EditNewsForm = ({ newsItem }: INewsForm) => {
                       ] as IFileProps[];
                       field.onChange(dedupeFiles(merged));
                     }}
-                    successMessage=""
                     maxFiles={12}
                     folder={`news/media-${new Date().getFullYear()}`}
                     hidePreview={(field?.value?.length ?? 0) === 0}
