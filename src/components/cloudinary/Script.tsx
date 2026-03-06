@@ -1,7 +1,9 @@
 // components/CloudinaryWidget.tsx
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback, useState, ReactNode } from "react";
 import { Button } from "@/components/buttons/Button";
 import { Upload } from "lucide-react";
+import { TButtonVariant } from "../ui/button";
+import { ICloudinaryFile } from "@/types/file.interface";
 
 declare global {
   interface Window {
@@ -10,9 +12,10 @@ declare global {
 }
 
 interface CloudinaryWidgetProps {
-  onUploadSuccess?: (result: any) => void;
+  onUploadSuccess?: (files: ICloudinaryFile[]) => void;
   onUploadFailure?: (error: any) => void;
-  buttonText?: string;
+  trigger?: ReactNode;
+  variant?: TButtonVariant;
   cloudName?: string;
   uploadPreset?: string;
   folder?: string;
@@ -21,24 +24,44 @@ interface CloudinaryWidgetProps {
   maxFiles?: number;
   resourceType?: "image" | "video" | "auto";
   className?: string;
+  maxFileSize?:
+    | "2_000_000"
+    | "5_000_000"
+    | "10_000_000"
+    | "20_000_000"
+    | "40_000_000"
+    | "60_000_000"
+    | "80_000_000"
+    | "100_000_000";
 }
 
 export function CloudinaryWidget({
   onUploadSuccess,
   onUploadFailure,
-  buttonText = "Upload Image",
-  cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
-  uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
+
+  trigger = "Upload Image",
+  variant = "outline",
+  className = "",
+
   folder = "bunyeni-fc",
-  cropping = true,
-  multiple = false,
+  cropping = false,
+  multiple = true,
   maxFiles = 1,
   resourceType = "image",
-  className = "",
+  maxFileSize = "10_000_000",
+
+  cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
+  uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
 }: CloudinaryWidgetProps) {
+  const uploadedFilesRef = useRef<ICloudinaryFile[]>([]);
+
   const widgetRef = useRef<any>(null);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [scriptError, setScriptError] = useState(false);
+
+  useEffect(() => {
+    console.log("ref", uploadedFilesRef.current);
+  }, [uploadedFilesRef]);
 
   // Load script dynamically with proper error handling
   useEffect(() => {
@@ -75,7 +98,6 @@ export function CloudinaryWidget({
       setIsScriptLoaded(true);
     };
     script.onerror = () => {
-      console.error("❌ Failed to load Cloudinary script");
       setScriptError(true);
       onUploadFailure?.(new Error("Failed to load upload widget"));
     };
@@ -96,7 +118,6 @@ export function CloudinaryWidget({
 
     // Validate configuration
     if (!cloudName || !uploadPreset) {
-      console.error("Cloudinary configuration missing!");
       setScriptError(true);
       return;
     }
@@ -111,19 +132,20 @@ export function CloudinaryWidget({
 
       widgetRef.current = window.cloudinary.createUploadWidget(
         {
-          cloudName,
-          uploadPreset,
+          cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
+          uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
           folder,
           sources: ["local", "camera", "dropbox", "google_drive"],
           multiple,
           maxFiles,
-          cropping,
+          cropping: multiple || maxFiles > 1 ? false : cropping,
           croppingAspectRatio: 1,
           showAdvancedOptions: true,
           clientAllowedFormats:
             resourceType === "image" ? ["image"] : undefined,
           maxImageFileSize: 5000000, // 5MB
-          maxVideoFileSize: 50000000, // 50MB
+          maxVideoFileSize: Number(maxFileSize.replace(/_/g, "")) || 50000000, // 50MB
+          //   maxFileSize: Number(maxFileSize.replace(/_/g, "")),
           theme: "minimal",
           styles: {
             palette: {
@@ -144,14 +166,23 @@ export function CloudinaryWidget({
           },
         },
         (error: any, result: any) => {
+          // console.log(result)
           if (error) {
             console.error("Upload error:", error);
             onUploadFailure?.(error);
             return;
           }
 
-          if (result && result.event === "success") {
-            onUploadSuccess?.(result.info);
+          if (result?.event === "success") {
+            uploadedFilesRef.current.push(result.info);
+          }
+
+          // Widget closed → send all uploaded files
+          if (result?.event === "close") {
+            if (uploadedFilesRef.current.length) {
+              onUploadSuccess?.([...uploadedFilesRef.current]);
+              uploadedFilesRef.current = [];
+            }
           }
         },
       );
@@ -224,9 +255,9 @@ export function CloudinaryWidget({
       type="button"
       onClick={openWidget}
       className={`flex items-center gap-2 ${className}`}
+      variant={variant}
     >
-      <Upload className="h-4 w-4" />
-      {buttonText}
+      {trigger}
     </Button>
   );
 }

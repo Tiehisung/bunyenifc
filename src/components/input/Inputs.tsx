@@ -12,6 +12,7 @@ import { IoIosLink, IoMdTime } from "react-icons/io";
 import { MdAlternateEmail, MdDateRange, MdNumbers } from "react-icons/md";
 import { TbLockPassword } from "react-icons/tb";
 import { Label } from "../ui/label";
+import { cn } from "@/lib/utils";
 
 const inputIcons = [
   { type: "text", icon: <BiText /> },
@@ -81,7 +82,7 @@ export function TextArea({
         onChange={(e) => {
           onChange(e);
         }}
-        className={`outline-none border _borderColor focus:border-border shadow-teal-100/50 rounded px-2 w-full min-h-20 bg-accent ${className}`}
+        className={cn(`outline-none border _borderColor focus:border-border shadow-teal-100/50 rounded px-2 w-full min-h-20 `,className)}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(value ? true : false)}
         {...others}
