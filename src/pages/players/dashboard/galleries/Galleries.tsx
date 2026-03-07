@@ -17,11 +17,11 @@ export function PlayerGalleriesClient({
   const [data, setData] = useState<IGallery[]>(galleries?.data ?? []);
 
   return (
-    <div className="grid gap-2">
-      <h3 className="text-lg font-semibold mb-4"> Galleries</h3>
+    <div className="grid gap-2 _page">
+      <h3 className="text-lg font-semibold mb-4 _title"> Galleries</h3>
 
       <div className="pb-4 space-y-3">
-        <PrimarySearch searchKey="gallery_search" />
+        <PrimarySearch searchKey="search" />
         <GalleryGrid galleries={data} />
 
         <SlicePagination onPageChange={setData} data={galleries?.data} />

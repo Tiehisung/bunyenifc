@@ -75,13 +75,13 @@ export function PlayerFeatureMedia({ player }: { player?: IPlayer }) {
     <div className="p-6 grow min-h-44 my-10 w-full">
       <h3 className="text-lg font-semibold mb-4">Featured Media</h3>
       <div className="flex flex-col items-center justify-center gap-6 my-6 border-t pt-3">
+        
         <CloudinaryWidget
           onUploadSuccess={(fs) => setUploadedFile(fs?.[0])}
           maxFiles={1}
           multiple={false}
-          trigger={
-            <span className="_secondaryBtn ring">Add Feature Media</span>
-          }
+          trigger={"Add Feature Media"}
+          cropping
         />
 
         {uploadedFile && (
@@ -98,7 +98,7 @@ export function PlayerFeatureMedia({ player }: { player?: IPlayer }) {
       {player?.featureMedia?.length ? (
         <MasonryGallery
           files={player?.featureMedia ?? []}
-          useSize
+          // useSize
           action={(f) => (
             <div className="space-y-1.5">
               <Button
@@ -106,7 +106,7 @@ export function PlayerFeatureMedia({ player }: { player?: IPlayer }) {
                 primaryText="Set as Wallpaper"
                 waitingText="Finalizing..."
                 variant="secondary"
-                className="w-full _hover"
+                className="w-full justify-start"
                 disabled={isLoading}
               />
               <Button
@@ -114,7 +114,7 @@ export function PlayerFeatureMedia({ player }: { player?: IPlayer }) {
                 primaryText="Delete"
                 waitingText="Wait..."
                 variant="secondary"
-                className="w-full _hover"
+                className="w-full justify-start"
                 disabled={isLoading}
               />
             </div>

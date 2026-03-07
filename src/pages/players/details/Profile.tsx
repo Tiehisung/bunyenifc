@@ -9,7 +9,6 @@ import {
 } from "recharts";
 import { IPlayer } from "@/types/player.interface";
 
-import { PrimarySelect } from "@/components/select/Select";
 import CardCarousel from "@/components/carousel/cards";
 import { usePlayerGalleryUtils } from "@/hooks/usePlayerGallery";
 import { IGallery } from "@/types/file.interface";
@@ -78,7 +77,7 @@ export default function PlayerProfile({
 
   return (
     <main
-      className="min-h-screen bg-popover flex flex-col items-center p-10"
+      className="min-h-screen bg-popover flex flex-col items-center px-2 py-16"
       id="overview"
     >
       {/* Header */}
@@ -87,14 +86,6 @@ export default function PlayerProfile({
           ⚽ {TEAM.name} - Team{" "}
           <strong className="uppercase">{player?.training?.team || "A"}</strong>
         </h1>
-
-        <PrimarySelect
-          options={players?.map((p) => ({
-            value: p._id,
-            label: `${p.lastName} ${p.firstName}`,
-          }))}
-          paramKey="playerId"
-        />
 
         {/* Quick Links */}
         <nav className="flex gap-6 text-muted-foreground text-sm">

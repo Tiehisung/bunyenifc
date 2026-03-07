@@ -99,7 +99,7 @@ export const MobilePublicNav = () => {
   const role = user?.role
   const dashboardRoute =
     role === "player"
-      ? "/player/dashboard"
+      ? "/players/dashboard"
       : role?.includes("admin")
         ? "/admin"
         : "";

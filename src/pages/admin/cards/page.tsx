@@ -1,7 +1,7 @@
 // pages/CardsPage.tsx
 import { useLocation } from "react-router-dom";
 import HEADER from "@/components/Element";
-import BackToTopButton from "@/components/scroll/ToTop";
+import BackToTopButton from "@/components/scroll/ToTopBtn";
 import { CardsManager } from "./CardsManager";
 import Loader from "@/components/loaders/Loader";
 import { useGetCardsQuery } from "@/services/cards.endpoints";

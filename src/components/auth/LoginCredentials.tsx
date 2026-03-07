@@ -29,10 +29,17 @@ export function CredentialsLoginForm() {
     setError(null);
     const result = await login(data);
 
+    const path =
+      result?.user?.role == "player"
+        ? "/players/dashboard"
+        : result?.user?.role?.includes("admin")
+          ? "/admin"
+          : "";
+
     if (result.success) {
-      navigate("/admin");
+      navigate(path, { replace: true });
     } else {
-      setError(result.error);
+      setError(result?.error as string);
     }
   };
 
@@ -41,7 +48,7 @@ export function CredentialsLoginForm() {
       <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
       {error && (
-        <Alert variant="destructive" className="mb-4">
+        <Alert variant="destructive" className="mb-6">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -59,7 +66,6 @@ export function CredentialsLoginForm() {
             />
           )}
         />
-
 
         <Controller
           control={control}
