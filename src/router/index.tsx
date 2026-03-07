@@ -25,6 +25,8 @@ import LoginPage from "@/pages/auth/LoginPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { EUserRole } from "@/types/user";
 import NotAuthorizedPage from "@/pages/auth/NotAuthorized";
+import PlayerDashboardPage from "@/pages/players/dashboard/page";
+import PlayerGalleriesPage from "@/pages/players/dashboard/galleries/page";
 
 // Wrapper component for AdminLayout with ScrollToTop
 const AdminLayoutWithScrollToTop = () => (
@@ -34,23 +36,11 @@ const AdminLayoutWithScrollToTop = () => (
     <AdminLayout />
   </>
 );
+
 const applicationRouter = createBrowserRouter([
   {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />,
-  },
-  {
     path: "/",
-    element: (
-      <>
-        <ScrollToTop />
-        <HomeLayout />
-      </>
-    ),
+    element: <HomeLayout />,
 
     children: [
       { index: true, element: <Home /> },
@@ -68,11 +58,24 @@ const applicationRouter = createBrowserRouter([
       },
       {
         path: "players",
-        element: <PlayersPage />,
-      },
-      {
-        path: "players/details",
-        element: <PlayerProfilePage />,
+        children: [
+          {
+            index: true,
+            element: <PlayersPage />,
+          },
+          {
+            path: "details",
+            element: <PlayerProfilePage />,
+          },
+          {
+            path: "dashboard",
+            element: <PlayerDashboardPage />,
+          },
+          {
+            path: "dashboard/galleries",
+            element: <PlayerGalleriesPage />,
+          },
+        ],
       },
       {
         path: "matches",
@@ -107,7 +110,7 @@ const applicationRouter = createBrowserRouter([
         path: "/unauthorized",
         element: <NotAuthorizedPage />,
       },
-     
+
       {
         path: "*", // Catch-all route for 404 pages
         element: <NotFoundPage />,
@@ -124,6 +127,14 @@ const applicationRouter = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: adminRoutes,
+  },
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
   },
 ]);
 

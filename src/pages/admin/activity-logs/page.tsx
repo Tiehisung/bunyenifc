@@ -1,8 +1,8 @@
 import HEADER from "@/components/Element";
- 
+
 import { LogsClient } from "./Client";
-import BackToTopButton from "@/components/scroll/ToTop";
- 
+import BackToTopButton from "@/components/scroll/ToTopBtn";
+
 import { useSearchParams } from "react-router-dom";
 import { useGetLogsQuery } from "@/services/logs.endpoints";
 import Loader from "@/components/loaders/Loader";
@@ -12,7 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 export default function LogsPage() {
   const [searchParams] = useSearchParams();
   const paramsString = searchParams.toString();
-  console.log(paramsString)
+  console.log(paramsString);
 
   const { data: logsData, isLoading, error } = useGetLogsQuery({});
   const logs = logsData;

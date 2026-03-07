@@ -74,6 +74,7 @@ export function PlayerHeader({ player }: PlayerHeaderProps) {
             src={player?.avatar}
             alt={fullName}
             fallbackText={getInitials(fullName)}
+            size={"2xl"}
           />
           <div className="absolute -top-2 -right-2">
             <div
@@ -133,12 +134,7 @@ export function PlayerHeader({ player }: PlayerHeaderProps) {
 
       <div className="flex items-center flex-wrap gap-2 self-start lg:self-center">
         <POPOVER
-          trigger={
-            <>
-              <Share2 className="h-4 w-4" />
-              Share
-            </>
-          }
+          trigger={<Share2 className="h-4 w-4" />}
           variant={"outline"}
           className="grid"
         >
@@ -153,7 +149,6 @@ export function PlayerHeader({ player }: PlayerHeaderProps) {
           onClick={() => window.print()}
         >
           <Printer className="h-4 w-4" />
-          Print
         </Button>
         <Button className="gap-2" size="sm">
           <Edit className="h-4 w-4" />

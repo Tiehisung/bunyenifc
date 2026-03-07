@@ -1,5 +1,5 @@
 import HEADER from "@/components/Element";
-import BackToTopButton from "@/components/scroll/ToTop";
+import BackToTopButton from "@/components/scroll/ToTopBtn";
 import { MVPsManager } from "./MVPsManager";
 import { useSearchParams } from "react-router-dom";
 import Loader from "@/components/loaders/Loader";
@@ -9,13 +9,15 @@ import { useGetMvpsQuery } from "@/services/mvps.endpoints";
 
 export default function MVPsPage() {
   const [searchParams] = useSearchParams();
-  const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
+  const queryString = searchParams.toString()
+    ? `?${searchParams.toString()}`
+    : "";
 
-  const { 
-    data: mvps, 
-    isLoading, 
+  const {
+    data: mvps,
+    isLoading,
     error,
-    isFetching 
+    isFetching,
   } = useGetMvpsQuery(queryString);
 
   if (isLoading) {
@@ -45,7 +47,7 @@ export default function MVPsPage() {
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>
-              Failed to load MVPs: {(error as any)?.message || 'Unknown error'}
+              Failed to load MVPs: {(error as any)?.message || "Unknown error"}
             </AlertDescription>
           </Alert>
         </div>
@@ -56,10 +58,7 @@ export default function MVPsPage() {
 
   return (
     <div>
-      <HEADER
-        title="MVPs Management"
-        subtitle="Track and manage player MVPs"
-      />
+      <HEADER title="MVPs Management" subtitle="Track and manage player MVPs" />
 
       <div className="_page">
         <MVPsManager mvpsData={mvps} />

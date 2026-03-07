@@ -8,6 +8,7 @@ import { Outlet } from "react-router-dom";
 import { useAppSelector } from "@/store/hooks/store";
 
 export default function AdminLayout() {
+  
   return (
     <main className="md:flex relative">
       <LeftPaneDesktop />
@@ -18,6 +19,7 @@ export default function AdminLayout() {
         </div>
         <AdminFooter />
       </section>
+      
     </main>
   );
 }

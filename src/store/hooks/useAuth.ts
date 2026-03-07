@@ -3,11 +3,12 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks/store';
 import { useLoginMutation, useLogoutMutation, useRefreshTokenMutation } from '@/services/auth.endpoints';
 import { ILoginCredentials } from '@/types/auth';
-import { logout, setAccessToken, setCredentials ,} from '../slices/auth.slice';
+import { logout, setAccessToken, setCredentials, } from '../slices/auth.slice';
+import {   getErrorMessage } from '@/lib/error';
 
 export const useAuth = () => {
     const dispatch = useAppDispatch();
-    const { user, accessToken, isAuthenticated ,} = useAppSelector((state) => state.auth);
+    const { user, accessToken, isAuthenticated, } = useAppSelector((state) => state.auth);
 
     const [loginMutation, { isLoading: isLoggingIn }] = useLoginMutation();
     const [logoutMutation, { isLoading: isLoggingOut }] = useLogoutMutation();
@@ -40,11 +41,11 @@ export const useAuth = () => {
                 refreshToken: response.data.refreshToken,
             }));
 
-            return { success: true };
+            return { success: true, user: response.data.user };
         } catch (error: any) {
             return {
                 success: false,
-                error: error?.data?.message || 'Login failed'
+                error: getErrorMessage(error, 'Login failed')
             };
         }
     };

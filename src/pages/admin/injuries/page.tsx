@@ -1,5 +1,5 @@
 import HEADER from "@/components/Element";
-import BackToTopButton from "@/components/scroll/ToTop";
+import BackToTopButton from "@/components/scroll/ToTopBtn";
 import { useGetInjuriesQuery } from "@/services/injuries.endpoints";
 import { useSearchParams } from "react-router-dom";
 import Loader from "@/components/loaders/Loader";
@@ -21,7 +21,7 @@ export default function InjuryPage() {
     isFetching,
   } = useGetInjuriesQuery(queryString);
 
-  console.log(injuriesData)
+  console.log(injuriesData);
 
   if (isLoading) {
     return (

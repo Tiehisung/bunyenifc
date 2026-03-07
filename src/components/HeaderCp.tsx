@@ -9,6 +9,8 @@ import { NavigationPopover } from "./NavigationPopover";
 import { GalleryThumbnails } from "lucide-react";
 import { fireEscape } from "@/hooks/Esc";
 import { TEAM } from "@/data/teamBnfc";
+import { useAuth } from "@/store/hooks/useAuth";
+import { GrDashboard } from "react-icons/gr";
 
 export default function HeaderCp() {
   const location = useLocation();
@@ -93,14 +95,14 @@ const navLinks = [
 ];
 
 export const MobilePublicNav = () => {
-  // const { user, isLoading } = useAuth(); // From your auth context
-  // const role = { role: "player" }?.role;
-  // const dashboardRoute =
-  //   role === "player"
-  //     ? "/player/dashboard"
-  //     : role?.includes("admin")
-  //       ? "/admin"
-  //       : "";
+  const { user, isLoading } = useAuth(); // From your auth context
+  const role = user?.role
+  const dashboardRoute =
+    role === "player"
+      ? "/players/dashboard"
+      : role?.includes("admin")
+        ? "/admin"
+        : "";
 
   return (
     <NavigationPopover>
@@ -119,7 +121,7 @@ export const MobilePublicNav = () => {
             </Link>
           </li>
         ))}
-        {/* {!isLoading && user && (
+        {!isLoading && user && (
           <li className="flex _hover">
             <Link
               to={dashboardRoute}
@@ -131,10 +133,10 @@ export const MobilePublicNav = () => {
               Dashboard
             </Link>
           </li>
-        )} */}
+        )}
         <li className="mt-12 px-3 flex gap-3 items-center">
           <ThemeModeToggle />
-          {/* <UserLogButtons /> */}
+          <UserLogButtons />
         </li>
       </ul>
     </NavigationPopover>

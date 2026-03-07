@@ -10,22 +10,22 @@ import GalleryGrid from "@/components/Gallery/GallaryGrid";
 import { Link } from "react-router-dom";
 import { PlayerFeatureMedia } from "./FeatureMedia";
 import { useGetPlayerQuery } from "@/services/player.endpoints";
-
 import Loader from "@/components/loaders/Loader";
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Helmet } from "react-helmet";
 import { TEAM } from "@/data/teamBnfc";
 import { useGetGalleriesQuery } from "@/services/gallery.endpoints";
 import { useAppSelector } from "@/store/hooks/store";
+import DataErrorAlert from "@/components/error/DataError";
+import { PageSEO } from "@/utils/PageSEO";
 
-export default function PlayerPage() {
-  const {user} = useAppSelector(s=>s.auth);
+export default function PlayerDashboardPage() {
+  const { user } = useAppSelector((s) => s.auth);
 
   const {
     data: playerData,
     isLoading: playerLoading,
     error: playerError,
+    isFetching,
+    refetch,
   } = useGetPlayerQuery(user?.email || "");
 
   const { data: galleriesData, isLoading: galleriesLoading } =
@@ -51,42 +51,28 @@ export default function PlayerPage() {
     return (
       <div className="min-h-screen bg-accent p-4 md:p-8 pt-20 md:pt-20">
         <div className="max-w-7xl mx-auto">
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
-              {playerError ? "Failed to load player data" : "Player not found"}
-            </AlertDescription>
-          </Alert>
+          <DataErrorAlert
+            message={playerError}
+            onRefetch={refetch}
+            isRefreshing={isFetching}
+          />
         </div>
       </div>
     );
   }
 
-  const title = `${player?.lastName} | ${TEAM.name}`;
+  const title = `${player?.lastName} | ${TEAM.name} player`;
   const description = player?.about || "Player dashboard from bunyenifc.";
 
   return (
     <>
-      <Helmet>
-        <title>{title}</title>
-        <meta name="description" content={description} />
-
-        {/* Open Graph */}
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <meta property="og:image" content={player?.avatar || TEAM.logo} />
-        <meta property="og:site_name" content={TEAM.name} />
-        <meta property="og:type" content="profile" />
-        <meta property="profile:first_name" content={player?.firstName} />
-        <meta property="profile:last_name" content={player?.lastName} />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content={player?.avatar || TEAM.logo} />
-      </Helmet>
+      <PageSEO
+        page="players"
+        title={title}
+        description={description}
+        image={player?.avatar}
+        url={window.location.href}
+      />
 
       <div className="min-h-screen bg-accent p-4 md:p-8 pt-20 md:pt-20">
         <div className="max-w-7xl mx-auto">
@@ -113,9 +99,8 @@ export default function PlayerPage() {
                   <CardTitle className="text-lg">About Player</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">
-                    {player?.about || "No description available."}
-                  </p>
+                  <div className="text-muted-foreground" dangerouslySetInnerHTML={{__html:player?.about || "No description available."}}/>
+                  
                 </CardContent>
               </Card>
 

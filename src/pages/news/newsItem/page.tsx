@@ -16,7 +16,6 @@ export default function NewsItemPage() {
   const newsSlug = useParams().newsSlug;
   const [searchParams] = useSearchParams();
   const paramsString = searchParams.toString();
-  console.log(paramsString);
 
   const {
     data: newsItemData,
@@ -24,7 +23,8 @@ export default function NewsItemPage() {
     error: itemError,
   } = useGetNewsItemQuery(newsSlug || "");
 
-  const { data: newsData, isLoading: newsLoading } = useGetNewsQuery('');
+  const { data: newsData, isLoading: newsLoading } =
+    useGetNewsQuery(paramsString);
 
   const isLoading = itemLoading || newsLoading;
   const newsItem = newsItemData?.data;
