@@ -239,8 +239,7 @@ export const SellerListingCard = ({
                 <span>{listing.location}</span>
                 <span className="hidden sm:inline">·</span>
                 <span className="capitalize">{listing.condition}</span>
-                <span className="hidden sm:inline">·</span>
-                <span>{listing.viewCount} views</span>
+                
                 {listing.listingType === "premium" && (
                   <>
                     <span className="hidden sm:inline">·</span>

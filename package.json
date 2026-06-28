@@ -22,6 +22,7 @@
     "@fontsource/titillium-web": "^5.2.8",
     "@headlessui/react": "^2.2.9",
     "@hookform/resolvers": "^5.2.2",
+    "@paystack/inline-js": "^2.23.1",
     "@react-pdf/renderer": "^4.3.2",
     "@reduxjs/toolkit": "^2.11.2",
     "@tailwindcss/vite": "^4.2.0",
@@ -69,6 +70,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.1",
+    "@types/paystack__inline-js": "^1.0.3",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@types/react-helmet": "^6.1.11",

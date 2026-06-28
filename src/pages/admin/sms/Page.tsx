@@ -9,12 +9,14 @@ import {
   HiOutlineCheckCircle,
 } from "react-icons/hi2";
 import {
+  TestSmsResponse,
   useGetSmsBalanceQuery,
   useSendTestSmsMutation,
 } from "@/services/smsApi";
 import { MdOutlineRefresh } from "react-icons/md";
 import { Input, Textarea } from "@/components/form";
 import { Button } from "@/components/buttons/Button";
+import { useNavigate } from "react-router-dom";
 
 const AdminSmsPage = () => {
   const {
@@ -24,10 +26,12 @@ const AdminSmsPage = () => {
   } = useGetSmsBalanceQuery();
   const [sendTestSms, { isLoading: isSending }] = useSendTestSmsMutation();
 
-  console.log({ balanceData });
+  const navigate = useNavigate();
+
+  // console.log({ balanceData });
   const [testPhone, setTestPhone] = useState("");
   const [testMessage, setTestMessage] = useState("");
-  const [testResult, setTestResult] = useState<any>(null);
+  const [testResult, setTestResult] = useState<TestSmsResponse|null>(null);
 
   const balance = balanceData?.data;
   const isSandbox = balance?.isSandbox;
@@ -44,8 +48,11 @@ const AdminSmsPage = () => {
         message: testMessage || undefined,
       }).unwrap();
 
+      console.log(result);
+
       setTestResult(result);
-      toast.success(result?.smsSent ? "SMS sent!" : result.messageId);
+      if (result.success) toast.success(result.message);
+      else toast.error(result.message);
     } catch (err: any) {
       toast.error("Failed to send test SMS");
     }
@@ -159,24 +166,24 @@ const AdminSmsPage = () => {
         {testResult && (
           <div
             className={`mt-4 rounded-xl p-4 ${
-              testResult.smsSent
+              testResult.success
                 ? "bg-success/5 border border-success/20"
                 : "bg-destructive/5 border border-destructive/20"
             }`}
           >
             <div className="flex items-center gap-2 mb-2">
-              {testResult.smsSent ? (
+              {testResult.success ? (
                 <HiOutlineCheckCircle className="w-5 h-5 text-success" />
               ) : (
                 <HiOutlineExclamationTriangle className="w-5 h-5 text-destructive" />
               )}
               <span className="text-sm font-medium">
-                {testResult.smsSent ? "SMS Sent Successfully" : "SMS Failed"}
+                {testResult.success ? "SMS Sent Successfully" : "SMS Failed"}
               </span>
             </div>
-            {testResult.messageId && (
+            {testResult.message && (
               <p className="text-xs text-muted-foreground">
-                Message ID: {testResult.messageId}
+                Response: {testResult.message}
               </p>
             )}
             {testResult.recipients && (
@@ -225,7 +232,7 @@ const AdminSmsPage = () => {
       {/* Logs  */}
 
       <Button
-        onClick={() => (window.location.href = "/admin/sms/logs")}
+        onClick={() => navigate("/admin/sms/logs")}
         className="grow w-full p-2 my-9"
       >
         View SMS Logs

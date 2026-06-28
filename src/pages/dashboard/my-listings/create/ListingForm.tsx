@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { HiOutlineArrowLeft, HiOutlineCheck, HiOutlineStar } from "react-icons/hi2";
+import {
+  HiOutlineArrowLeft,
+  HiOutlineCheck,
+  HiOutlineStar,
+} from "react-icons/hi2";
 
 import {
   useCreateListingMutation,
@@ -14,14 +18,14 @@ import { ImageUpload, validateImages } from "@/components/form/ImageUpload";
 import {
   createListingSchema,
   type ICreateListingFormData,
-} from "./validations";
+} from "../validations";
 import { Button } from "@/components/buttons/Button";
 import { useListingForm } from "@/hooks/useListingForm";
 import { useGetBrandsQuery } from "@/services/brandApi";
 import { useGetLocationsQuery } from "@/services/locationApi";
 import { CONDITIONS } from "@/data/motor";
 import { EDocumentType, IListing } from "@/types/listing";
-import PaymentModal from "../payments/PaymentModal";
+import PaymentModal from "../../payments/PaymentModal";
 import { enumToOptions } from "@/lib/select";
 import { usePricing } from "@/hooks/usePricing";
 
@@ -52,7 +56,6 @@ const ListingForm = ({ existingListing }: ListingFormProps) => {
   const navigate = useNavigate();
   const { data: brandsData } = useGetBrandsQuery();
   const { data: locationsData } = useGetLocationsQuery();
-
 
   // PAYMENT MODAL STATE
 
@@ -140,7 +143,6 @@ const ListingForm = ({ existingListing }: ListingFormProps) => {
   // Watch values
   const hasDocuments = watch("hasDocuments");
   const watchedImages = watch("images") || [];
-
 
   // HANDLERS
 
@@ -253,7 +255,6 @@ const ListingForm = ({ existingListing }: ListingFormProps) => {
     return new Date(lastSaved).toLocaleTimeString();
   };
 
-
   // RENDER HELPERS
 
   const renderStep = (step: number, content: React.ReactNode) => {
@@ -262,7 +263,6 @@ const ListingForm = ({ existingListing }: ListingFormProps) => {
     }
     return null;
   };
-
 
   // RENDER
 

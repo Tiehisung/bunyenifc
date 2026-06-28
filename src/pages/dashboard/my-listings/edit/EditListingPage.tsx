@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useGetListingQuery } from "@/services/listingsApi";
-import ListingForm from "./ListingForm";
+import ListingForm from "../create/ListingForm";
 
 const EditListingPage = () => {
   const { listingId } = useParams<{ listingId: string }>();

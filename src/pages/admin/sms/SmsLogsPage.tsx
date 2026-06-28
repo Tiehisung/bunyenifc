@@ -1,3 +1,6 @@
+import { CopyableText } from "@/components/buttons/CopyBtn";
+import { shortText } from "@/lib";
+import { formatDate } from "@/lib/timeAndDate";
 import { useGetSmsLogsQuery } from "@/services/smsApi";
 import { useState } from "react";
 import {
@@ -10,9 +13,7 @@ import {
   HiOutlineChevronRight,
 } from "react-icons/hi2";
 
-// ============================================
 // STATUS CONFIG
-// ============================================
 const STATUS_CONFIG: Record<
   string,
   { icon: any; color: string; bg: string; label: string }
@@ -55,16 +56,6 @@ const AdminSmsLogsPage = () => {
 
   const logs = data?.data || [];
   const pagination = data?.pagination;
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("en-GH", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   return (
     <div className="space-y-6">
@@ -161,9 +152,12 @@ const AdminSmsLogsPage = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3" title={log.messageId}>
                         <code className="text-xs bg-muted px-1.5 py-0.5 rounded text-muted-foreground">
-                          {log.messageId?.substring(0, 12)}...
+                          <CopyableText
+                            text={log.messageId}
+                            visibleText={shortText(log.messageId, 12)}
+                          />
                         </code>
                       </td>
                       <td className="px-4 py-3">
@@ -185,8 +179,8 @@ const AdminSmsLogsPage = () => {
                       <td className="px-4 py-3 text-sm text-muted-foreground">
                         {log.cost || "—"}
                       </td>
-                      <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
-                        {formatDate(log.createdAt)}
+                      <td className="px-4 py-3 text-xs text-muted-foreground _wordBreak">
+                        {formatDate(log.createdAt, "28 Mar 2026, 04:47 pm")}
                       </td>
                     </tr>
                   );
