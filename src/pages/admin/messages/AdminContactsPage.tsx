@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { toast } from "sonner";
 import {
+  EMessageCategory,
+  EMessageStatus,
   useGetAdminContactsQuery,
-  useUpdateContactStatusMutation,
-  useDeleteContactMutation,
 } from "@/services/contactApi";
 
 import {
@@ -13,14 +12,15 @@ import {
 } from "react-icons/hi2";
 import { MessageCard } from "./MessageCard";
 import Loader from "@/components/loaders/Loader";
+import { enumToOptions } from "@/lib/select";
 
 const STATUS_TABS = [
   { value: "all", label: "All" },
-  { value: "new", label: "New" },
+  { value: "unread", label: "Unread" },
   { value: "read", label: "Read" },
-  { value: "replied", label: "Replied" },
-  { value: "closed", label: "Closed" },
 ];
+
+const CATEGORIES_TABS = enumToOptions(EMessageCategory);
 
 const INQUIRY_TYPES = [
   { value: "all", label: "All Types" },
@@ -34,47 +34,25 @@ const INQUIRY_TYPES = [
 ];
 
 const AdminContactsPage = () => {
-  const [statusFilter, setStatusFilter] = useState("new");
+  const [statusFilter, setStatusFilter] = useState("unread");
   const [typeFilter, setTypeFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const queryParams: Record<string, any> = { page, limit: 15 };
-  if (statusFilter !== "all") queryParams.status = statusFilter;
+  if (statusFilter !== "all") {
+    if (Object.values(EMessageStatus).includes(statusFilter as any))
+      queryParams.status = statusFilter;
+    else queryParams.category = statusFilter;
+  }
   if (typeFilter !== "all") queryParams.inquiryType = typeFilter;
 
-  const { data, isLoading, refetch } = useGetAdminContactsQuery(queryParams);
-  const [updateStatus, { isLoading: isUpdating }] =
-    useUpdateContactStatusMutation();
-  const [deleteContact] = useDeleteContactMutation();
+  const { data, isLoading } = useGetAdminContactsQuery(queryParams);
 
   const contacts = data?.data || [];
   const pagination = data?.pagination;
 
-  // HANDLERS
-
-  const handleStatusChange = async (id: string, status: string) => {
-    try {
-      await updateStatus({ id, status }).unwrap();
-      toast.success(`Marked as ${status}`);
-      refetch();
-    } catch {
-      toast.error("Failed to update status");
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteContact(id).unwrap();
-      toast.success("Message deleted");
-      if (expandedId === id) setExpandedId(null);
-      refetch();
-    } catch {
-      toast.error("Failed to delete");
-    }
-  };
-
-  const handleToggleExpand = (id: string) => {
+  const handleToggleExpand = (id: string | null) => {
     setExpandedId(expandedId === id ? null : id);
   };
 
@@ -97,8 +75,8 @@ const AdminContactsPage = () => {
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex gap-1.5 overflow-x-auto">
-          {STATUS_TABS.map((tab) => (
+        <div className="flex flex-wrap gap-1.5 overflow-x-auto">
+          {[STATUS_TABS, CATEGORIES_TABS].flat().map((tab) => (
             <button
               key={tab.value}
               onClick={() => {
@@ -115,6 +93,7 @@ const AdminContactsPage = () => {
             </button>
           ))}
         </div>
+
         <select
           value={typeFilter}
           onChange={(e) => {
@@ -160,11 +139,8 @@ const AdminContactsPage = () => {
             <MessageCard
               key={contact._id}
               contact={contact}
-              isExpanded={expandedId === contact._id}
-              isUpdating={isUpdating}
+              expandedId={expandedId}
               onToggleExpand={handleToggleExpand}
-              onStatusChange={handleStatusChange}
-              onDelete={handleDelete}
             />
           ))}
         </div>
@@ -197,253 +173,3 @@ const AdminContactsPage = () => {
 };
 
 export default AdminContactsPage;
-
-// const MessageCard = ({
-//   contact,
-//   onClick,
-//   isExpanded,
-// }: {
-//   contact: IContactMessage;
-//   onClick?: () => void;
-//   isExpanded?: boolean;
-// }) => {
-//   const [updateStatus, { isLoading: isUpdating }] =
-//     useUpdateContactStatusMutation();
-//   const [deleteContact, { isLoading: isDeleting }] = useDeleteContactMutation();
-
-//   const statusStyle = STATUS_CONFIG[contact.status] || STATUS_CONFIG.new;
-//   const StatusIcon = statusStyle.icon;
-
-//   const [expandedId, setExpandedId] = useState<string | null>(null);
-
-//   const handleStatusChange = async (id: string, status: string) => {
-//     try {
-//       await updateStatus({ id, status }).unwrap();
-//       toast.success(`Marked as ${status}`);
-//       //   refetch();
-//     } catch {
-//       toast.error("Failed to update status");
-//     }
-//   };
-
-//   const handleDelete = async (id: string) => {
-//     try {
-//       await deleteContact(id).unwrap();
-//       toast.success("Message deleted");
-//       if (expandedId === id) setExpandedId(null);
-//       //   refetch();
-//     } catch {
-//       toast.error("Failed to delete");
-//     }
-//   };
-
-//   const toggleExpand = (id: string) => {
-//     setExpandedId(expandedId === id ? null : id);
-//   };
-
-//   const formatDate = (date: string) => {
-//     return new Date(date).toLocaleDateString("en-GH", {
-//       day: "numeric",
-//       month: "short",
-//       year: "numeric",
-//       hour: "2-digit",
-//       minute: "2-digit",
-//     });
-//   };
-//   return (
-//     <div
-//       key={contact._id}
-//       className={`bg-card border rounded-2xl transition-all ${
-//         contact.status === "new"
-//           ? "border-warning/30 shadow-[0_0_15px_rgba(234,179,8,0.05)]"
-//           : "border-border"
-//       }`}
-//     >
-//       {/* Summary Row */}
-//       <button
-//         onClick={() => toggleExpand(contact._id)}
-//         className="w-full p-5 text-left"
-//       >
-//         <div className="flex items-start justify-between gap-4">
-//           <div className="flex items-start gap-3 flex-1 min-w-0">
-//             {/* Avatar */}
-//             <div
-//               className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${statusStyle.bg}`}
-//             >
-//               {contact.status === "new" ? (
-//                 <StatusIcon className={`w-5 h-5 ${statusStyle.color}`} />
-//               ) : (
-//                 <HiOutlineUser className={`w-5 h-5 ${statusStyle.color}`} />
-//               )}
-//             </div>
-
-//             <div className="flex-1 min-w-0">
-//               <div className="flex items-center gap-2">
-//                 <h3
-//                   className={`font-semibold text-foreground ${contact.status === "new" ? "" : ""}`}
-//                 >
-//                   {contact.fullName}
-//                 </h3>
-//                 {contact.status === "new" && (
-//                   <span className="w-2 h-2 bg-warning rounded-full animate-pulse" />
-//                 )}
-//               </div>
-//               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-muted-foreground">
-//                 <span className="flex items-center gap-1">
-//                   <HiOutlinePhone className="w-3 h-3" />
-//                   {contact.phoneNumber}
-//                 </span>
-//                 {contact.email && (
-//                   <span className="flex items-center gap-1">
-//                     <HiOutlineEnvelope className="w-3 h-3" />
-//                     {contact.email}
-//                   </span>
-//                 )}
-//                 <span className="flex items-center gap-1">
-//                   <HiOutlineTag className="w-3 h-3" />
-//                   {contact.inquiryType}
-//                 </span>
-//               </div>
-//             </div>
-//           </div>
-
-//           <div className="flex items-center gap-2 shrink-0">
-//             <span
-//               className={`text-xs px-2 py-0.5 rounded-full ${statusStyle.bg} ${statusStyle.color}`}
-//             >
-//               {statusStyle.label}
-//             </span>
-//             <span className="text-xs text-muted-foreground">
-//               <HiOutlineClock className="w-3 h-3 inline mr-1" />
-//               {formatDate(contact.createdAt)}
-//             </span>
-//           </div>
-//         </div>
-
-//         {/* Preview of message */}
-//         {contact.message && !isExpanded && (
-//           <p className="mt-3 text-sm text-muted-foreground line-clamp-2 pl-13 ml-10">
-//             {contact.message}
-//           </p>
-//         )}
-//       </button>
-
-//       {/* Expanded Content */}
-//       {isExpanded && (
-//         <div className="px-5 pb-5 space-y-4 border-t border-border pt-4">
-//           {/* Full message */}
-//           {contact.message ? (
-//             <div className="bg-muted rounded-xl p-4">
-//               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-//                 Message
-//               </p>
-//               <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
-//                 {contact.message}
-//               </p>
-//             </div>
-//           ) : (
-//             <p className="text-sm text-muted-foreground italic">
-//               No message provided
-//             </p>
-//           )}
-
-//           {/* Contact details grid */}
-//           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-//             <div>
-//               <p className="text-xs text-muted-foreground">Name</p>
-//               <p className="text-sm font-medium text-foreground">
-//                 {contact.fullName}
-//               </p>
-//             </div>
-//             <div>
-//               <p className="text-xs text-muted-foreground">Phone</p>
-//               <a
-//                 href={`tel:${contact.phoneNumber}`}
-//                 className="text-sm font-medium text-primary hover:underline"
-//               >
-//                 {contact.phoneNumber}
-//               </a>
-//             </div>
-//             {contact.email && (
-//               <div>
-//                 <p className="text-xs text-muted-foreground">Email</p>
-//                 <a
-//                   href={`mailto:${contact.email}`}
-//                   className="text-sm font-medium text-primary hover:underline"
-//                 >
-//                   {contact.email}
-//                 </a>
-//               </div>
-//             )}
-//             <div>
-//               <p className="text-xs text-muted-foreground">Type</p>
-//               <p className="text-sm font-medium text-foreground capitalize">
-//                 {contact.inquiryType}
-//               </p>
-//             </div>
-//             <div>
-//               <p className="text-xs text-muted-foreground">Status</p>
-//               <span
-//                 className={`text-xs px-2 py-0.5 rounded-full ${statusStyle.bg} ${statusStyle.color}`}
-//               >
-//                 {statusStyle.label}
-//               </span>
-//             </div>
-//             <div>
-//               <p className="text-xs text-muted-foreground">Received</p>
-//               <p className="text-sm font-medium text-foreground">
-//                 {formatDate(contact.createdAt)}
-//               </p>
-//             </div>
-//           </div>
-
-//           {/* Actions */}
-//           <div className="flex items-center flex-wrap gap-2 pt-2">
-//             {contact.status !== "read" && (
-//               <button
-//                 onClick={() => handleStatusChange(contact._id, "read")}
-//                 disabled={isUpdating}
-//                 className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-muted-foreground
-//                             hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-//               >
-//                 <HiOutlineEye className="w-3.5 h-3.5" />
-//                 Mark Read
-//               </button>
-//             )}
-//             {contact.status !== "replied" && (
-//               <button
-//                 onClick={() => handleStatusChange(contact._id, "replied")}
-//                 disabled={isUpdating}
-//                 className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-success
-//                             hover:bg-success/5 rounded-lg transition-colors"
-//               >
-//                 <HiOutlineCheck className="w-3.5 h-3.5" />
-//                 Mark Replied
-//               </button>
-//             )}
-//             {contact.status !== "closed" && (
-//               <button
-//                 onClick={() => handleStatusChange(contact._id, "closed")}
-//                 disabled={isUpdating}
-//                 className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-muted-foreground
-//                             hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-//               >
-//                 <HiOutlineXMark className="w-3.5 h-3.5" />
-//                 Close
-//               </button>
-//             )}
-//             <div className="flex-1" />
-//             <ConfirmDialog
-//               onConfirm={() => handleDelete(contact._id)}
-//               confirmText="Confirm Delete"
-//               trigger={<HiOutlineTrash className="w-4 h-4 text-red-400" />}
-//               triggerStyles="rounded-full w-7 p-1"
-//               size={"sm"}
-//               title={`Delete this message permanently?`}
-//             />
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };

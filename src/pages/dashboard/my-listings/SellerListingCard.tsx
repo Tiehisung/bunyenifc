@@ -4,6 +4,7 @@ import { ResizableContent } from "@/components/resizables/ResizableContent";
 import { cn } from "@/lib/utils";
 import {
   useDeleteListingMutation,
+  useDuplicateListingMutation,
   useMarkAsSoldMutation,
 } from "@/services/listingsApi";
 import { useCheckBoostStatusQuery } from "@/services/services/boostApi";
@@ -21,13 +22,15 @@ import {
   HiOutlineEye,
   HiOutlinePencil,
   HiOutlineTrash,
+  HiOutlineDocumentDuplicate,
 } from "react-icons/hi2";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import PaymentModal from "../payments/PaymentModal";
 import BoostModal from "./BoostModal";
 import ListingViewers from "./ListingViewers";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/buttons/Button";
+import { formatPrice } from "@/lib/format";
 
 interface SellerListingCardProps {
   listing: IListing;
@@ -73,6 +76,7 @@ export const SellerListingCard = ({
   listing,
   isLoading,
 }: SellerListingCardProps) => {
+  const navigate = useNavigate();
   const [showBoost, setShowBoost] = useState(false);
   const { data: boostStatus } = useCheckBoostStatusQuery(listing._id);
 
@@ -99,6 +103,24 @@ export const SellerListingCard = ({
 
   const title = `${listing.brand} ${listing.model || ""}`.trim();
 
+  const [duplicateListing, { isLoading: isDuplicating }] =
+    useDuplicateListingMutation();
+
+  const handleDuplicate = async () => {
+    try {
+      const result = await duplicateListing(listing._id).unwrap();
+      toast.success("Listing duplicated!", {
+        description: "Review and pay the listing fee to publish.",
+      });
+      // Navigate to edit the new listing
+      navigate(`/dashboard/listings/${result.data._id}/edit`);
+    } catch (err: any) {
+      toast.error("Failed to duplicate", {
+        description: err?.data?.message,
+      });
+    }
+  };
+
   const handleDelete = async () => {
     try {
       await deleteListing(listing._id).unwrap();
@@ -120,14 +142,6 @@ export const SellerListingCard = ({
   const handlePaymentSuccess = () => {
     setShowPayment(false);
     toast.success("Payment successful! Listing submitted for approval.");
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 0,
-    }).format(price);
   };
 
   const className =
@@ -239,7 +253,8 @@ export const SellerListingCard = ({
                 <span>{listing.location}</span>
                 <span className="hidden sm:inline">·</span>
                 <span className="capitalize">{listing.condition}</span>
-                
+                <span className="hidden sm:inline">·</span>
+                <span>{listing.viewCount} views</span>
                 {listing.listingType === "premium" && (
                   <>
                     <span className="hidden sm:inline">·</span>
@@ -360,6 +375,19 @@ export const SellerListingCard = ({
                 {isBoosted ? "Boosted" : "Boost"}
               </button>
             )}
+
+            {/* ✅ Duplicate Button */}
+            <Button
+              size={"sm"}
+              variant="ghost"
+              onClick={handleDuplicate}
+              className={className}
+              title="Duplicate"
+              text="Duplicate"
+              loading={isDuplicating}
+            >
+              <HiOutlineDocumentDuplicate className="w-3.5 h-3.5" />
+            </Button>
             {/* Spacer */}
             <div className="flex-1" />
             {/* Delete */}

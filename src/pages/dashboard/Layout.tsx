@@ -13,8 +13,8 @@ import {
 } from "react-icons/hi2";
 import { useAppSelector } from "@/store/hooks/store";
 import { LogoutBtn } from "@/pages/auth/LogoutButton";
-import { symbols } from "@/data";
 import { EUserRole } from "@/types/user";
+import { AppName } from "../Navbar";
 interface IDashboardLink {
   href: string;
   icon: ReactNode;
@@ -124,15 +124,7 @@ const DashboardLayout = () => {
       {/* ============ DESKTOP SIDEBAR ============ */}
       <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-surface-elevated border-r border-border">
         <div className="p-6 pb-4">
-          <Link
-            to="/"
-            className="font-display font-bold text-xl text-surface-foreground"
-          >
-            <div className="flex items-center ">
-              <span className="pb-2.5"> {symbols.motor}</span> Moto
-              <span className="text-brand">Trust</span>
-            </div>
-          </Link>
+          <AppName className="text-lg" />
           <span className="block text-xs text-surface-400 font-normal mt-1">
             {`${user?.fullName?.split(" ")?.[1]} ...${user?.phoneNumber?.substring(6)}`}
           </span>
@@ -144,12 +136,7 @@ const DashboardLayout = () => {
 
       {/* ============ MOBILE HEADER ============ */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 _glass h-14 flex items-center justify-between px-4">
-        <Link
-          to="/"
-          className="font-display font-bold text-lg text-surface-foreground"
-        >
-          Moto<span className="text-brand">Trust</span>
-        </Link>
+        <AppName className="text-lg" />
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="p-2 hover:bg-surface-muted rounded-xl transition-colors"

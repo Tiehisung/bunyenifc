@@ -24,6 +24,7 @@ export interface IAuth extends IUser {
 export enum EUserRole {
   SELLER = "seller",
   BUYER = "buyer",
+  MANAGER = "manager",
   ADMIN = "admin"
 }
 

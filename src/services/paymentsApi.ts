@@ -55,9 +55,7 @@ export interface IPaymentHistoryItem {
     completedAt?: string;
 }
 
-// ============================================
 // API ENDPOINTS
-// ============================================
 export const paymentApi = api.injectEndpoints({
     endpoints: (builder) => ({
         // Direct MoMo charge
@@ -67,7 +65,7 @@ export const paymentApi = api.injectEndpoints({
                 method: 'POST',
                 body,
             }),
-            invalidatesTags: ['Payments'],
+            invalidatesTags: ['Payments','MyListings'],
         }),
 
         // Paystack checkout (redirect)

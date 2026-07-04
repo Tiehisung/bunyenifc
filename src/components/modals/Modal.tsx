@@ -7,7 +7,7 @@ import { TButtonSize, TButtonVariant } from "../ui/button";
 import { cn } from "@/lib/utils";
 
 interface ModalProps {
-  title: string;
+  title: ReactNode;
   children: ReactNode;
   modalSize?: "sm" | "md" | "lg" | "xl" | "full";
 
@@ -83,9 +83,9 @@ export function MODAL({
             {/* Header */}
             {title && (
               <header className="flex items-center justify-between p-6 pb-4 border-b border-border">
-                <h2 className="text-lg font-semibold text-surface-foreground line-clamp-1">
+                <div className="text-lg font-semibold text-surface-foreground line-clamp-1">
                   {title}
-                </h2>
+                </div>
                 {showCloseButton && (
                   <button
                     onClick={() => setIsOpen(false)}

@@ -175,6 +175,7 @@ export interface TimeLeftResult {
   unit: TimeUnit;
   expired: boolean;
   formatted: string;
+  short: string
 }
 
 /**
@@ -223,7 +224,7 @@ export function getTimeLeftOrAgo(date?: string | number | Date): TimeLeftResult 
     ? `${value}${unit} ago`
     : `${value}${unit} left`;
 
-  return { value, unit, expired, formatted };
+  return { value, unit, expired, formatted, short: formatted.replace('ago', '').replace('left', '') };
 }
 
 
@@ -285,6 +286,6 @@ export const getDeadlineInfo = (
 
   return {
     isPassed,
-    deadline: formatDate(deadline, ),
+    deadline: formatDate(deadline,),
   };
 };

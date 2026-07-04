@@ -26,8 +26,7 @@ interface PaymentModalProps {
   onAbort?: () => void;
 }
 
-const PAYSTACK_KEY =
-  import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "pk_test_xxxxxxxx";
+const PAYSTACK_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
 
 // COMPONENT
 const PaymentModal = ({
@@ -51,7 +50,6 @@ const PaymentModal = ({
     useInitializePopupPaymentMutation();
   const [verify] = useVerifyPopupPaymentMutation();
 
-
   // HANDLE PAYSTACK POPUP PAYMENT
 
   const handlePay = async () => {
@@ -67,7 +65,7 @@ const PaymentModal = ({
       }).unwrap();
 
       if (!result.success || !result.data) {
-        throw new Error(result.message || "Failed to initialize payment");
+        throw new Error("Failed to initialize payment");
       }
 
       const { reference, email } = result.data;
@@ -75,7 +73,7 @@ const PaymentModal = ({
       // 2. Open Paystack Popup
       openPaystackPopup({
         key: PAYSTACK_KEY,
-        email: email || `${user?.phoneNumber}@motomartgh.com`,
+        email: email || `${user?.phoneNumber}@motomartgh.com` ,
         amount,
         reference,
         onSuccess: async (ref) => {
@@ -112,7 +110,6 @@ const PaymentModal = ({
     }
   };
 
-
   // POLL FOR VERIFICATION
 
   const pollVerification = (reference: string) => {
@@ -146,7 +143,6 @@ const PaymentModal = ({
   };
 
   if (!isOpen) return null;
-
 
   // RENDER
 

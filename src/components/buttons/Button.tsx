@@ -42,7 +42,7 @@ export function Button({
       disabled={loading || disabled}
       className={cn(
         `flex items-center gap-2 font-semibold disabled:pointer-events-none disabled:hover:bg-transparent disabled:opacity-60 active:scale-[99%] overflow-hidden ${
-          loading ? "cursor-wait" : "cursor-pointer"
+          loading ? "cursor-wait " : "cursor-pointer"
         }  `,
         className,
       )}
