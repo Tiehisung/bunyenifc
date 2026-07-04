@@ -1,13 +1,12 @@
- 
 import { ReactNode, useEffect, useState } from "react";
 import DiveUpwards from "./Animate";
 import CloseButton from "./buttons/Close";
 
 interface INotifierProps {
-  message: ReactNode;
+  message?: ReactNode;
   children?: React.ReactNode;
   className?: string;
-  inDismissible?: boolean;
+  isDismissible?: boolean;
   delay?: "1m" | "30s" | "10s" | "5s" | "2s" | "0";
 }
 const NotifierWrapper = ({
@@ -15,7 +14,7 @@ const NotifierWrapper = ({
   children,
   className,
   delay = "2s",
-  inDismissible,
+  isDismissible=true,
 }: INotifierProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -24,16 +23,16 @@ const NotifierWrapper = ({
       delay == "1m"
         ? 10000
         : delay == "30s"
-        ? 30000
-        : delay == "10s"
-        ? 10000
-        : delay == "5s"
-        ? 5000
-        : delay == "2s"
-        ? 2000
-        : delay == "0"
-        ? 0
-        : 0;
+          ? 30000
+          : delay == "10s"
+            ? 10000
+            : delay == "5s"
+              ? 5000
+              : delay == "2s"
+                ? 2000
+                : delay == "0"
+                  ? 0
+                  : 0;
     const timeout = setTimeout(() => {
       setIsOpen(true);
     }, elapse);
@@ -45,14 +44,14 @@ const NotifierWrapper = ({
   return (
     <DiveUpwards
       layoutId={message?.toString() as string}
-      className={`relative w-full flex gap-6 items-start justify-between border-green-200 bg-green-700/5 bg-opacity-10 p-4 rounded-lg shadow-sm border ${className}`}
+      className={`relative w-full flex gap-6 items-start justify-between border-green-200 bg-green-700/5 p-4 rounded-lg shadow-sm border ${className}`}
     >
       <div className="grid gap-3 grow">
-        <p className="font-normal text-sm min-h-6">{message}</p>
+        {message && <p className="font-normal text-sm min-h-6">{message}</p>}
         {children}
       </div>
 
-      {inDismissible && (
+      {isDismissible && (
         <CloseButton
           onClose={() => setIsOpen(false)}
           className="absolute right-1 top-1"

@@ -13,12 +13,35 @@ export interface IContactMessage {
     fullName: string;
     phoneNumber: string;
     email?: string;
-    inquiryType: string;
     message?: string;
-    status: 'new' | 'read' | 'replied' | 'closed';
+    inquiryType: `${EInquiryType}`;
+    status: `${EMessageStatus}`;
+    category: `${EMessageCategory}`;
     notes?: string;
     createdAt: string;
     updatedAt: string;
+}
+
+export enum EMessageStatus {
+    UNREAD = 'unread',
+    READ = 'read',
+}
+
+export enum EMessageCategory {
+    STARRED = 'starred',
+    IMPORTANT = 'important',
+    SPAM = 'spam',
+    ARCHIVED = 'archived',
+}
+
+export enum EInquiryType {
+    BUYING = 'buying',
+    SELLING = 'selling',
+    VERIFICATION = 'verification',
+    PAYMENT = 'payment',
+    LISTING = 'listing',
+    PARTNERSHIP = 'partnership',
+    OTHER = 'other',
 }
 
 export const contactApi = api.injectEndpoints({
@@ -52,10 +75,23 @@ export const contactApi = api.injectEndpoints({
         // Update contact status
         updateContactStatus: builder.mutation<
             { success: boolean; message: string; data: IContactMessage },
-            { id: string; status: string; notes?: string }
+            { id: string;  notes?: string }
         >({
             query: ({ id, ...body }) => ({
                 url: `/contacts/${id}/status`,
+                method: 'PATCH',
+                body,
+            }),
+            invalidatesTags: ['AdminContacts'],
+        }),
+
+        // Update contact category
+        updateContactCategory: builder.mutation<
+            { success: boolean; message: string; data: IContactMessage },
+            { id: string; category: string | null; }
+        >({
+            query: ({ id, ...body }) => ({
+                url: `/contacts/${id}/category`,
                 method: 'PATCH',
                 body,
             }),
@@ -79,5 +115,6 @@ export const {
     useGetAdminContactQuery,
     useGetAdminContactsQuery,
     useUpdateContactStatusMutation,
+    useUpdateContactCategoryMutation
 
 } = contactApi;

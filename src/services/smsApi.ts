@@ -12,13 +12,12 @@ interface SmsBalanceResponse {
     message?: string;
 }
 
-interface TestSmsResponse {
+export interface TestSmsResponse {
     success: boolean;
-    smsSent: boolean;
-    messageId?: string;
+    message?: string;
     recipients?: number;
     details?: any;
-    isSandbox: boolean;
+   
 }
 
 export const adminSmsApi = api.injectEndpoints({
@@ -34,11 +33,11 @@ export const adminSmsApi = api.injectEndpoints({
                 body,
             }),
             invalidatesTags: ['AdminSMS'],
-        }), 
-        
+        }),
+
         getSmsLogs: builder.query<any, Record<string, any>>({
-            query: (params) => ({ url: '/admin/sms/logs', params }),
-            providesTags: ['AdminSmsLogs'],
+            query: (params) => ({ url: '/sms/logs', params }),
+            providesTags: ['AdminSmsLogs', 'AdminSMS'],
         }),
     }),
 });

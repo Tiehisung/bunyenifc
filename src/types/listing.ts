@@ -1,5 +1,6 @@
 export interface IListing {
     _id: string;
+    duplicatedFrom?: string,//may start as duplicate
     seller: { _id: string; fullName: string; phoneNumber: string; town?: string; isVerified: boolean };
     brand: string;
     model?: string;

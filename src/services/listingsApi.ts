@@ -60,6 +60,13 @@ export const listingsApi = api.injectEndpoints({
             query: (body) => ({ url: '/listings', method: 'POST', body }),
             invalidatesTags: ['Listings', 'MyListings'],
         }),
+        duplicateListing: builder.mutation<ISingleListingResponse, string>({
+            query: (id) => ({
+                url: `/listings/${id}/duplicate`,
+                method: 'POST',
+            }),
+            invalidatesTags: ['MyListings'],
+        }),
         updateListing: builder.mutation<ISingleListingResponse, { id: string; data: any }>({
             query: ({ id, data }) => ({ url: `/listings/${id}`, method: 'PUT', body: data }),
             invalidatesTags: ['Listings', 'MyListings'],
@@ -141,6 +148,7 @@ export const {
     useGetListingQuery,
     useGetMyListingsQuery,
     useCreateListingMutation,
+    useDuplicateListingMutation,
     useUpdateListingMutation,
     useDeleteListingMutation,
     useMarkAsSoldMutation,

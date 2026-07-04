@@ -55,9 +55,7 @@ export interface IPaymentHistoryItem {
     completedAt?: string;
 }
 
-// ============================================
 // API ENDPOINTS
-// ============================================
 export const paymentApi = api.injectEndpoints({
     endpoints: (builder) => ({
         // Direct MoMo charge
@@ -67,7 +65,7 @@ export const paymentApi = api.injectEndpoints({
                 method: 'POST',
                 body,
             }),
-            invalidatesTags: ['Payments'],
+            invalidatesTags: ['Payments','MyListings'],
         }),
 
         // Paystack checkout (redirect)
@@ -94,6 +92,22 @@ export const paymentApi = api.injectEndpoints({
         getPayment: builder.query<{ success: boolean; data: IPaymentHistoryItem }, string>({
             query: (id) => `/payments/${id}`,
         }),
+
+        // popup
+        verifyPopupPayment: builder.mutation<any, string>({
+            query: (reference) => `/payments/verify/${reference}`,
+        }),
+
+        initializePopupPayment: builder.mutation<
+            { success: boolean; data: { reference: string; amount: number; email: string; paymentId: string } },
+            { listingId?: string; paymentType?: string; metadata?: Record<string, any> }
+        >({
+            query: (body) => ({
+                url: '/payments/initialize',
+                method: 'POST',
+                body,
+            }),
+        }),
     }),
 });
 
@@ -103,4 +117,7 @@ export const {
     useVerifyPaymentQuery,
     useGetPaymentHistoryQuery,
     useGetPaymentQuery,
+    // popup
+    useInitializePopupPaymentMutation,
+    useVerifyPopupPaymentMutation
 } = paymentApi;

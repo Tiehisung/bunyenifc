@@ -30,7 +30,7 @@ const AdminUserDetailPage = () => {
 
   const { data, isLoading } = useGetAdminUserQuery(userId as string);
   const user = data?.data?.user;
-  console.log(data, userId);
+ 
 
   const [verifyUser, { isLoading: verifying }] = useVerifyUserMutation();
   const handleVerify = async () => {

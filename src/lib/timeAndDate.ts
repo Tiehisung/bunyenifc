@@ -19,6 +19,15 @@ export const getAgeFromDOB = (dob: string): number => {
 };
 
 
+//   const formatDate = (date: string) => {
+//     return new Date(date).toLocaleDateString("en-GH", {
+//       day: "numeric",
+//       month: "short",
+//       year: "numeric",
+//       hour: "2-digit",
+//       minute: "2-digit",
+//     });
+//   };
 export const formatDate = (
   dateString?: string | Date,
   format:
@@ -27,6 +36,7 @@ export const formatDate = (
     | "yyyy-mm-dd"
     | "March 2, 2025"
     | "28 Mar 2025"
+    | "28 Mar 2026, 04:47 pm"
     | "Sunday, March 2, 2025"
     | "HH:MM"
     | "HH:MM:SS"
@@ -55,6 +65,14 @@ export const formatDate = (
           year: "numeric",
         },
       )
+    case "28 Mar 2026, 04:47 pm":
+      return createdAt.toLocaleDateString("en-GH", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 
     case "dd/mm/yyyy":
       return moment(dateString).format("DD/MM/YYYY");
@@ -157,6 +175,7 @@ export interface TimeLeftResult {
   unit: TimeUnit;
   expired: boolean;
   formatted: string;
+  short: string
 }
 
 /**
@@ -205,7 +224,7 @@ export function getTimeLeftOrAgo(date?: string | number | Date): TimeLeftResult 
     ? `${value}${unit} ago`
     : `${value}${unit} left`;
 
-  return { value, unit, expired, formatted };
+  return { value, unit, expired, formatted, short: formatted.replace('ago', '').replace('left', '') };
 }
 
 
@@ -267,6 +286,6 @@ export const getDeadlineInfo = (
 
   return {
     isPassed,
-    deadline: formatDate(deadline, ),
+    deadline: formatDate(deadline,),
   };
 };

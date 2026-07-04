@@ -1,104 +1,183 @@
+import { Button } from "@/components/buttons/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { IContactMessage } from "@/services/contactApi";
-import { HiOutlineEnvelope, HiOutlineEnvelopeOpen, HiOutlineChatBubbleLeftRight, HiOutlineCheck, HiOutlineUser, HiOutlinePhone, HiOutlineTag, HiOutlineClock, HiOutlineEye, HiOutlineXMark, HiOutlineTrash } from "react-icons/hi2";
+import { formatDate, getTimeLeftOrAgo } from "@/lib/timeAndDate";
+import {
+  EMessageCategory,
+  IContactMessage,
+  useDeleteContactMutation,
+  useUpdateContactCategoryMutation,
+  useUpdateContactStatusMutation,
+} from "@/services/contactApi";
+import { Loader } from "lucide-react";
+import {
+  HiOutlineEnvelope,
+  HiOutlineEnvelopeOpen,
+  HiOutlinePhone,
+  HiOutlineTag,
+  HiOutlineClock,
+  HiOutlineTrash,
+  HiOutlineArchiveBox,
+  HiOutlineArchiveBoxXMark,
+  HiOutlineExclamationTriangle,
+  HiOutlineStar,
+} from "react-icons/hi2";
+import { toast } from "sonner";
 
-const STATUS_CONFIG: Record<
-  string,
-  { icon: any; color: string; bg: string; label: string }
-> = {
-  new: {
+// STATUS CONFIG
+const STATUS_CONFIG = {
+  unread: {
     icon: HiOutlineEnvelope,
-    color: "text-warning",
-    bg: "bg-warning/5",
-    label: "New",
+    color: "text-success",
+    bg: "bg-success/5",
+    label: "Unread",
   },
   read: {
     icon: HiOutlineEnvelopeOpen,
-    color: "text-info",
-    bg: "bg-info/5",
-    label: "Read",
-  },
-  replied: {
-    icon: HiOutlineChatBubbleLeftRight,
-    color: "text-success",
-    bg: "bg-success/5",
-    label: "Replied",
-  },
-  closed: {
-    icon: HiOutlineCheck,
     color: "text-muted-foreground",
     bg: "bg-muted",
-    label: "Closed",
+    label: "Read",
   },
 };
 
-const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString("en-GH", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+// CATEGORY CONFIG
+const CATEGORY_CONFIG = {
+  starred: {
+    icon: HiOutlineStar,
+    color: "text-warning",
+    bg: "bg-warning/5",
+    label: "Starred",
+  },
+  important: {
+    icon: HiOutlineExclamationTriangle,
+    color: "text-destructive",
+    bg: "bg-destructive/5",
+    label: "Important",
+  },
+  spam: {
+    icon: HiOutlineArchiveBoxXMark,
+    color: "text-muted-foreground",
+    bg: "bg-muted",
+    label: "Spam",
+  },
+  archived: {
+    icon: HiOutlineArchiveBox,
+    color: "text-muted-foreground",
+    bg: "bg-muted",
+    label: "Archived",
+  },
 };
 
+// PROPS
 interface MessageCardProps {
   contact: IContactMessage;
-  isExpanded: boolean;
-  isUpdating: boolean;
-  onToggleExpand: (id: string) => void;
-  onStatusChange: (id: string, status: string) => void;
-  onDelete: (id: string) => void;
+  expandedId: string | null;
+
+  onToggleExpand: (id: string | null) => void;
 }
 
+// COMPONENT
 export const MessageCard = ({
   contact,
-  isExpanded,
-  isUpdating,
   onToggleExpand,
-  onStatusChange,
-  onDelete,
+  expandedId,
 }: MessageCardProps) => {
-  const statusStyle = STATUS_CONFIG[contact.status] || STATUS_CONFIG.new;
+  const statusStyle = STATUS_CONFIG[contact.status] || STATUS_CONFIG.unread;
   const StatusIcon = statusStyle.icon;
+  const categoryStyle = contact.category
+    ? CATEGORY_CONFIG[contact.category]
+    : null;
+  const CategoryIcon = categoryStyle?.icon;
+
+  const isExpanded = contact?._id == expandedId;
+
+  const [updateStatus, { isLoading: isUpdatingStatus }] =
+    useUpdateContactStatusMutation();
+  const [updateCategory, { isLoading: isUpdatingCategory }] =
+    useUpdateContactCategoryMutation();
+  const [deleteContact, { isLoading: isDeleting }] = useDeleteContactMutation();
+
+  // HANDLERS
+
+  const handleStatusChange = async () => {
+    try {
+      await updateStatus({ id: contact._id }).unwrap();
+    } catch {
+      toast.error("Failed to update status");
+    }
+  };
+
+  const handleCategoryChange = async (category: EMessageCategory | null) => {
+    try {
+      await updateCategory({ id: contact._id, category }).unwrap();
+      toast.success(category ? `Marked as ${category}` : "Category removed");
+    } catch {
+      toast.error("Failed to update category");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteContact(contact._id).unwrap();
+      toast.success("Message deleted");
+      if (expandedId === contact._id) onToggleExpand(null);
+    } catch {
+      toast.error("Failed to delete");
+    }
+  };
 
   return (
     <div
       className={`bg-card border rounded-2xl transition-all ${
-        contact.status === "new"
+        contact.status === "unread"
           ? "border-warning/30 shadow-[0_0_15px_rgba(234,179,8,0.05)]"
           : "border-border"
       }`}
     >
       {/* ============ SUMMARY ROW ============ */}
       <button
-        onClick={() => onToggleExpand(contact._id)}
+        onClick={() => {
+          onToggleExpand(contact._id);
+          if (contact.status !== "read") {
+            handleStatusChange();
+          }
+        }}
         className="w-full p-5 text-left"
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="relative flex items-start justify-between gap-4">
           <div className="flex items-start gap-3 flex-1 min-w-0">
             {/* Avatar */}
             <div
-              className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${statusStyle.bg}`}
+              className={`relative w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${statusStyle.bg}`}
             >
-              {contact.status === "new" ? (
-                <StatusIcon className={`w-5 h-5 ${statusStyle.color}`} />
-              ) : (
-                <HiOutlineUser className={`w-5 h-5 ${statusStyle.color}`} />
+              <StatusIcon className={`w-5 h-5 ${statusStyle.color}`} />
+              {contact.status === "unread" && (
+                <span className="absolute w-2 h-2 bg-success rounded-full animate-pulse top-1 left-1" />
               )}
             </div>
 
             {/* Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-foreground">
+                <h3 className="font-semibold text-foreground grow line-clamp-1">
                   {contact.fullName}
                 </h3>
-                {contact.status === "new" && (
-                  <span className="w-2 h-2 bg-warning rounded-full animate-pulse" />
+
+                {CategoryIcon && (
+                  <CategoryIcon
+                    className={`w-3.5 h-3.5 ${categoryStyle?.color}`}
+                  />
                 )}
+
+                <span className="tracking-wider font-normal text-sm text-muted-foreground">
+                  {getTimeLeftOrAgo(contact.createdAt).short}
+                </span>
               </div>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <HiOutlineClock className="w-3 h-3 inline mr-1" />
+                  {formatDate(contact.createdAt, "28 Mar 2026, 04:47 pm")}
+                </span>
+
                 <span className="flex items-center gap-1">
                   <HiOutlinePhone className="w-3 h-3" />
                   {contact.phoneNumber}
@@ -115,19 +194,6 @@ export const MessageCard = ({
                 </span>
               </div>
             </div>
-          </div>
-
-          {/* Status + Date */}
-          <div className="flex items-center gap-2 shrink-0">
-            <span
-              className={`text-xs px-2 py-0.5 rounded-full ${statusStyle.bg} ${statusStyle.color}`}
-            >
-              {statusStyle.label}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              <HiOutlineClock className="w-3 h-3 inline mr-1" />
-              {formatDate(contact.createdAt)}
-            </span>
           </div>
         </div>
 
@@ -175,54 +241,101 @@ export const MessageCard = ({
             )}
             <DetailItem label="Type" value={contact.inquiryType} capitalize />
             <DetailItem label="Status">
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full ${statusStyle.bg} ${statusStyle.color}`}
+              <Button
+                title={`Mark as ${contact.status == "read" ? "uread" : "read"}`}
+                onClick={handleStatusChange}
+                className={`text-xs px-4 py-0.5 rounded-full cursor-pointer ${statusStyle.bg} ${statusStyle.color}`}
+                variant={"secondary"}
+                size="xs"
               >
+                {isUpdatingStatus && <Loader className="animate-spin" />}{" "}
                 {statusStyle.label}
-              </span>
+              </Button>
             </DetailItem>
+            {contact.category && (
+              <DetailItem label="Category">
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full ${categoryStyle?.bg} ${categoryStyle?.color}`}
+                >
+                  {categoryStyle?.label}
+                </span>
+              </DetailItem>
+            )}
             <DetailItem
               label="Received"
-              value={formatDate(contact.createdAt)}
+              value={formatDate(contact.createdAt, "28 Mar 2026, 04:47 pm")}
             />
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center flex-wrap gap-2 pt-2">
-            {contact.status !== "read" && (
-              <ActionButton
-                icon={HiOutlineEye}
-                label="Mark Read"
-                onClick={() => onStatusChange(contact._id, "read")}
-                disabled={isUpdating}
+          {/* ============ ACTIONS ============ */}
+          <div className="space-y-3 pt-2 border-t border-border">
+            {/* Status Row */}
+            <div className="flex items-center flex-wrap gap-2">
+              <div className="flex-1" />
+              <ConfirmDialog
+                onConfirm={handleDelete}
+                confirmText="Delete"
+                trigger={
+                  <HiOutlineTrash className="w-4 h-4 text-destructive" />
+                }
+                triggerStyles="rounded-full w-7 p-1 hover:bg-destructive/5"
+                size="sm"
+                title="Delete this message permanently?"
+                isLoading={isDeleting}
               />
-            )}
-            {contact.status !== "replied" && (
-              <ActionButton
-                icon={HiOutlineCheck}
-                label="Mark Replied"
-                onClick={() => onStatusChange(contact._id, "replied")}
-                disabled={isUpdating}
-                className="text-success hover:bg-success/5"
-              />
-            )}
-            {contact.status !== "closed" && (
-              <ActionButton
-                icon={HiOutlineXMark}
-                label="Close"
-                onClick={() => onStatusChange(contact._id, "closed")}
-                disabled={isUpdating}
-              />
-            )}
-            <div className="flex-1" />
-            <ConfirmDialog
-              onConfirm={() => onDelete(contact._id)}
-              confirmText="Delete"
-              trigger={<HiOutlineTrash className="w-4 h-4 text-red-400" />}
-              triggerStyles="rounded-full w-7 p-1 hover:bg-destructive/5"
-              size="sm"
-              title="Delete this message permanently?"
-            />
+            </div>
+
+            {/* Category Row */}
+            <div className="flex items-center flex-wrap gap-1.5">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider mr-1">
+                Categories:
+              </span>
+              {[
+                {
+                  key: EMessageCategory.STARRED,
+                  icon: HiOutlineStar,
+                  label: "Star",
+                  color: "text-warning hover:bg-warning/5",
+                },
+                {
+                  key: EMessageCategory.IMPORTANT,
+                  icon: HiOutlineExclamationTriangle,
+                  label: "Important",
+                  color: "text-destructive hover:bg-destructive/5",
+                },
+                {
+                  key: EMessageCategory.SPAM,
+                  icon: HiOutlineArchiveBoxXMark,
+                  label: "Spam",
+                  color: "text-muted-foreground hover:bg-muted",
+                },
+                {
+                  key: EMessageCategory.ARCHIVED,
+                  icon: HiOutlineArchiveBox,
+                  label: "Archive",
+                  color: "text-muted-foreground hover:bg-muted",
+                },
+              ].map((cat) => {
+                const isActive = contact.category === cat.key;
+                return (
+                  <Button
+                    key={cat.key}
+                    variant={isActive ? "secondary" : "ghost"}
+                    size={"xs"}
+                    onClick={() =>
+                      handleCategoryChange(isActive ? null : cat.key)
+                    }
+                    disabled={isUpdatingCategory}
+                    className={`text-xs font-light ${
+                      isActive ? `bg-primary/10 text-primary` : `${cat.color}`
+                    }`}
+                  >
+                    <cat.icon className="w-3 h-3" />
+                    {cat.label}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
@@ -230,9 +343,7 @@ export const MessageCard = ({
   );
 };
 
-// ============================================
 // SUB-COMPONENTS
-// ============================================
 
 interface DetailItemProps {
   label: string;
@@ -268,30 +379,4 @@ const DetailItem = ({
       </p>
     )}
   </div>
-);
-
-interface ActionButtonProps {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  className?: string;
-}
-
-const ActionButton = ({
-  icon: Icon,
-  label,
-  onClick,
-  disabled,
-  className = "",
-}: ActionButtonProps) => (
-  <button
-    onClick={onClick}
-    disabled={disabled}
-    className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-muted-foreground
-      hover:text-foreground hover:bg-muted rounded-lg transition-colors disabled:opacity-50 ${className}`}
-  >
-    <Icon className="w-3.5 h-3.5" />
-    {label}
-  </button>
 );

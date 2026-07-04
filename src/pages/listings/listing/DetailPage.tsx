@@ -88,16 +88,28 @@ const ListingDetailPage = () => {
       <div className="space-y-3">
         <div className="aspect-video md:aspect-2/1 bg-muted rounded-3xl overflow-hidden relative">
           {listing.images?.[selectedImage] ? (
-            <img
-              src={listing.images[selectedImage]}
-              alt={`${listing.brand} ${listing.model}`}
-              className="w-full h-full object-cover"
-            />
+            <>
+              {/* Background */}
+              <img
+                src={listing.images[selectedImage]}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-40"
+              />
+
+              {/* Foreground */}
+              <img
+                src={listing.images[selectedImage]}
+                alt={`${listing.brand} ${listing.model}`}
+                className="relative w-full h-full object-contain z-10"
+              />
+            </>
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <FaMotorcycle className="w-20 h-20 text-muted-foreground/30" />
             </div>
           )}
+
+          {/* Badges */}
           <div className="absolute top-4 left-4 flex gap-2">
             {listing.listingType === "premium" && (
               <span className="inline-flex items-center px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
